@@ -33,7 +33,7 @@ func init() {
 	config.AddConfigPath("/etc/")
 	config.AddConfigPath("/usr/etc/")
 
-	flag.String("port", "9664", "The port number to listen on for HTTP requests")
+	flag.String("port", "9680", "The port number to listen on for HTTP requests")
 	flag.String("address", "0.0.0.0", "The address to listen on for HTTP requests")
 	flag.String("log-level", "info", "The minimum logging level; levels are, in ascending order: debug, info, warn, error")
 
