@@ -13,21 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-Name:           prometheus-sap-host-exporter
+Name:           prometheus-sap_host_exporter
 # Version will be processed via set_version source service
 Version:        0
 Release:        0
 License:        Apache-2.0
 Summary:        Prometheus exporter for SAP systems (a.k.a. NetWeaver)
 Group:          System/Monitoring
-Url:            https://github.com/SUSE/sap-host-exporter
+Url:            https://github.com/SUSE/sap_host_exporter
 Source:         %{name}-%{version}.tar.gz
 Source1:        vendor.tar.gz
 ExclusiveArch:  aarch64 x86_64 ppc64le s390x
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  go >= 1.11
-Provides:       sap-host-exporter = %{version}-%{release}
-Provides:       prometheus(sap-host-exporter) = %{version}-%{release}
+Provides:       sap_host_exporter = %{version}-%{release}
+Provides:       prometheus(sap_host_exporter) = %{version}-%{release}
 # Unlike C/C++ packages, Golang packages do not have header files. They are statically built so the main package is also the devel package.
 Provides:       %{name}-devel = %{version}
 Provides:       %{name}-devel-static = %{version}
@@ -43,7 +43,7 @@ Prometheus exporter for Pacemaker HA clusters metrics
 %setup -q            # unpack project sources
 %setup -q -T -D -a 1 # unpack go dependencies in vendor.tar.gz, which was prepared by the source services
 
-%define shortname sap-host-exporter
+%define shortname sap_host_exporter
 
 %build
 

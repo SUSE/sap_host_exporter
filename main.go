@@ -27,7 +27,7 @@ func loglevel(level string) {
 }
 
 func init() {
-	config.SetConfigName("sap-host-exporter")
+	config.SetConfigName("sap_host_exporter")
 	config.AddConfigPath("./")
 	config.AddConfigPath("$HOME/.config/")
 	config.AddConfigPath("/etc/")

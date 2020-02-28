@@ -7,8 +7,8 @@ AUTHOR ?= shap-staff@suse.de
 
 # you can customize any of the following to build forks
 OBS_PROJECT ?= server:monitoring
-OBS_PACKAGE ?= prometheus-sap-host-exporter
-REPOSITORY ?= SUSE/sap-host-exporter
+OBS_PACKAGE ?= prometheus-sap_host_exporter
+REPOSITORY ?= SUSE/sap_host_exporter
 
 # the Go archs we crosscompile to
 ARCHS ?= amd64 arm64 ppc64le s390x
@@ -25,7 +25,7 @@ build-all: clean-bin $(ARCHS)
 
 $(ARCHS):
 	@mkdir -p build/bin
-	CGO_ENABLED=0 GOOS=linux GOARCH=$@ go build -trimpath -ldflags "-s -w -X main.version=$(VERSION)" -o build/bin/sap-host-exporter-$(VERSION)-$@
+	CGO_ENABLED=0 GOOS=linux GOARCH=$@ go build -trimpath -ldflags "-s -w -X main.version=$(VERSION)" -o build/bin/sap_host_exporter-$(VERSION)-$@
 
 install:
 	go install

@@ -25,8 +25,8 @@ The project can be installed in many ways, including but not limited to:
 ### Manual clone & build
 
 ```
-git clone https://github.com/SUSE/sap-host-exporter
-cd sap-host-exporter
+git clone https://github.com/SUSE/sap_host_exporter
+cd sap_host_exporter
 make
 make install
 ```
@@ -34,16 +34,16 @@ make install
 ### Go
 
 ```
-go get github.com/SUSE/sap-host-exporter
+go get github.com/SUSE/sap_host_exporter
 ```
 
 ### RPM
-You can find the repositories for RPM based distributions in [SUSE's Open Build Service](https://build.opensuse.org/package/show/server:monitoring/prometheus-sap-host-exporter).  
+You can find the repositories for RPM based distributions in [SUSE's Open Build Service](https://build.opensuse.org/package/show/server:monitoring/prometheus-sap_host_exporter).  
 On openSUSE or SUSE Linux Enterprise you can just use the `zypper` system package manager:
 ```shell
 export DISTRO=SLE_15_SP2 # change as desired
 zypper addrepo https://download.opensuse.org/repositories/server:/monitoring/$DISTRO/server:monitoring.repo
-zypper install prometheus-sap-host-exporter
+zypper install prometheus-sap_host_exporter
 ```
 
 ## Usage

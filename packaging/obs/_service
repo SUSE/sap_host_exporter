@@ -1,15 +1,15 @@
 <services>
     <service name="tar_scm" mode="disabled">
-        <param name="url">git://github.com/SUSE/sap-host-exporter.git</param>
+        <param name="url">git://github.com/SUSE/sap_host_exporter.git</param>
         <param name="scm">git</param>
         <param name="revision">%%VERSION%%</param>
         <param name="exclude">.git</param>
         <param name="versionformat">@PARENT_TAG@</param>
-        <param name="filename">prometheus-sap-host-exporter</param>
+        <param name="filename">prometheus-sap_host_exporter</param>
     </service>
     <service name="set_version" mode="disabled">
         <param name="version">%%VERSION%%</param>
-        <param name="file">prometheus-sap-host-exporter.spec</param>
+        <param name="file">prometheus-sap_host_exporter.spec</param>
     </service>
     <service name="recompress" mode="disabled">
         <param name="file">*.tar</param>

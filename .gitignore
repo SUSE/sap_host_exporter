@@ -12,7 +12,7 @@
 *.out
 
 # ignore binary
-sap-host-exporter
+sap_host_exporter
 
 # we don't use vendoring
 /vendor
