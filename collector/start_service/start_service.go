@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"github.com/SUSE/sap_host_exporter/collector"
+	"github.com/SUSE/sap_host_exporter/internal/soap"
 )
 
 func NewCollector() (*soapCollector, error) {
@@ -24,5 +25,5 @@ type soapCollector struct {
 
 func (c *soapCollector) Collect(ch chan<- prometheus.Metric) {
 	log.Infoln("Collecting SOAP metrics")
-
+	soap.Hello()
 }
