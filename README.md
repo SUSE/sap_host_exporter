@@ -2,6 +2,8 @@
 
 This is a bespoke Prometheus exporter enabling the monitoring of SAP systems (a.k.a. SAP NetWeaver applications).
 
+[![Build Status](https://travis-ci.org/SUSE/sap_host_exporter.svg?branch=master)](https://travis-ci.org/SUSE/sap_host_exporter)
+
 ## Table of Contents
 1. [Features](#features)
 2. [Installation](#installation)
