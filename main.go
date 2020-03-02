@@ -9,22 +9,9 @@ import (
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	config "github.com/spf13/viper"
-)
 
-func loglevel(level string) {
-	switch level {
-	case "error":
-		log.SetLevel(log.ErrorLevel)
-	case "warn":
-		log.SetLevel(log.WarnLevel)
-	case "info":
-		log.SetLevel(log.InfoLevel)
-	case "debug":
-		log.SetLevel(log.DebugLevel)
-	default:
-		log.Warnln("Unrecognized minimum log level; using 'info' as default")
-	}
-}
+	"github.com/SUSE/sap_host_exporter/internal"
+)
 
 func init() {
 	config.SetConfigName("sap_host_exporter")
@@ -58,11 +45,12 @@ func main() {
 
 	// call prometheus.MustRegister() here after instantiating collectors
 
-	loglevel(config.GetString("log-level"))
+	internal.SetLogLevel(config.GetString("log-level"))
 
 	fullListenAddress := fmt.Sprintf("%s:%s", config.Get("address"), config.Get("port"))
 
-	http.Handle("/", promhttp.Handler())
+	http.HandleFunc("/", internal.Landing)
+	http.Handle("/metrics", promhttp.Handler())
 
 	log.Infof("Serving metrics on %s", fullListenAddress)
 	log.Fatal(http.ListenAndServe(fullListenAddress, nil))
