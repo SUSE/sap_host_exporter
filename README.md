@@ -9,7 +9,8 @@ This is a bespoke Prometheus exporter enabling the monitoring of SAP systems (a.
 2. [Installation](#installation)
 3. [Usage](#usage)
 4. [Development](doc/devel.md)
-5. [License](#license)
+5. [Contributing](#contributing)
+6. [License](#license)
 
 ## Features
 
@@ -51,6 +52,10 @@ zypper install prometheus-sap_host_exporter
 ## Usage
 
 T.B.D.
+
+# Contribuiting
+
+T.B.D
 
 ## License
 
