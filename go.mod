@@ -3,6 +3,7 @@ module github.com/SUSE/sap_host_exporter
 go 1.12
 
 require (
+	github.com/hooklift/gowsdl v0.3.2-0.20200216020636-7a3e6bce010b
 	github.com/pkg/errors v0.8.0
 	github.com/prometheus/client_golang v1.1.0
 	github.com/sirupsen/logrus v1.4.2

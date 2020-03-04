@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"net/http"
 
-	_ "github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	config "github.com/spf13/viper"
 
+	"github.com/SUSE/sap_host_exporter/collector/start_service"
 	"github.com/SUSE/sap_host_exporter/internal"
 )
 
@@ -23,6 +24,7 @@ func init() {
 	flag.String("port", "9680", "The port number to listen on for HTTP requests")
 	flag.String("address", "0.0.0.0", "The address to listen on for HTTP requests")
 	flag.String("log-level", "info", "The minimum logging level; levels are, in ascending order: debug, info, warn, error")
+	flag.String("url", "", "The URL of the SAPControl web service")
 
 	err := config.BindPFlags(flag.CommandLine)
 	if err != nil {
@@ -43,7 +45,14 @@ func main() {
 		log.Info("Using config file: ", config.ConfigFileUsed())
 	}
 
-	// call prometheus.MustRegister() here after instantiating collectors
+	startServiceCollector, err := start_service.NewCollector(config.GetString("url"))
+
+	if err != nil {
+		log.Warn(err)
+	} else {
+		prometheus.MustRegister(startServiceCollector)
+		log.Info("StartService collector registered")
+	}
 
 	internal.SetLogLevel(config.GetString("log-level"))
 
