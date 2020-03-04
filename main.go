@@ -11,6 +11,10 @@ import (
 	config "github.com/spf13/viper"
 
 	"github.com/SUSE/sap_host_exporter/internal"
+	"github.com/SUSE/sap_host_exporter/sapcontrol"
+	"github.com/davecgh/go-spew/spew"
+
+	"github.com/hooklift/gowsdl/soap"
 )
 
 func init() {
@@ -51,6 +55,15 @@ func main() {
 
 	http.HandleFunc("/", internal.Landing)
 	http.Handle("/metrics", promhttp.Handler())
+
+	client := soap.NewClient("http://10.162.32.183:50013")
+	service := sapcontrol.NewSAPControlPortType(client)
+
+	reply, err := service.GetProcessList(&sapcontrol.GetProcessList{})
+	if err != nil {
+		log.Fatalf("could't get trade prices: %v", err)
+	}
+	spew.Dump(reply)
 
 	log.Infof("Serving metrics on %s", fullListenAddress)
 	log.Fatal(http.ListenAndServe(fullListenAddress, nil))

@@ -1,5 +1,11 @@
 # Developer notes
 
+# Generatitng structs
+
+go get github.com/hooklift/gowsdl@506189e0354e7197035e46515b80a0836944acf2
+
+
+
 ## Learning materials
 
 This guide will provide some initial pointers to understand the material behind Netweaver.
