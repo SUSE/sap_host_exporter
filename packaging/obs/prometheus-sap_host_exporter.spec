@@ -58,8 +58,7 @@ go build -mod=vendor \
 install -D -m 0755 %{shortname} "%{buildroot}%{_bindir}/%{shortname}"
 
 # Install the systemd unit
-# TODO
-#install -D -m 0644 %{shortname}.service %{buildroot}%{_unitdir}/%{name}.service
+install -D -m 0644 %{shortname}.service %{buildroot}%{_unitdir}/%{name}.service
 
 # Install compat wrapper for legacy init systems
 install -Dd -m 0755 %{buildroot}%{_sbindir}

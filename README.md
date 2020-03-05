@@ -82,6 +82,14 @@ The first match has precedence, and the CLI flags have precedence over the confi
 
 Please refer to the example YAML configuration for more details.
 
+### systemd integration
+
+A [systemd unit file](ha_cluster_exporter.service) is provided with the RPM packages. You can enable and start it as usual:
+
+```
+systemctl --now enable prometheus-sap_host_exporter
+```
+
 
 # Contribuiting
 
