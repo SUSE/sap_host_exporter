@@ -51,11 +51,46 @@ zypper install prometheus-sap_host_exporter
 
 ## Usage
 
-T.B.D.
+You can run the exporter in any of the netweaver cluster nodes.
+
+```
+$ ./sap_host_exporter
+INFO[0000] Serving metrics on 0.0.0.0:9680
+```
+
+Though not strictly required, it is _strongly_ advised to run it in all the nodes.
+
+It will export the metrics under the `/metrics` path, on port `9680` by default.
+
+While the exporter can run outside a Netweaver cluster node, it won't export any metric it can't collect.
+A warning message will inform the user of such cases.
+
+**Hint:**
+You can deploy a full Netweaver Cluster via Terraform with [SUSE/ha-sap-terraform-deployments](https://github.com/SUSE/ha-sap-terraform-deployments), and also monitoring it.
+
+### Configuration
+
+All the runtime parameters can be configured either via CLI flags or via a configuration file, both or which are completely optional.
+
+For more details, refer to the help message via `sap_host_exporter --help`.
+
+**Note**:
+the built-in defaults are tailored for the latest version of SUSE Linux Enterprise and openSUSE.
+
+The program will scan, in order, the current working directory, `$HOME/.config`, `/etc` and `/usr/etc` for files named `sap_host_exporter.(yaml|json|toml)`.
+The first match has precedence, and the CLI flags have precedence over the config file.
+
+Please refer to the example YAML configuration for more details.
+
 
 # Contribuiting
 
-T.B.D
+Pull requests are more than welcome!
+
+We recommend having a look at the [design document](doc/design.md) before contributing.
+
+Also for learning material take a look at [devel notes](doc/devel.md)
+
 
 ## License
 
