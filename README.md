@@ -53,9 +53,8 @@ zypper install prometheus-sap_host_exporter
 
 You can run the exporter in any of the netweaver cluster nodes.
 
-```
-$ ./sap_host_exporter --
-INFO[0000] Serving metrics on 0.0.0.0:9680
+```shell
+./sap_host_exporter --sap-control-url http://foobarbaz:50013
 ```
 
 Though not strictly required, it is _strongly_ advised to run it in all the nodes.
