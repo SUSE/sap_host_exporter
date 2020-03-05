@@ -8,7 +8,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
-	"github.com/SUSE/sap_host_exporter/test/mock"
+	"github.com/SUSE/sap_host_exporter/test/mock_sapcontrol"
 )
 
 func TestNewCollector(t *testing.T) {
@@ -21,7 +21,7 @@ func TestProcessesMetric(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockWebService := mock.NewMockWebService(ctrl)
+	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
 	mockWebService.EXPECT().GetProcessList().Return(&sapcontrol.GetProcessListResponse{
 		Process: &sapcontrol.ArrayOfOSProcess{
 			Item: []*sapcontrol.OSProcess{
