@@ -24,7 +24,7 @@ func init() {
 	flag.String("port", "9680", "The port number to listen on for HTTP requests")
 	flag.String("address", "0.0.0.0", "The address to listen on for HTTP requests")
 	flag.String("log-level", "info", "The minimum logging level; levels are, in ascending order: debug, info, warn, error")
-	flag.String("url", "", "The URL of the SAPControl web service")
+	flag.String("sap-control-url", "", "The URL of the SAPControl SOAP web service")
 
 	err := config.BindPFlags(flag.CommandLine)
 	if err != nil {
@@ -33,19 +33,11 @@ func init() {
 }
 
 func main() {
+	initConfig()
+
 	var err error
 
-	flag.Parse()
-
-	err = config.ReadInConfig()
-	if err != nil {
-		log.Warn(err)
-		log.Info("Default config values will be used")
-	} else {
-		log.Info("Using config file: ", config.ConfigFileUsed())
-	}
-
-	startServiceCollector, err := start_service.NewCollector(config.GetString("url"))
+	startServiceCollector, err := start_service.NewCollector(config.GetString("sap-control-url"))
 
 	if err != nil {
 		log.Warn(err)
@@ -63,4 +55,22 @@ func main() {
 
 	log.Infof("Serving metrics on %s", fullListenAddress)
 	log.Fatal(http.ListenAndServe(fullListenAddress, nil))
+}
+
+func initConfig() {
+	var err error
+
+	flag.Parse()
+
+	err = config.ReadInConfig()
+	if err != nil {
+		log.Warn(err)
+		log.Info("Default config values will be used")
+	} else {
+		log.Info("Using config file: ", config.ConfigFileUsed())
+	}
+
+	if config.GetString("sap-control-url") == "" {
+		log.Fatal("sap-control-url cannot be empty, please use the --sap-control-url flag or set a value in the config")
+	}
 }
