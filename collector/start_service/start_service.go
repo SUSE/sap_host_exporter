@@ -1,6 +1,8 @@
 package start_service
 
 import (
+	"strconv"
+
 	"github.com/hooklift/gowsdl/soap"
 	log "github.com/sirupsen/logrus"
 
@@ -13,11 +15,11 @@ func NewCollector(startServiceUrl string) (*soapCollector, error) {
 	webService := sapcontrol.NewWebService(soap.NewClient(startServiceUrl))
 
 	c := &soapCollector{
-		collector.NewDefaultCollector("start_svc"),
+		collector.NewDefaultCollector("start_service"),
 		webService,
 	}
 
-	c.SetDescriptor("process", "The SAP processes running on this instance", []string{"name", "status"})
+	c.SetDescriptor("processes", "The processes started by the SAP Start Service", []string{"name", "pid", "textstatus", "dispstatus"})
 
 	return c, nil
 }
@@ -28,16 +30,17 @@ type soapCollector struct {
 }
 
 func (c *soapCollector) Collect(ch chan<- prometheus.Metric) {
-	log.Debugln("Collecting SOAP metrics")
+	log.Debugln("Collecting SAP Start Service metrics")
 
 	response, err := c.webService.GetProcessList()
 
 	if err != nil {
-		log.Warnf("SAPControl service error: %s", err)
+		log.Warnf("SAPControl web service error: %s", err)
 		return
 	}
 
-	for _, processItem := range response.Process.Item {
-		ch <- c.MakeGaugeMetric("process", 1, processItem.Name, string(processItem.Dispstatus))
+	for _, process := range response.Process.Item {
+		dispStatus, _ := sapcontrol.StateColorToString(process.Dispstatus)
+		ch <- c.MakeGaugeMetric("processes", 1, process.Name, strconv.Itoa(int(process.Pid)), process.Textstatus, dispStatus)
 	}
 }
