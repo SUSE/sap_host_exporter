@@ -40,7 +40,6 @@ const (
 	STATECOLORRED    STATECOLOR = "SAPControl-RED"
 )
 
-
 type WebService interface {
 	/* Returns a list of all processes directly started by the webservice according to the SAP start profile. */
 	GetProcessList() (*GetProcessListResponse, error)

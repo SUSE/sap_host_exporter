@@ -4,11 +4,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
+	"github.com/SUSE/sap_host_exporter/test/mock_sapcontrol"
 	"github.com/golang/mock/gomock"
 	"github.com/prometheus/client_golang/prometheus/testutil"
 	"github.com/stretchr/testify/assert"
-	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
-	"github.com/SUSE/sap_host_exporter/test/mock_sapcontrol"
 )
 
 func TestNewCollector(t *testing.T) {
