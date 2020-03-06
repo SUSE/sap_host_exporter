@@ -4,6 +4,7 @@ This is a bespoke Prometheus exporter enabling the monitoring of SAP systems (a.
 
 [![Build Status](https://travis-ci.org/SUSE/sap_host_exporter.svg?branch=master)](https://travis-ci.org/SUSE/sap_host_exporter)
 
+
 ## Table of Contents
 1. [Features](#features)
 2. [Installation](#installation)
@@ -12,9 +13,11 @@ This is a bespoke Prometheus exporter enabling the monitoring of SAP systems (a.
 5. [Contributing](#contributing)
 6. [License](#license)
 
+
 ## Features
 
 T.B.D.
+
 
 ## Installation
 
@@ -49,23 +52,25 @@ zypper addrepo https://download.opensuse.org/repositories/server:/monitoring/$DI
 zypper install prometheus-sap_host_exporter
 ```
 
+
 ## Usage
 
-You can run the exporter in any of the netweaver cluster nodes.
+You can run the exporter as follows:
 
 ```shell
-./sap_host_exporter --sap-control-url http://foobarbaz:50013
+./sap_host_exporter --sap-control-url http://$SAP_HOST:$SAP_PORT
 ```
-
-Though not strictly required, it is _strongly_ advised to run it in all the nodes.
 
 It will export the metrics under the `/metrics` path, on port `9680` by default.
 
-While the exporter can run outside a Netweaver cluster node, it won't export any metric it can't collect.
+Though not strictly required, it is advised to run it in the nodes of the cluster and access the required services like SAPControl locally.
+
+While the exporter can run outside a cluster node, it won't export any metric it can't collect.
 A warning message will inform the user of such cases.
 
 **Hint:**
-You can deploy a full Netweaver Cluster via Terraform with [SUSE/ha-sap-terraform-deployments](https://github.com/SUSE/ha-sap-terraform-deployments), and also monitoring it.
+You can deploy a full SAP NetWeaver cluster via Terraform with [SUSE/ha-sap-terraform-deployments](https://github.com/SUSE/ha-sap-terraform-deployments); 
+this exporter and the whole Prometheus monitoring stack will be automatically installed and configured for you.
 
 ### Configuration
 
@@ -90,7 +95,7 @@ systemctl --now enable prometheus-sap_host_exporter
 ```
 
 
-# Contribuiting
+## Contribuiting
 
 Pull requests are more than welcome!
 
