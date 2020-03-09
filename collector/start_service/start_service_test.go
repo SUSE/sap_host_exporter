@@ -12,7 +12,11 @@ import (
 )
 
 func TestNewCollector(t *testing.T) {
-	_, err := NewCollector("foobar")
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
+
+	_, err := NewCollector(mockWebService)
 
 	assert.Nil(t, err)
 }
@@ -28,7 +32,7 @@ func TestProcessesMetric(t *testing.T) {
 				{
 					Name:        "enserver",
 					Description: "foobar",
-					Dispstatus:  sapcontrol.STATECOLORGREEN,
+					Dispstatus:  sapcontrol.STATECOLOR_GREEN,
 					Textstatus:  "Running",
 					Starttime:   "",
 					Elapsedtime: "",
@@ -37,7 +41,7 @@ func TestProcessesMetric(t *testing.T) {
 				{
 					Name:        "msg_server",
 					Description: "foobar2",
-					Dispstatus:  sapcontrol.STATECOLORGREEN,
+					Dispstatus:  sapcontrol.STATECOLOR_GREEN,
 					Textstatus:  "Running",
 					Starttime:   "",
 					Elapsedtime: "",
@@ -55,9 +59,8 @@ func TestProcessesMetric(t *testing.T) {
 	`
 
 	var err error
-	collector, err := NewCollector("foobar")
+	collector, err := NewCollector(mockWebService)
 	assert.NoError(t, err)
-	collector.webService = mockWebService
 
 	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics), "sap_start_service_processes")
 	assert.NoError(t, err)

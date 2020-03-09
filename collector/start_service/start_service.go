@@ -3,18 +3,17 @@ package start_service
 import (
 	"strconv"
 
-	"github.com/hooklift/gowsdl/soap"
 	log "github.com/sirupsen/logrus"
+
+	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/SUSE/sap_host_exporter/collector"
 	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
-	"github.com/prometheus/client_golang/prometheus"
 )
 
-func NewCollector(startServiceUrl string) (*soapCollector, error) {
-	webService := sapcontrol.NewWebService(soap.NewClient(startServiceUrl))
+func NewCollector(webService sapcontrol.WebService) (*StartServiceCollector, error) {
 
-	c := &soapCollector{
+	c := &StartServiceCollector{
 		collector.NewDefaultCollector("start_service"),
 		webService,
 	}
@@ -24,22 +23,26 @@ func NewCollector(startServiceUrl string) (*soapCollector, error) {
 	return c, nil
 }
 
-type soapCollector struct {
+type StartServiceCollector struct {
 	collector.DefaultCollector
 	webService sapcontrol.WebService
 }
 
-func (c *soapCollector) Collect(ch chan<- prometheus.Metric) {
+func (c *StartServiceCollector) Collect(ch chan<- prometheus.Metric) {
 	log.Debugln("Collecting SAP Start Service metrics")
 
-	response, err := c.webService.GetProcessList()
+	c.recordProcesses(ch)
+}
+
+func (c *StartServiceCollector) recordProcesses(ch chan<- prometheus.Metric) {
+	processList, err := c.webService.GetProcessList()
 
 	if err != nil {
 		log.Warnf("SAPControl web service error: %s", err)
 		return
 	}
 
-	for _, process := range response.Process.Item {
+	for _, process := range processList.Process.Item {
 		dispStatus, _ := sapcontrol.StateColorToString(process.Dispstatus)
 		ch <- c.MakeGaugeMetric("processes", 1, process.Name, strconv.Itoa(int(process.Pid)), process.Textstatus, dispStatus)
 	}

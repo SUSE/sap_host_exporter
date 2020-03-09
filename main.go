@@ -4,14 +4,17 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/hooklift/gowsdl/soap"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 	config "github.com/spf13/viper"
 
+	"github.com/SUSE/sap_host_exporter/collector/enqueue_server"
 	"github.com/SUSE/sap_host_exporter/collector/start_service"
 	"github.com/SUSE/sap_host_exporter/internal"
+	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
 )
 
 func init() {
@@ -37,16 +40,32 @@ func main() {
 
 	var err error
 
-	startServiceCollector, err := start_service.NewCollector(config.GetString("sap-control-url"))
+	client := soap.NewClient(
+		config.GetString("sap-control-url"),
+		soap.WithBasicAuth(
+			config.GetString("sap-control-user"),
+			config.GetString("sap-control-pass"),
+		),
+	)
+	webService := sapcontrol.NewWebService(client)
+
+	startServiceCollector, err := start_service.NewCollector(webService)
 
 	if err != nil {
 		log.Warn(err)
 	} else {
 		prometheus.MustRegister(startServiceCollector)
-		log.Info("StartService collector registered")
+		log.Info("Start Service collector registered")
 	}
 
-	internal.SetLogLevel(config.GetString("log-level"))
+	enqueueServerCollector, err := enqueue_server.NewCollector(webService)
+
+	if err != nil {
+		log.Warn(err)
+	} else {
+		prometheus.MustRegister(enqueueServerCollector)
+		log.Info("Enqueue Server collector registered")
+	}
 
 	fullListenAddress := fmt.Sprintf("%s:%s", config.Get("address"), config.Get("port"))
 
@@ -69,6 +88,8 @@ func initConfig() {
 	} else {
 		log.Info("Using config file: ", config.ConfigFileUsed())
 	}
+
+	internal.SetLogLevel(config.GetString("log-level"))
 
 	if config.GetString("sap-control-url") == "" {
 		log.Fatal("sap-control-url cannot be empty, please use the --sap-control-url flag or set a value in the config")
