@@ -44,7 +44,7 @@ func main() {
 		config.GetString("sap-control-url"),
 		soap.WithBasicAuth(
 			config.GetString("sap-control-user"),
-			config.GetString("sap-control-pass"),
+			config.GetString("sap-control-password"),
 		),
 	)
 	webService := sapcontrol.NewWebService(client)
