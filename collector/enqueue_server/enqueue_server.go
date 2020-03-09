@@ -16,6 +16,8 @@ func NewCollector(webService sapcontrol.WebService) (*EnqueueServerCollector, er
 		webService,
 	}
 
+	// TO-DO: describe all these metrics
+	// https://github.com/SUSE/sap_host_exporter/issues/11
 	c.SetDescriptor("owner_now", "TBD", nil)
 	c.SetDescriptor("owner_high", "TBD", nil)
 	c.SetDescriptor("owner_max", "TBD", nil)
