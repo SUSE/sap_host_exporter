@@ -79,7 +79,7 @@ ln -s /usr/sbin/service %{buildroot}%{_sbindir}/rc%{name}
 %files
 %defattr(-,root,root)
 %doc *.md
-%doc doc/*
+%doc doc/*.md
 %if 0%{?suse_version} >= 1500
 %license LICENSE
 %else
