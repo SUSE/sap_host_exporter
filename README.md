@@ -84,7 +84,7 @@ the built-in defaults are tailored for the latest version of SUSE Linux Enterpri
 The program will scan, in order, the current working directory, `$HOME/.config`, `/etc` and `/usr/etc` for files named `sap_host_exporter.(yaml|json|toml)`.
 The first match has precedence, and the CLI flags have precedence over the config file.
 
-Please refer to the example YAML configuration for more details.
+Please refer to the [example YAML configuration](doc/sap_host_exporter.yaml) for more details.
 
 ### systemd integration
 
