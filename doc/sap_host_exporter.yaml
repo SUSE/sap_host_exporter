@@ -1,0 +1,7 @@
+# sample config
+port: "9680"
+addres: "0.0.0.0"
+log-level: "info"
+sap-control-url: ""
+sap-control-user: ""
+sap-control-password: ""
