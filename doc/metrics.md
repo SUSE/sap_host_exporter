@@ -318,3 +318,139 @@ sap_enqueue_server_server_time 0
 # TYPE sap_enqueue_server_verify_requests gauge
 sap_enqueue_server_verify_requests 0
 ```
+
+
+## SAP AS Dispatcher
+
+The Application Server Dispatcher is the component that manages the Work Process queues. We collect a set of queue stats for each type of Work Process queue.
+
+1. [`sap_dispatcher_queue_now`](#sap_dispatcher_queue_now)
+2. [`sap_dispatcher_queue_high`](#sap_dispatcher_queue_high)
+3. [`sap_dispatcher_queue_max`](#sap_dispatcher_queue_max)
+4. [`sap_dispatcher_queue_writes`](#sap_dispatcher_queue_writes)
+5. [`sap_dispatcher_queue_reads`](#sap_dispatcher_queue_reads)
+
+### `sap_dispatcher_queue_now`
+
+#### Description
+
+Work process current queue length
+
+#### Labels
+
+- `type`: the type of the work queue.
+
+#### Example
+
+```
+# HELP sap_dispatcher_queue_now Work process current queue length
+# TYPE sap_dispatcher_queue_now gauge
+sap_dispatcher_queue_now{type="ABAP/BTC"} 0
+sap_dispatcher_queue_now{type="ABAP/DIA"} 0
+sap_dispatcher_queue_now{type="ABAP/ENQ"} 0
+sap_dispatcher_queue_now{type="ABAP/NOWP"} 0
+sap_dispatcher_queue_now{type="ABAP/SPO"} 0
+sap_dispatcher_queue_now{type="ABAP/UP2"} 0
+sap_dispatcher_queue_now{type="ABAP/UPD"} 0
+sap_dispatcher_queue_now{type="ICM/Intern"} 0
+```
+
+### `sap_dispatcher_queue_high` 
+
+#### Description
+
+Work process highest queue length
+
+#### Labels
+
+- `type`: the type of the work queue.
+
+#### Example
+
+```
+# HELP sap_dispatcher_queue_high Work process highest queue length
+# TYPE sap_dispatcher_queue_high gauge
+sap_dispatcher_queue_high{type="ABAP/BTC"} 2
+sap_dispatcher_queue_high{type="ABAP/DIA"} 5
+sap_dispatcher_queue_high{type="ABAP/ENQ"} 0
+sap_dispatcher_queue_high{type="ABAP/NOWP"} 3
+sap_dispatcher_queue_high{type="ABAP/SPO"} 1
+sap_dispatcher_queue_high{type="ABAP/UP2"} 1
+sap_dispatcher_queue_high{type="ABAP/UPD"} 2
+sap_dispatcher_queue_high{type="ICM/Intern"} 1
+```
+
+### `sap_dispatcher_queue_max`
+
+#### Description
+
+Work process maximum queue length
+
+#### Labels
+
+- `type`: the type of the work queue.
+
+#### Example
+
+```
+# HELP sap_dispatcher_queue_max Work process maximum queue length
+# TYPE sap_dispatcher_queue_max gauge
+sap_dispatcher_queue_max{type="ABAP/BTC"} 14000
+sap_dispatcher_queue_max{type="ABAP/DIA"} 14000
+sap_dispatcher_queue_max{type="ABAP/ENQ"} 14000
+sap_dispatcher_queue_max{type="ABAP/NOWP"} 14000
+sap_dispatcher_queue_max{type="ABAP/SPO"} 14000
+sap_dispatcher_queue_max{type="ABAP/UP2"} 14000
+sap_dispatcher_queue_max{type="ABAP/UPD"} 14000
+sap_dispatcher_queue_max{type="ICM/Intern"} 6000
+```
+
+### `sap_dispatcher_queue_writes`
+
+#### Description
+
+Work process queue writes
+
+#### Labels
+
+- `type`: the type of the work queue.
+
+#### Example
+
+```
+# HELP sap_dispatcher_queue_writes Work process queue writes
+# TYPE sap_dispatcher_queue_writes gauge
+sap_dispatcher_queue_writes{type="ABAP/BTC"} 11229
+sap_dispatcher_queue_writes{type="ABAP/DIA"} 479801
+sap_dispatcher_queue_writes{type="ABAP/ENQ"} 0
+sap_dispatcher_queue_writes{type="ABAP/NOWP"} 267333
+sap_dispatcher_queue_writes{type="ABAP/SPO"} 41171
+sap_dispatcher_queue_writes{type="ABAP/UP2"} 3743
+sap_dispatcher_queue_writes{type="ABAP/UPD"} 3746
+sap_dispatcher_queue_writes{type="ICM/Intern"} 37426
+```
+
+### `sap_dispatcher_queue_reads`
+
+#### Description
+
+Work process queue reads
+
+#### Labels
+
+- `type`: the type of the work queue.
+
+#### Example
+
+```
+# HELP sap_dispatcher_queue_reads Work process queue reads
+# TYPE sap_dispatcher_queue_reads gauge
+sap_dispatcher_queue_reads{type="ABAP/BTC"} 11229
+sap_dispatcher_queue_reads{type="ABAP/DIA"} 479801
+sap_dispatcher_queue_reads{type="ABAP/ENQ"} 0
+sap_dispatcher_queue_reads{type="ABAP/NOWP"} 267333
+sap_dispatcher_queue_reads{type="ABAP/SPO"} 41171
+sap_dispatcher_queue_reads{type="ABAP/UP2"} 3743
+sap_dispatcher_queue_reads{type="ABAP/UPD"} 3746
+sap_dispatcher_queue_reads{type="ICM/Intern"} 37426
+```

@@ -68,6 +68,29 @@ type EnqStatisticResponse struct {
 	ReplicationState   STATECOLOR `xml:"replication-state,omitempty" json:"replication-state,omitempty"`
 }
 
+type GetQueueStatistic struct {
+	XMLName xml.Name `xml:"urn:SAPControl GetQueueStatistic"`
+}
+
+type GetQueueStatisticResponse struct {
+	XMLName xml.Name `xml:"urn:SAPControl GetQueueStatisticResponse"`
+
+	Queue *ArrayOfTaskHandlerQueue `xml:"queue,omitempty" json:"queue,omitempty"`
+}
+
+type TaskHandlerQueue struct {
+	Type   string `xml:"Typ,omitempty" json:"Typ,omitempty"`
+	Now    int32  `xml:"Now,omitempty" json:"Now,omitempty"`
+	High   int32  `xml:"High,omitempty" json:"High,omitempty"`
+	Max    int32  `xml:"Max,omitempty" json:"Max,omitempty"`
+	Writes int32  `xml:"Writes,omitempty" json:"Writes,omitempty"`
+	Reads  int32  `xml:"Reads,omitempty" json:"Reads,omitempty"`
+}
+
+type ArrayOfTaskHandlerQueue struct {
+	Item []*TaskHandlerQueue `xml:"item,omitempty" json:"item,omitempty"`
+}
+
 const (
 	STATECOLOR_GRAY        STATECOLOR      = "SAPControl-GRAY"
 	STATECOLOR_GREEN       STATECOLOR      = "SAPControl-GREEN"
@@ -85,6 +108,9 @@ type WebService interface {
 
 	/* Returns enque statistic. */
 	EnqGetStatistic() (*EnqStatisticResponse, error)
+
+	/* Returns a list of queue information of work processes and icm (similar to dpmon). */
+	GetQueueStatistic() (*GetQueueStatisticResponse, error)
 }
 
 type webService struct {
@@ -107,6 +133,18 @@ func (service *webService) GetProcessList() (*GetProcessListResponse, error) {
 func (service *webService) EnqGetStatistic() (*EnqStatisticResponse, error) {
 	request := &EnqGetStatistic{}
 	response := &EnqStatisticResponse{}
+	err := service.client.Call("''", request, response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+// implements WebService.GetQueueStatistic()
+func (service *webService) GetQueueStatistic() (*GetQueueStatisticResponse, error) {
+	request := &GetQueueStatistic{}
+	response := &GetQueueStatisticResponse{}
 	err := service.client.Call("''", request, response)
 	if err != nil {
 		return nil, err
