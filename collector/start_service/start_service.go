@@ -11,9 +11,9 @@ import (
 	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
 )
 
-func NewCollector(webService sapcontrol.WebService) (*StartServiceCollector, error) {
+func NewCollector(webService sapcontrol.WebService) (*startServiceCollector, error) {
 
-	c := &StartServiceCollector{
+	c := &startServiceCollector{
 		collector.NewDefaultCollector("start_service"),
 		webService,
 	}
@@ -23,18 +23,18 @@ func NewCollector(webService sapcontrol.WebService) (*StartServiceCollector, err
 	return c, nil
 }
 
-type StartServiceCollector struct {
+type startServiceCollector struct {
 	collector.DefaultCollector
 	webService sapcontrol.WebService
 }
 
-func (c *StartServiceCollector) Collect(ch chan<- prometheus.Metric) {
+func (c *startServiceCollector) Collect(ch chan<- prometheus.Metric) {
 	log.Debugln("Collecting SAP Start Service metrics")
 
 	c.recordProcesses(ch)
 }
 
-func (c *StartServiceCollector) recordProcesses(ch chan<- prometheus.Metric) {
+func (c *startServiceCollector) recordProcesses(ch chan<- prometheus.Metric) {
 	processList, err := c.webService.GetProcessList()
 
 	if err != nil {
