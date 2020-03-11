@@ -62,3 +62,18 @@ func (mr *MockWebServiceMockRecorder) EnqGetStatistic() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EnqGetStatistic", reflect.TypeOf((*MockWebService)(nil).EnqGetStatistic))
 }
+
+// GetQueueStatistic mocks base method
+func (m *MockWebService) GetQueueStatistic() (*sapcontrol.GetQueueStatisticResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetQueueStatistic")
+	ret0, _ := ret[0].(*sapcontrol.GetQueueStatisticResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetQueueStatistic indicates an expected call of GetQueueStatistic
+func (mr *MockWebServiceMockRecorder) GetQueueStatistic() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetQueueStatistic", reflect.TypeOf((*MockWebService)(nil).GetQueueStatistic))
+}

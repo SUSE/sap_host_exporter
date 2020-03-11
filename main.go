@@ -11,6 +11,7 @@ import (
 	flag "github.com/spf13/pflag"
 	config "github.com/spf13/viper"
 
+	"github.com/SUSE/sap_host_exporter/collector/dispatcher"
 	"github.com/SUSE/sap_host_exporter/collector/enqueue_server"
 	"github.com/SUSE/sap_host_exporter/collector/start_service"
 	"github.com/SUSE/sap_host_exporter/internal"
@@ -65,6 +66,15 @@ func main() {
 	} else {
 		prometheus.MustRegister(enqueueServerCollector)
 		log.Info("Enqueue Server collector registered")
+	}
+
+	dispatcherCollector, err := dispatcher.NewCollector(webService)
+
+	if err != nil {
+		log.Warn(err)
+	} else {
+		prometheus.MustRegister(dispatcherCollector)
+		log.Info("Dispatcher collector registered")
 	}
 
 	fullListenAddress := fmt.Sprintf("%s:%s", config.Get("address"), config.Get("port"))

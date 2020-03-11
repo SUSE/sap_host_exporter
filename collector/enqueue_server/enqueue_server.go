@@ -9,9 +9,9 @@ import (
 	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
 )
 
-func NewCollector(webService sapcontrol.WebService) (*EnqueueServerCollector, error) {
+func NewCollector(webService sapcontrol.WebService) (*enqueueServerCollector, error) {
 
-	c := &EnqueueServerCollector{
+	c := &enqueueServerCollector{
 		collector.NewDefaultCollector("enqueue_server"),
 		webService,
 	}
@@ -49,18 +49,18 @@ func NewCollector(webService sapcontrol.WebService) (*EnqueueServerCollector, er
 	return c, nil
 }
 
-type EnqueueServerCollector struct {
+type enqueueServerCollector struct {
 	collector.DefaultCollector
 	webService sapcontrol.WebService
 }
 
-func (c *EnqueueServerCollector) Collect(ch chan<- prometheus.Metric) {
+func (c *enqueueServerCollector) Collect(ch chan<- prometheus.Metric) {
 	log.Debugln("Collecting Enqueue Server metrics")
 
 	c.recordEnqStats(ch)
 }
 
-func (c *EnqueueServerCollector) recordEnqStats(ch chan<- prometheus.Metric) {
+func (c *enqueueServerCollector) recordEnqStats(ch chan<- prometheus.Metric) {
 	enqStatistic, err := c.webService.EnqGetStatistic()
 
 	if err != nil {
