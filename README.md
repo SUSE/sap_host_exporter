@@ -115,7 +115,7 @@ We recommend having a look at the [design document](doc/design.md) and the [deve
 
 ## License
 
-Copyright 2019-2020 SUSE LLC
+Copyright 2020 SUSE LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
