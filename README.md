@@ -9,14 +9,19 @@ This is a bespoke Prometheus exporter enabling the monitoring of SAP systems (a.
 1. [Features](#features)
 2. [Installation](#installation)
 3. [Usage](#usage)
-4. [Development](doc/devel.md)
+4. [Development](doc/development.md)
 5. [Contributing](#contributing)
 6. [License](#license)
 
 
 ## Features
 
-T.B.D.
+The exporter is a stateless HTTP endpoint. On each HTTP request, it pulls runtime data from the SAP system via the SAPControl web interface.
+
+Exported data include:
+- Start Service processes
+- Enqueue Server stats
+- AS Dispatcher work process queue stats  
 
 
 ## Installation
@@ -63,10 +68,10 @@ You can run the exporter as follows:
 
 It will export the metrics under the `/metrics` path, on port `9680` by default.
 
-Though not strictly required, it is advised to run it in the nodes of the cluster and access the required services like SAPControl locally.
+Though not strictly required, it is advised to run it in the nodes of the cluster and access the SAPControl web service locally.
 
-While the exporter can run outside a cluster node, it won't export any metric it can't collect.
-A warning message will inform the user of such cases.
+The exporter won't export any metric it can't collect, but since it doesn't care about which subsystems are present in the monitored target, failing to collect metrics is _not_ considered a hard failure condition.
+Instead, in case some of the collectors fail to either register or perform collect cycles, a soft warning will be printed out in the log.  
 
 **Hint:**
 You can deploy a full SAP NetWeaver cluster via Terraform with [SUSE/ha-sap-terraform-deployments](https://github.com/SUSE/ha-sap-terraform-deployments); 
@@ -74,7 +79,7 @@ this exporter and the whole Prometheus monitoring stack will be automatically in
 
 ### Configuration
 
-All the runtime parameters can be configured either via CLI flags or via a configuration file, both or which are completely optional.
+The runtime parameters can be configured either via CLI flags or via a configuration file, both or which are completely optional.
 
 For more details, refer to the help message via `sap_host_exporter --help`.
 
@@ -85,23 +90,27 @@ The program will scan, in order, the current working directory, `$HOME/.config`,
 The first match has precedence, and the CLI flags have precedence over the config file.
 
 Please refer to the [example YAML configuration](doc/sap_host_exporter.yaml) for more details.
+ 
+The SAPControl web service requires HTTP Basic authentication for most of its methods, hence it is strongly advised to configure these credentials in the configuration file; note that, by design, these values cannot be set via CLI flag.
+
+For the time being, these credentials are stored in plain-text, so be sure to properly take care of the file permissions (e.g. `chmod 600` it). 
+
+As a reminder, HTTP Basic authentication usually implies the usage of Transport Layer Security.
 
 ### systemd integration
 
-A [systemd unit file](ha_cluster_exporter.service) is provided with the RPM packages. You can enable and start it as usual:
+A [systemd unit file](packaging/obs/prometheus-sap_host_exporter.spec) is provided with the RPM packages. You can enable and start it as usual:
 
 ```
 systemctl --now enable prometheus-sap_host_exporter
 ```
 
 
-## Contribuiting
+## Contributing
 
 Pull requests are more than welcome!
 
-We recommend having a look at the [design document](doc/design.md) before contributing.
-
-Also for learning material take a look at [devel notes](doc/devel.md)
+We recommend having a look at the [design document](doc/design.md) and the [development notes](doc/development.md) before contributing.
 
 
 ## License
