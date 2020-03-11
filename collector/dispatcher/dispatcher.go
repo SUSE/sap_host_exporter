@@ -16,8 +16,6 @@ func NewCollector(webService sapcontrol.WebService) (*dispatcherCollector, error
 		webService,
 	}
 
-	// TO-DO: describe all these metrics
-	// https://github.com/SUSE/sap_host_exporter/issues/11
 	c.SetDescriptor("queue_now", "Work process current queue length", []string{"type"})
 	c.SetDescriptor("queue_high", "Work process highest queue length", []string{"type"})
 	c.SetDescriptor("queue_max", "Work process maximum queue length", []string{"type"})
