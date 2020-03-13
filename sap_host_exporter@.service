@@ -5,8 +5,8 @@ After=network.target
 
 [Service]
 Type=simple
-Restart=always
-ExecStart=/usr/bin/sap_host_exporter  --identifier %i
+Restart=aAlways
+ExecStart=/usr/bin/sap_host_exporter
 ExecReload=/bin/kill -HUP $MAINPID
 
 [Install]
