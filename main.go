@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/hooklift/gowsdl/soap"
@@ -9,6 +11,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
+	"github.com/spf13/viper"
 	config "github.com/spf13/viper"
 
 	"github.com/SUSE/sap_host_exporter/collector/dispatcher"
@@ -29,6 +32,7 @@ func init() {
 	flag.String("address", "0.0.0.0", "The address to listen on for HTTP requests")
 	flag.String("log-level", "info", "The minimum logging level; levels are, in ascending order: debug, info, warn, error")
 	flag.String("sap-control-url", "", "The URL of the SAPControl SOAP web service, e.g. http://$HOST:$PORT")
+	flag.String("config", "", "The path where a custom configuration file is located")
 
 	err := config.BindPFlags(flag.CommandLine)
 	if err != nil {
@@ -91,12 +95,30 @@ func initConfig() {
 
 	flag.Parse()
 
-	err = config.ReadInConfig()
-	if err != nil {
-		log.Warn(err)
-		log.Info("Default config values will be used")
-	} else {
-		log.Info("Using config file: ", config.ConfigFileUsed())
+	// read first the configuration from custom file. If not provided, read default.
+	confFile := config.GetString("config")
+	if confFile != "" {
+		confData, err := ioutil.ReadFile(confFile)
+		if err != nil {
+			log.Fatal("Could not read configuration file for exporter: ", err)
+		}
+		viper.ReadConfig(bytes.NewBuffer(confData))
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	// load config from default if the option is empty
+	if confFile == "" {
+
+		err = config.ReadInConfig()
+		if err != nil {
+			log.Warn(err)
+			log.Info("Default config values will be used")
+		} else {
+			log.Info("Using config file: ", config.ConfigFileUsed())
+		}
+
 	}
 
 	internal.SetLogLevel(config.GetString("log-level"))
