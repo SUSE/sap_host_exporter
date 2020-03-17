@@ -90,10 +90,20 @@ func main() {
 }
 
 func initConfig() {
-	var err error
 
 	flag.Parse()
 
+	// read configuration from custom path or defaults
+	readExporterConf()
+
+	internal.SetLogLevel(config.GetString("log-level"))
+
+	if config.GetString("sap-control-url") == "" {
+		log.Fatal("sap-control-url cannot be empty, please use the --sap-control-url flag or set a value in the config")
+	}
+}
+
+func readExporterConf() {
 	// read first the configuration from custom file. If not provided, read default.
 	confFile := config.GetString("config")
 	if confFile != "" {
@@ -110,7 +120,7 @@ func initConfig() {
 	}
 
 	// if no custom file given, read configuration from default paths
-	err = config.ReadInConfig()
+	err := config.ReadInConfig()
 	if err != nil {
 		log.Warn(err)
 		log.Info("Default config values will be used")
@@ -118,9 +128,4 @@ func initConfig() {
 		log.Info("Using config file: ", config.ConfigFileUsed())
 	}
 
-	internal.SetLogLevel(config.GetString("log-level"))
-
-	if config.GetString("sap-control-url") == "" {
-		log.Fatal("sap-control-url cannot be empty, please use the --sap-control-url flag or set a value in the config")
-	}
 }
