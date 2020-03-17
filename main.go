@@ -113,7 +113,7 @@ func readExporterConf() {
 		}
 		config.ReadConfig(bytes.NewBuffer(confData))
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal("Could not parse configuration:", err)
 		}
 		log.Info("Using custom configuration file provided by flag")
 		return
