@@ -106,19 +106,17 @@ func initConfig() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		log.Info("Using custom configuration file provided by flag")
+		return
 	}
 
-	// load config from default if the option is empty
-	if confFile == "" {
-
-		err = config.ReadInConfig()
-		if err != nil {
-			log.Warn(err)
-			log.Info("Default config values will be used")
-		} else {
-			log.Info("Using config file: ", config.ConfigFileUsed())
-		}
-
+	// if no custom file given, read configuration from default paths
+	err = config.ReadInConfig()
+	if err != nil {
+		log.Warn(err)
+		log.Info("Default config values will be used")
+	} else {
+		log.Info("Using config file: ", config.ConfigFileUsed())
 	}
 
 	internal.SetLogLevel(config.GetString("log-level"))
