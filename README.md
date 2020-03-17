@@ -89,7 +89,7 @@ the built-in defaults are tailored for the latest version of SUSE Linux Enterpri
 The program will scan, in order, the current working directory, `$HOME/.config`, `/etc` and `/usr/etc` for files named `sap_host_exporter.(yaml|json|toml)`.
 The first match has precedence, and the CLI flags have precedence over the config file.
 
-Please refer to the [example YAML configuration](doc/sap_host_exporter.yaml) for more details.
+Please refer to the [example YAML configuration](default.yaml) for more details.
  
 The SAPControl web service requires HTTP Basic authentication for most of its methods, hence it is strongly advised to configure these credentials in the configuration file; note that, by design, these values cannot be set via CLI flag.
 
