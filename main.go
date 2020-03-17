@@ -11,7 +11,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
-	"github.com/spf13/viper"
 	config "github.com/spf13/viper"
 
 	"github.com/SUSE/sap_host_exporter/collector/dispatcher"
@@ -102,7 +101,7 @@ func initConfig() {
 		if err != nil {
 			log.Fatal("Could not read configuration file for exporter: ", err)
 		}
-		viper.ReadConfig(bytes.NewBuffer(confData))
+		config.ReadConfig(bytes.NewBuffer(confData))
 		if err != nil {
 			log.Fatal(err)
 		}
