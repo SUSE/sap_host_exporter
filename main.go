@@ -1,7 +1,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/hooklift/gowsdl/soap"
@@ -29,6 +31,7 @@ func init() {
 	flag.String("address", "0.0.0.0", "The address to listen on for HTTP requests")
 	flag.String("log-level", "info", "The minimum logging level; levels are, in ascending order: debug, info, warn, error")
 	flag.String("sap-control-url", "", "The URL of the SAPControl SOAP web service, e.g. http://$HOST:$PORT")
+	flag.String("config", "", "The path where a custom configuration file is located")
 
 	err := config.BindPFlags(flag.CommandLine)
 	if err != nil {
@@ -87,11 +90,37 @@ func main() {
 }
 
 func initConfig() {
-	var err error
 
 	flag.Parse()
 
-	err = config.ReadInConfig()
+	// read configuration from custom path or defaults
+	readExporterConf()
+
+	internal.SetLogLevel(config.GetString("log-level"))
+
+	if config.GetString("sap-control-url") == "" {
+		log.Fatal("sap-control-url cannot be empty, please use the --sap-control-url flag or set a value in the config")
+	}
+}
+
+func readExporterConf() {
+	// read first the configuration from custom file. If not provided, read default.
+	confFile := config.GetString("config")
+	if confFile != "" {
+		confData, err := ioutil.ReadFile(confFile)
+		if err != nil {
+			log.Fatal("Could not read configuration file for exporter: ", err)
+		}
+		config.ReadConfig(bytes.NewBuffer(confData))
+		if err != nil {
+			log.Fatal("Could not parse configuration:", err)
+		}
+		log.Info("Using custom configuration file provided by flag")
+		return
+	}
+
+	// if no custom file given, read configuration from default paths
+	err := config.ReadInConfig()
 	if err != nil {
 		log.Warn(err)
 		log.Info("Default config values will be used")
@@ -99,9 +128,4 @@ func initConfig() {
 		log.Info("Using config file: ", config.ConfigFileUsed())
 	}
 
-	internal.SetLogLevel(config.GetString("log-level"))
-
-	if config.GetString("sap-control-url") == "" {
-		log.Fatal("sap-control-url cannot be empty, please use the --sap-control-url flag or set a value in the config")
-	}
 }
