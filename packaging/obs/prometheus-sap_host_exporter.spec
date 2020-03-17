@@ -91,5 +91,7 @@ ln -s /usr/sbin/service %{buildroot}%{_sbindir}/rc%{name}
 %{_bindir}/%{shortname}
 %{_unitdir}/%{name}@.service
 %{_sbindir}/rc%{name}
+%dir /etc/%{shortname}/
+/etc/%{shortname}/default.yaml
 
 %changelog
