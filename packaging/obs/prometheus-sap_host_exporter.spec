@@ -58,23 +58,23 @@ go build -mod=vendor \
 install -D -m 0755 %{shortname} "%{buildroot}%{_bindir}/%{shortname}"
 
 # Install the systemd unit
-install -D -m 0644 %{shortname}.service %{buildroot}%{_unitdir}/%{name}.service
+install -D -m 0644 %{shortname}@.service %{buildroot}%{_unitdir}/%{name}@.service
 
 # Install compat wrapper for legacy init systems
 install -Dd -m 0755 %{buildroot}%{_sbindir}
 ln -s /usr/sbin/service %{buildroot}%{_sbindir}/rc%{name}
 
 %pre
-%service_add_pre %{name}.service
+%service_add_pre %{name}@.service
 
 %post
-%service_add_post %{name}.service
+%service_add_post %{name}@.service
 
 %preun
-%service_del_preun %{name}.service
+%service_del_preun %{name}@.service
 
 %postun
-%service_del_postun %{name}.service
+%service_del_postun %{name}@.service
 
 %files
 %defattr(-,root,root)
@@ -86,7 +86,7 @@ ln -s /usr/sbin/service %{buildroot}%{_sbindir}/rc%{name}
 %doc LICENSE
 %endif
 %{_bindir}/%{shortname}
-%{_unitdir}/%{name}.service
+%{_unitdir}/%{name}@.service
 %{_sbindir}/rc%{name}
 
 %changelog
