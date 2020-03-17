@@ -60,6 +60,10 @@ install -D -m 0755 %{shortname} "%{buildroot}%{_bindir}/%{shortname}"
 # Install the systemd unit
 install -D -m 0644 %{shortname}@.service %{buildroot}%{_unitdir}/%{name}@.service
 
+# Install the default config
+
+install -D -m 0755 default.yaml "%{buildroot}%{_bindir}/etc/%{shortname}/default.yaml"
+
 # Install compat wrapper for legacy init systems
 install -Dd -m 0755 %{buildroot}%{_sbindir}
 ln -s /usr/sbin/service %{buildroot}%{_sbindir}/rc%{name}

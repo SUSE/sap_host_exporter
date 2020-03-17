@@ -11,4 +11,4 @@ ExecReload=/bin/kill -HUP $MAINPID
 
 [Install]
 WantedBy=multi-user.target
-DefaultInstance=""
+DefaultInstance="default"
