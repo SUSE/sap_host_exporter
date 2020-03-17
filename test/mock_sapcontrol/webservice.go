@@ -77,3 +77,18 @@ func (mr *MockWebServiceMockRecorder) GetQueueStatistic() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetQueueStatistic", reflect.TypeOf((*MockWebService)(nil).GetQueueStatistic))
 }
+
+// HACheckConfig mocks base method
+func (m *MockWebService) HACheckConfig() (*sapcontrol.HACheckConfigResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "HACheckConfig")
+	ret0, _ := ret[0].(*sapcontrol.HACheckConfigResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// HACheckConfig indicates an expected call of HACheckConfig
+func (mr *MockWebServiceMockRecorder) HACheckConfig() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "HACheckConfig", reflect.TypeOf((*MockWebService)(nil).HACheckConfig))
+}
