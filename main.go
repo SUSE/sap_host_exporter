@@ -31,7 +31,7 @@ func init() {
 	flag.String("address", "0.0.0.0", "The address to listen on for HTTP requests")
 	flag.String("log-level", "info", "The minimum logging level; levels are, in ascending order: debug, info, warn, error")
 	flag.String("sap-control-url", "", "The URL of the SAPControl SOAP web service, e.g. http://$HOST:$PORT")
-	flag.String("config", "", "The path where a custom configuration file is located")
+	flag.String("config", "", "The path where a custom configuration.yaml file is located. NOTE: the conf must be yaml")
 
 	err := config.BindPFlags(flag.CommandLine)
 	if err != nil {
@@ -104,9 +104,14 @@ func initConfig() {
 }
 
 func readExporterConf() {
+
 	// read first the configuration from custom file. If not provided, read default.
 	confFile := config.GetString("config")
 	if confFile != "" {
+		// hardcode for custom config file type to yaml
+		// this workaround is needed otherwise viper return empty conf
+		// see issue https://github.com/spf13/viper/issues/316
+		config.SetConfigType("yaml")
 		confData, err := ioutil.ReadFile(confFile)
 		if err != nil {
 			log.Fatal("Could not read configuration file for exporter: ", err)
