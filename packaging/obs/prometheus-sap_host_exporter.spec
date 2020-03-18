@@ -61,7 +61,7 @@ install -D -m 0755 %{shortname} "%{buildroot}%{_bindir}/%{shortname}"
 install -D -m 0644 %{shortname}@.service %{buildroot}%{_unitdir}/%{name}@.service
 
 # Install the default config
-install -D -m 0600 doc/%{shortname}.yaml "%{buildroot}%{_bindir}/etc/%{shortname}/default.yaml"
+install -D -m 0600 doc/%{shortname}.yaml "%{buildroot}/etc/%{shortname}/default.yaml"
 
 # Install compat wrapper for legacy init systems
 install -Dd -m 0755 %{buildroot}%{_sbindir}
