@@ -10,6 +10,17 @@ import (
 type STATECOLOR string
 type STATECOLOR_CODE int
 
+const (
+	STATECOLOR_GRAY        STATECOLOR      = "SAPControl-GRAY"
+	STATECOLOR_GREEN       STATECOLOR      = "SAPControl-GREEN"
+	STATECOLOR_YELLOW      STATECOLOR      = "SAPControl-YELLOW"
+	STATECOLOR_RED         STATECOLOR      = "SAPControl-RED"
+	STATECOLOR_CODE_GRAY   STATECOLOR_CODE = 1
+	STATECOLOR_CODE_GREEN  STATECOLOR_CODE = 2
+	STATECOLOR_CODE_YELLOW STATECOLOR_CODE = 3
+	STATECOLOR_CODE_RED    STATECOLOR_CODE = 4
+)
+
 type GetProcessList struct {
 	XMLName xml.Name `xml:"urn:SAPControl GetProcessList"`
 }
@@ -91,15 +102,54 @@ type ArrayOfTaskHandlerQueue struct {
 	Item []*TaskHandlerQueue `xml:"item,omitempty" json:"item,omitempty"`
 }
 
+type HACheckConfig struct {
+	XMLName xml.Name `xml:"urn:SAPControl HACheckConfig"`
+}
+
+type HACheckConfigResponse struct {
+	XMLName xml.Name        `xml:"urn:SAPControl HACheckConfigResponse"`
+	Check   *ArrayOfHACheck `xml:"check,omitempty" json:"check,omitempty"`
+}
+
+type HACheckFailoverConfig struct {
+	XMLName xml.Name `xml:"urn:SAPControl HACheckFailoverConfig"`
+}
+
+type HACheckFailoverConfigResponse struct {
+	XMLName xml.Name        `xml:"urn:SAPControl HACheckFailoverConfigResponse"`
+	Check   *ArrayOfHACheck `xml:"check,omitempty" json:"check,omitempty"`
+}
+
+type ArrayOfHACheck struct {
+	Item []*HACheck `xml:"item,omitempty" json:"item,omitempty"`
+}
+
+type HACheck struct {
+	State       HAVerificationState `xml:"state,omitempty" json:"state,omitempty"`
+	Category    HACheckCategory     `xml:"category,omitempty" json:"category,omitempty"`
+	Description string              `xml:"description,omitempty" json:"description,omitempty"`
+	Comment     string              `xml:"comment,omitempty" json:"comment,omitempty"`
+}
+
+type HAVerificationState string
+type HAVerificationStateCode int
+
 const (
-	STATECOLOR_GRAY        STATECOLOR      = "SAPControl-GRAY"
-	STATECOLOR_GREEN       STATECOLOR      = "SAPControl-GREEN"
-	STATECOLOR_YELLOW      STATECOLOR      = "SAPControl-YELLOW"
-	STATECOLOR_RED         STATECOLOR      = "SAPControl-RED"
-	STATECOLOR_CODE_GRAY   STATECOLOR_CODE = 1
-	STATECOLOR_CODE_GREEN  STATECOLOR_CODE = 2
-	STATECOLOR_CODE_YELLOW STATECOLOR_CODE = 3
-	STATECOLOR_CODE_RED    STATECOLOR_CODE = 4
+	HA_VERIFICATION_STATE_SUCCESS HAVerificationState = "SAPControl-HA-SUCCESS"
+	HA_VERIFICATION_STATE_WARNING HAVerificationState = "SAPControl-HA-WARNING"
+	HA_VERIFICATION_STATE_ERROR   HAVerificationState = "SAPControl-HA-ERROR"
+	HA_VERIFICATION_STATE_CODE_SUCCESS HAVerificationStateCode = 0
+	HA_VERIFICATION_STATE_CODE_WARNING HAVerificationStateCode = 1
+	HA_VERIFICATION_STATE_CODE_ERROR   HAVerificationStateCode = 2
+)
+
+type HACheckCategory string
+
+const (
+	HA_CHECK_CATEGORY_SAP_CONFIGURATION HACheckCategory = "SAPControl-SAP-CONFIGURATION"
+	HA_CHECK_CATEGORY_SAP_STATE         HACheckCategory = "SAPControl-SAP-STATE"
+	HA_CHECK_CATEGORY_HA_CONFIGURATION  HACheckCategory = "SAPControl-HA-CONFIGURATION"
+	HA_CHECK_CATEGORY_HA_STATE          HACheckCategory = "SAPControl-HA-STATE"
 )
 
 type WebService interface {
@@ -111,6 +161,9 @@ type WebService interface {
 
 	/* Returns a list of queue information of work processes and icm (similar to dpmon). */
 	GetQueueStatistic() (*GetQueueStatisticResponse, error)
+
+	/* Checks high availability configuration and status of the system. */
+	HACheckConfig() (*HACheckConfigResponse, error)
 }
 
 type webService struct {
@@ -188,6 +241,50 @@ func StateColorToFloat(statecolor STATECOLOR) (float64, error) {
 	case STATECOLOR_RED:
 		return float64(STATECOLOR_CODE_RED), nil
 	default:
-		return 0, errors.New("Invalid STATECOLOR value")
+		return -1, errors.New("Invalid STATECOLOR value")
+	}
+}
+
+// makes HACheckCategory values more human-readable
+func HaCheckCategoryToString(category HACheckCategory) (string, error) {
+	switch category {
+	case HA_CHECK_CATEGORY_HA_CONFIGURATION:
+		return "HA-CONFIGURATION", nil
+	case HA_CHECK_CATEGORY_HA_STATE:
+		return "HA-STATE", nil
+	case HA_CHECK_CATEGORY_SAP_CONFIGURATION:
+		return "SAP-CONFIGURATION", nil
+	case HA_CHECK_CATEGORY_SAP_STATE:
+		return "SAP-STATE", nil
+	default:
+		return "", errors.New("Invalid HACheckCategory value")
+	}
+}
+
+// makes HAVerificationState values more human-readable
+func HaVerificationStateToString(state HAVerificationState) (string, error) {
+	switch state {
+	case HA_VERIFICATION_STATE_SUCCESS:
+		return "SUCCESS", nil
+	case HA_VERIFICATION_STATE_WARNING:
+		return "WARNING", nil
+	case HA_VERIFICATION_STATE_ERROR:
+		return "ERROR", nil
+	default:
+		return "", errors.New("Invalid HAVerificationState value")
+	}
+}
+
+// makes HAVerificationState values more metric friendly
+func HaVerificationStateToFloat(state HAVerificationState) (float64, error) {
+	switch state {
+	case HA_VERIFICATION_STATE_SUCCESS:
+		return float64(HA_VERIFICATION_STATE_CODE_SUCCESS), nil
+	case HA_VERIFICATION_STATE_WARNING:
+		return float64(HA_VERIFICATION_STATE_CODE_WARNING), nil
+	case HA_VERIFICATION_STATE_ERROR:
+		return float64(HA_VERIFICATION_STATE_CODE_ERROR), nil
+	default:
+		return -1, errors.New("Invalid HAVerificationState value")
 	}
 }
