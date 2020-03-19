@@ -51,10 +51,10 @@ func TestHACheckMetrics(t *testing.T) {
 	expectedMetrics := `
 	# HELP sap_alert_ha_check High Availability system configuration and status checks
 	# TYPE sap_alert_ha_check gauge
-	sap_alert_ha_check{category="HA-STATE",comment="bar",description="foo",state="ERROR"} 2
-	sap_alert_ha_check{category="SAP-STATE",comment="bar2",description="foo2",state="WARNING"} 1
-	sap_alert_ha_check{category="SAP-CONFIGURATION",comment="bar3",description="foo3",state="SUCCESS"} 0
-	sap_alert_ha_check{category="SAP-CONFIGURATION",comment="bar4",description="foo4",state="SUCCESS"} 0
+	sap_alert_ha_check{category="HA-STATE",comment="bar",description="foo"} 2
+	sap_alert_ha_check{category="SAP-STATE",comment="bar2",description="foo2"} 1
+	sap_alert_ha_check{category="SAP-CONFIGURATION",comment="bar3",description="foo3"} 0
+	sap_alert_ha_check{category="SAP-CONFIGURATION",comment="bar4",description="foo4"} 0
 `
 
 	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics), "sap_alert_ha_check")

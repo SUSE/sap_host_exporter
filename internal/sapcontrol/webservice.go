@@ -305,20 +305,6 @@ func HaCheckCategoryToString(category HACheckCategory) (string, error) {
 	}
 }
 
-// makes HAVerificationState values more human-readable
-func HaVerificationStateToString(state HAVerificationState) (string, error) {
-	switch state {
-	case HA_VERIFICATION_STATE_SUCCESS:
-		return "SUCCESS", nil
-	case HA_VERIFICATION_STATE_WARNING:
-		return "WARNING", nil
-	case HA_VERIFICATION_STATE_ERROR:
-		return "ERROR", nil
-	default:
-		return "", errors.New("Invalid HAVerificationState value")
-	}
-}
-
 // makes HAVerificationState values more metric friendly
 func HaVerificationStateToFloat(state HAVerificationState) (float64, error) {
 	switch state {

@@ -17,7 +17,7 @@ func NewCollector(webService sapcontrol.WebService) (*dispatcherCollector, error
 		webService,
 	}
 
-	c.SetDescriptor("ha_check", "High Availability system configuration and status checks", []string{"category", "state", "description", "comment"})
+	c.SetDescriptor("ha_check", "High Availability system configuration and status checks", []string{"description", "category", "comment"})
 	c.SetDescriptor("ha_failover_active", "Whether or not High Availability Failover is active", nil)
 
 	return c, nil
@@ -86,12 +86,11 @@ func (c *dispatcherCollector) recordHAChecks(checks []*sapcontrol.HACheck, ch ch
 
 func (c *dispatcherCollector) recordHACheck(check *sapcontrol.HACheck, ch chan<- prometheus.Metric) error {
 	stateCode, err := sapcontrol.HaVerificationStateToFloat(check.State)
-	state, err := sapcontrol.HaVerificationStateToString(check.State)
 	category, err := sapcontrol.HaCheckCategoryToString(check.Category)
 	if err != nil {
 		return errors.Wrapf(err, "Unable to process SAPControl HACheck data: %v", *check)
 	}
-	ch <- c.MakeGaugeMetric("ha_check", stateCode, category, state, check.Description, check.Comment)
+	ch <- c.MakeGaugeMetric("ha_check", stateCode, check.Description, category, check.Comment)
 
 	return nil
 }
