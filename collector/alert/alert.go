@@ -1,6 +1,7 @@
 package alert
 
 import (
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -29,37 +30,78 @@ type dispatcherCollector struct {
 func (c *dispatcherCollector) Collect(ch chan<- prometheus.Metric) {
 	log.Debugln("Collecting Alert metrics")
 
-	c.recordHaChecks(ch)
-}
+	var err error
 
-func (c *dispatcherCollector) recordHaChecks(ch chan<- prometheus.Metric) {
-	haChecks, err := c.webService.HACheckConfig()
+	err = collector.RecordConcurrently([]func(ch chan<- prometheus.Metric) error{
+		c.recordHAConfigChecks,
+		c.recordHAFailoverConfigChecks,
+	}, ch)
 
 	if err != nil {
-		log.Warnf("SAPControl web service error: %s", err)
-		return
-	}
-
-	for _, check := range haChecks.Check.Item {
-		c.recordHaCheck(check, ch)
+		log.Warn(err)
 	}
 }
 
-func (c *dispatcherCollector) recordHaCheck(check *sapcontrol.HACheck, ch chan<- prometheus.Metric) {
+func (c *dispatcherCollector) recordHAConfigChecks(ch chan<- prometheus.Metric) error {
+	response, err := c.webService.HACheckConfig()
+
+	if err != nil {
+		return errors.Wrap(err, "SAPControl web service error")
+	}
+
+	if response.Check == nil {
+		return nil
+	}
+
+	checks := response.Check.Item
+
+	err = c.recordHAChecks(checks, ch)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *dispatcherCollector) recordHAFailoverConfigChecks(ch chan<- prometheus.Metric) error {
+	response, err := c.webService.HACheckFailoverConfig()
+
+	if err != nil {
+		return errors.Wrap(err, "SAPControl web service error")
+	}
+
+	if response.Check == nil {
+		return nil
+	}
+
+	checks := response.Check.Item
+
+	err = c.recordHAChecks(checks, ch)
+	if err != nil {
+		return errors.Wrap(err, "Could not record HACheck")
+	}
+
+	return nil
+}
+
+func (c *dispatcherCollector) recordHAChecks(checks []*sapcontrol.HACheck, ch chan<- prometheus.Metric) error {
+	for _, check := range checks {
+		err := c.recordHACheck(check, ch)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (c *dispatcherCollector) recordHACheck(check *sapcontrol.HACheck, ch chan<- prometheus.Metric) error {
 	stateCode, err := sapcontrol.HaVerificationStateToFloat(check.State)
-	if err != nil {
-		log.Warnf("Could not record ha_check metric: %s", err)
-		return
-	}
 	state, err := sapcontrol.HaVerificationStateToString(check.State)
-	if err != nil {
-		log.Warnf("Could not record ha_check metric: %s", err)
-		return
-	}
 	category, err := sapcontrol.HaCheckCategoryToString(check.Category)
 	if err != nil {
-		log.Warnf("Could not record ha_check metric: %s", err)
-		return
+		return errors.Wrapf(err, "Unable to process SAPControl HACheck data: %v", *check)
 	}
 	ch <- c.MakeGaugeMetric("ha_check", stateCode, category, state, check.Description, check.Comment)
+
+	return nil
 }

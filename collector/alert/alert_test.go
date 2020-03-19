@@ -28,7 +28,7 @@ func TestHaCheckMetrics(t *testing.T) {
 
 	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
 
-	mockHACheckResponse := &sapcontrol.HACheckConfigResponse{
+	mockHACheckConfigResponse := &sapcontrol.HACheckConfigResponse{
 		Check: &sapcontrol.ArrayOfHACheck{
 			Item: []*sapcontrol.HACheck{
 				{State: sapcontrol.HA_VERIFICATION_STATE_ERROR, Category: sapcontrol.HA_CHECK_CATEGORY_HA_STATE, Description: "foo", Comment: "bar"},
@@ -37,7 +37,15 @@ func TestHaCheckMetrics(t *testing.T) {
 			},
 		},
 	}
-	mockWebService.EXPECT().HACheckConfig().Return(mockHACheckResponse, nil)
+	mockHACheckFailoverConfigResponse := &sapcontrol.HACheckFailoverConfigResponse{
+		Check: &sapcontrol.ArrayOfHACheck{
+			Item: []*sapcontrol.HACheck{
+				{State: sapcontrol.HA_VERIFICATION_STATE_SUCCESS, Category: sapcontrol.HA_CHECK_CATEGORY_SAP_CONFIGURATION, Description: "foo4", Comment: "bar4"},
+			},
+		},
+	}
+	mockWebService.EXPECT().HACheckConfig().Return(mockHACheckConfigResponse, nil)
+	mockWebService.EXPECT().HACheckFailoverConfig().Return(mockHACheckFailoverConfigResponse, nil)
 
 	var err error
 	collector, err := NewCollector(mockWebService)
@@ -49,8 +57,28 @@ func TestHaCheckMetrics(t *testing.T) {
 	sap_alert_ha_check{category="HA-STATE",comment="bar",description="foo",state="ERROR"} 2
 	sap_alert_ha_check{category="SAP-STATE",comment="bar2",description="foo2",state="WARNING"} 1
 	sap_alert_ha_check{category="SAP-CONFIGURATION",comment="bar3",description="foo3",state="SUCCESS"} 0
+	sap_alert_ha_check{category="SAP-CONFIGURATION",comment="bar4",description="foo4",state="SUCCESS"} 0
 `
 
 	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics))
+	assert.NoError(t, err)
+}
+
+func TestHaCheckMetricsWithEmptyData(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
+
+	mockHACheckConfigResponse := &sapcontrol.HACheckConfigResponse{}
+	mockHACheckFailoverConfigResponse := &sapcontrol.HACheckFailoverConfigResponse{}
+	mockWebService.EXPECT().HACheckConfig().Return(mockHACheckConfigResponse, nil)
+	mockWebService.EXPECT().HACheckFailoverConfig().Return(mockHACheckFailoverConfigResponse, nil)
+
+	var err error
+	collector, err := NewCollector(mockWebService)
+	assert.NoError(t, err)
+
+	err = testutil.CollectAndCompare(collector, strings.NewReader(""))
 	assert.NoError(t, err)
 }

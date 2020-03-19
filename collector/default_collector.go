@@ -1,8 +1,6 @@
 package collector
 
 import (
-	"os"
-
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -58,19 +56,22 @@ func (c *DefaultCollector) makeMetric(name string, value float64, valueType prom
 	return prometheus.MustNewConstMetric(desc, valueType, value, labelValues...)
 }
 
-// check that all the given paths exist and are executable files
-func CheckExecutables(paths ...string) error {
-	for _, path := range paths {
-		fileInfo, err := os.Stat(path)
-		if err != nil || os.IsNotExist(err) {
-			return errors.Errorf("'%s' does not exist", path)
-		}
-		if fileInfo.IsDir() {
-			return errors.Errorf("'%s' is a directory", path)
-		}
-		if (fileInfo.Mode() & 0111) == 0 {
-			return errors.Errorf("'%s' is not executable", path)
+// run multiple metric recording functions concurrently
+func RecordConcurrently(recorders []func(ch chan<- prometheus.Metric) error, ch chan<- prometheus.Metric) error {
+	errs := make(chan error, len(recorders))
+
+	for _, recorder := range recorders {
+		go func(recorder func(ch chan<- prometheus.Metric) error) {
+			errs <- recorder(ch)
+		}(recorder)
+	}
+	// we wait for all the metric recorders, and return as soon as one sends an error
+	for range recorders {
+		err := <-errs
+		if err != nil {
+			return err
 		}
 	}
+
 	return nil
 }
