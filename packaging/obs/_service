@@ -4,7 +4,7 @@
         <param name="scm">git</param>
         <param name="revision">%%VERSION%%</param>
         <param name="exclude">.git</param>
-        <param name="versionformat">@PARENT_TAG@</param>
+        <param name="versionformat">%h</param>
         <param name="filename">prometheus-sap_host_exporter</param>
     </service>
     <service name="set_version" mode="disabled">

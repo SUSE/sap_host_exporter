@@ -1,6 +1,7 @@
 # this is the what ends up in the RPM "Version" field and it is also used as suffix for the built binaries
-# it can be arbitrary for local builds, but it if you want to commit to OBS it must correspond to a Git tag with an associated GitHub release
-VERSION ?= dev
+# if you want to commit to OBS it must correspond to a Git tag with an associated GitHub release
+# some targets like "obs-workdir" need a remotely available Git ref
+VERSION ?= $(shell git rev-parse --short HEAD)
 
 # we only use this to comply with RPM changelog conventions at SUSE
 AUTHOR ?= shap-staff@suse.de
