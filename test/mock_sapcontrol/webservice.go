@@ -34,10 +34,10 @@ func (m *MockWebService) EXPECT() *MockWebServiceMockRecorder {
 }
 
 // EnqGetStatistic mocks base method
-func (m *MockWebService) EnqGetStatistic() (*sapcontrol.EnqStatisticResponse, error) {
+func (m *MockWebService) EnqGetStatistic() (*sapcontrol.EnqGetStatisticResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "EnqGetStatistic")
-	ret0, _ := ret[0].(*sapcontrol.EnqStatisticResponse)
+	ret0, _ := ret[0].(*sapcontrol.EnqGetStatisticResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
