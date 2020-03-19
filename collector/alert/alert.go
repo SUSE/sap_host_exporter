@@ -40,7 +40,7 @@ func (c *dispatcherCollector) Collect(ch chan<- prometheus.Metric) {
 	}, ch)
 
 	if err != nil {
-		log.Warn(err)
+		log.Warnf("Some metrics could not be recorded: %s", err)
 	}
 }
 
