@@ -40,17 +40,20 @@ func TestRecordConcurrently(t *testing.T) {
 }
 
 func TestRecordConcurrentlyErrors(t *testing.T) {
-	metrics := make(chan prometheus.Metric)
+	metrics := make(chan prometheus.Metric, 2)
+	metric2 := prometheus.NewGauge(prometheus.GaugeOpts{})
 	expectedError := errors.New("")
 	recorder1 := func(ch chan<- prometheus.Metric) error {
 		return expectedError
 	}
 	recorder2 := func(ch chan<- prometheus.Metric) error {
-		// we make metric1 take longer so that we can assert that metric2 will come first
 		time.Sleep(time.Millisecond * 50)
+		ch <- metric2
 		return nil
 	}
 
 	err := RecordConcurrently([]func(ch chan<- prometheus.Metric) error{recorder1, recorder2}, metrics)
 	assert.Equal(t, expectedError, err)
+	time.Sleep(time.Millisecond * 50)
+	assert.Equal(t, metric2, <-metrics) // even if the first recorder returned an error, the second one should still run to completion
 }
