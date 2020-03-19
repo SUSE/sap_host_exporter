@@ -7,6 +7,8 @@ import (
 	"github.com/pkg/errors"
 )
 
+//go:generate mockgen -destination ../../test/mock_sapcontrol/webservice.go github.com/SUSE/sap_host_exporter/internal/sapcontrol WebService
+
 type STATECOLOR string
 type STATECOLOR_CODE int
 
@@ -102,6 +104,10 @@ type ArrayOfTaskHandlerQueue struct {
 	Item []*TaskHandlerQueue `xml:"item,omitempty" json:"item,omitempty"`
 }
 
+type ArrayOfString struct {
+	Item []string `xml:"item,omitempty" json:"item,omitempty"`
+}
+
 type HACheckConfig struct {
 	XMLName xml.Name `xml:"urn:SAPControl HACheckConfig"`
 }
@@ -120,6 +126,20 @@ type HACheckFailoverConfigResponse struct {
 	Check   *ArrayOfHACheck `xml:"check,omitempty" json:"check,omitempty"`
 }
 
+type HAGetFailoverConfig struct {
+	XMLName xml.Name `xml:"urn:SAPControl HAGetFailoverConfig"`
+}
+
+type HAGetFailoverConfigResponse struct {
+	XMLName               xml.Name       `xml:"urn:SAPControl HAGetFailoverConfigResponse"`
+	HAActive              bool           `xml:"HAActive,omitempty" json:"HAActive,omitempty"`
+	HAProductVersion      string         `xml:"HAProductVersion,omitempty" json:"HAProductVersion,omitempty"`
+	HASAPInterfaceVersion string         `xml:"HASAPInterfaceVersion,omitempty" json:"HASAPInterfaceVersion,omitempty"`
+	HADocumentation       string         `xml:"HADocumentation,omitempty" json:"HADocumentation,omitempty"`
+	HAActiveNode          string         `xml:"HAActiveNode,omitempty" json:"HAActiveNode,omitempty"`
+	HANodes               *ArrayOfString `xml:"HANodes,omitempty" json:"HANodes,omitempty"`
+}
+
 type ArrayOfHACheck struct {
 	Item []*HACheck `xml:"item,omitempty" json:"item,omitempty"`
 }
@@ -135,9 +155,9 @@ type HAVerificationState string
 type HAVerificationStateCode int
 
 const (
-	HA_VERIFICATION_STATE_SUCCESS HAVerificationState = "SAPControl-HA-SUCCESS"
-	HA_VERIFICATION_STATE_WARNING HAVerificationState = "SAPControl-HA-WARNING"
-	HA_VERIFICATION_STATE_ERROR   HAVerificationState = "SAPControl-HA-ERROR"
+	HA_VERIFICATION_STATE_SUCCESS      HAVerificationState     = "SAPControl-HA-SUCCESS"
+	HA_VERIFICATION_STATE_WARNING      HAVerificationState     = "SAPControl-HA-WARNING"
+	HA_VERIFICATION_STATE_ERROR        HAVerificationState     = "SAPControl-HA-ERROR"
 	HA_VERIFICATION_STATE_CODE_SUCCESS HAVerificationStateCode = 0
 	HA_VERIFICATION_STATE_CODE_WARNING HAVerificationStateCode = 1
 	HA_VERIFICATION_STATE_CODE_ERROR   HAVerificationStateCode = 2
@@ -164,6 +184,12 @@ type WebService interface {
 
 	/* Checks high availability configuration and status of the system. */
 	HACheckConfig() (*HACheckConfigResponse, error)
+
+	/* Checks HA failover third party configuration and status of an instnace. */
+	HACheckFailoverConfig() (*HACheckFailoverConfigResponse, error)
+
+	/* Returns HA failover third party information. */
+	HAGetFailoverConfig() (*HAGetFailoverConfigResponse, error)
 }
 
 type webService struct {
@@ -198,6 +224,42 @@ func (service *webService) EnqGetStatistic() (*EnqStatisticResponse, error) {
 func (service *webService) GetQueueStatistic() (*GetQueueStatisticResponse, error) {
 	request := &GetQueueStatistic{}
 	response := &GetQueueStatisticResponse{}
+	err := service.client.Call("''", request, response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+// implements WebService.HACheckConfig()
+func (service *webService) HACheckConfig() (*HACheckConfigResponse, error) {
+	request := &HACheckConfig{}
+	response := &HACheckConfigResponse{}
+	err := service.client.Call("''", request, response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+// implements WebService.HACheckFailoverConfig()
+func (service *webService) HACheckFailoverConfig() (*HACheckFailoverConfigResponse, error) {
+	request := &HACheckFailoverConfig{}
+	response := &HACheckFailoverConfigResponse{}
+	err := service.client.Call("''", request, response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+// implements WebService.HAGetFailoverConfig()
+func (service *webService) HAGetFailoverConfig() (*HAGetFailoverConfigResponse, error) {
+	request := &HAGetFailoverConfig{}
+	response := &HAGetFailoverConfigResponse{}
 	err := service.client.Call("''", request, response)
 	if err != nil {
 		return nil, err
