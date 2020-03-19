@@ -45,7 +45,7 @@ fmt-check:
 	.ci/go_lint.sh
 
 generate:
-	go generate
+	go generate ./...
 
 test: download
 	go test -v ./...
