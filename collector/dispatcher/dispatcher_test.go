@@ -28,17 +28,15 @@ func TestWorkProcessQueueStatsMetric(t *testing.T) {
 
 	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
 	mockWebService.EXPECT().GetQueueStatistic().Return(&sapcontrol.GetQueueStatisticResponse{
-		Queue: &sapcontrol.ArrayOfTaskHandlerQueue{
-			Item: []*sapcontrol.TaskHandlerQueue{
-				{Type: "ABAP/NOWP", High: 3, Max: 14000, Writes: 249133, Reads: 249133},
-				{Type: "ABAP/DIA", High: 5, Max: 14000, Writes: 447173, Reads: 447173},
-				{Type: "ABAP/UPD", High: 2, Max: 14000, Writes: 3491, Reads: 3491},
-				{Type: "ABAP/ENQ", Max: 14000},
-				{Type: "ABAP/BTC", High: 2, Max: 14000, Writes: 10464, Reads: 10464},
-				{Type: "ABAP/SPO", High: 1, Max: 14000, Writes: 38366, Reads: 38366},
-				{Type: "ABAP/UP2", High: 1, Max: 14000, Writes: 3488, Reads: 3488},
-				{Type: "ICM/Intern", High: 1, Max: 6000, Writes: 34877, Reads: 34877},
-			},
+		Queues: []*sapcontrol.TaskHandlerQueue{
+			{Type: "ABAP/NOWP", High: 3, Max: 14000, Writes: 249133, Reads: 249133},
+			{Type: "ABAP/DIA", High: 5, Max: 14000, Writes: 447173, Reads: 447173},
+			{Type: "ABAP/UPD", High: 2, Max: 14000, Writes: 3491, Reads: 3491},
+			{Type: "ABAP/ENQ", Max: 14000},
+			{Type: "ABAP/BTC", High: 2, Max: 14000, Writes: 10464, Reads: 10464},
+			{Type: "ABAP/SPO", High: 1, Max: 14000, Writes: 38366, Reads: 38366},
+			{Type: "ABAP/UP2", High: 1, Max: 14000, Writes: 3488, Reads: 3488},
+			{Type: "ICM/Intern", High: 1, Max: 6000, Writes: 34877, Reads: 34877},
 		},
 	}, nil)
 
@@ -100,5 +98,20 @@ func TestWorkProcessQueueStatsMetric(t *testing.T) {
 	assert.NoError(t, err)
 
 	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics))
+	assert.NoError(t, err)
+}
+
+func TestWorkProcessQueueStatsMetricWithEmptyData(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
+	mockWebService.EXPECT().GetQueueStatistic().Return(&sapcontrol.GetQueueStatisticResponse{}, nil)
+
+	var err error
+	collector, err := NewCollector(mockWebService)
+	assert.NoError(t, err)
+
+	err = testutil.CollectAndCompare(collector, strings.NewReader(""))
 	assert.NoError(t, err)
 }

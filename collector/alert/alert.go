@@ -51,13 +51,7 @@ func (c *dispatcherCollector) recordHAConfigChecks(ch chan<- prometheus.Metric) 
 		return errors.Wrap(err, "SAPControl web service error")
 	}
 
-	if response.Check == nil {
-		return nil
-	}
-
-	checks := response.Check.Item
-
-	err = c.recordHAChecks(checks, ch)
+	err = c.recordHAChecks(response.Checks, ch)
 	if err != nil {
 		return err
 	}
@@ -72,13 +66,7 @@ func (c *dispatcherCollector) recordHAFailoverConfigChecks(ch chan<- prometheus.
 		return errors.Wrap(err, "SAPControl web service error")
 	}
 
-	if response.Check == nil {
-		return nil
-	}
-
-	checks := response.Check.Item
-
-	err = c.recordHAChecks(checks, ch)
+	err = c.recordHAChecks(response.Checks, ch)
 	if err != nil {
 		return errors.Wrap(err, "Could not record HACheck")
 	}

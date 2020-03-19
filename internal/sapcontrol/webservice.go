@@ -9,6 +9,9 @@ import (
 
 //go:generate mockgen -destination ../../test/mock_sapcontrol/webservice.go github.com/SUSE/sap_host_exporter/internal/sapcontrol WebService
 
+type HAVerificationState string
+type HAVerificationStateCode int
+type HACheckCategory string
 type STATECOLOR string
 type STATECOLOR_CODE int
 
@@ -23,13 +26,29 @@ const (
 	STATECOLOR_CODE_RED    STATECOLOR_CODE = 4
 )
 
+const (
+	HA_VERIFICATION_STATE_SUCCESS      HAVerificationState     = "SAPControl-HA-SUCCESS"
+	HA_VERIFICATION_STATE_WARNING      HAVerificationState     = "SAPControl-HA-WARNING"
+	HA_VERIFICATION_STATE_ERROR        HAVerificationState     = "SAPControl-HA-ERROR"
+	HA_VERIFICATION_STATE_CODE_SUCCESS HAVerificationStateCode = 0
+	HA_VERIFICATION_STATE_CODE_WARNING HAVerificationStateCode = 1
+	HA_VERIFICATION_STATE_CODE_ERROR   HAVerificationStateCode = 2
+)
+
+const (
+	HA_CHECK_CATEGORY_SAP_CONFIGURATION HACheckCategory = "SAPControl-SAP-CONFIGURATION"
+	HA_CHECK_CATEGORY_SAP_STATE         HACheckCategory = "SAPControl-SAP-STATE"
+	HA_CHECK_CATEGORY_HA_CONFIGURATION  HACheckCategory = "SAPControl-HA-CONFIGURATION"
+	HA_CHECK_CATEGORY_HA_STATE          HACheckCategory = "SAPControl-HA-STATE"
+)
+
 type GetProcessList struct {
 	XMLName xml.Name `xml:"urn:SAPControl GetProcessList"`
 }
 
 type GetProcessListResponse struct {
-	XMLName xml.Name          `xml:"urn:SAPControl GetProcessListResponse"`
-	Process *ArrayOfOSProcess `xml:"process,omitempty" json:"process,omitempty"`
+	XMLName   xml.Name     `xml:"urn:SAPControl GetProcessListResponse"`
+	Processes []*OSProcess `xml:"process>item,omitempty" json:"process>item,omitempty"`
 }
 
 type OSProcess struct {
@@ -40,10 +59,6 @@ type OSProcess struct {
 	Starttime   string     `xml:"starttime,omitempty" json:"starttime,omitempty"`
 	Elapsedtime string     `xml:"elapsedtime,omitempty" json:"elapsedtime,omitempty"`
 	Pid         int32      `xml:"pid,omitempty" json:"pid,omitempty"`
-}
-
-type ArrayOfOSProcess struct {
-	Item []*OSProcess `xml:"item,omitempty" json:"item,omitempty"`
 }
 
 type EnqGetStatistic struct {
@@ -86,9 +101,18 @@ type GetQueueStatistic struct {
 }
 
 type GetQueueStatisticResponse struct {
-	XMLName xml.Name `xml:"urn:SAPControl GetQueueStatisticResponse"`
+	XMLName xml.Name            `xml:"urn:SAPControl GetQueueStatisticResponse"`
+	Queues  []*TaskHandlerQueue `xml:"queue>item,omitempty" json:"queue,omitempty"`
+}
 
-	Queue *ArrayOfTaskHandlerQueue `xml:"queue,omitempty" json:"queue,omitempty"`
+type HAGetFailoverConfigResponse struct {
+	XMLName               xml.Name `xml:"urn:SAPControl HAGetFailoverConfigResponse"`
+	HAActive              bool     `xml:"HAActive,omitempty" json:"HAActive,omitempty"`
+	HAProductVersion      string   `xml:"HAProductVersion,omitempty" json:"HAProductVersion,omitempty"`
+	HASAPInterfaceVersion string   `xml:"HASAPInterfaceVersion,omitempty" json:"HASAPInterfaceVersion,omitempty"`
+	HADocumentation       string   `xml:"HADocumentation,omitempty" json:"HADocumentation,omitempty"`
+	HAActiveNode          string   `xml:"HAActiveNode,omitempty" json:"HAActiveNode,omitempty"`
+	HANodes               []string `xml:"HANodes>item,omitempty" json:"HANodes,omitempty"`
 }
 
 type TaskHandlerQueue struct {
@@ -100,21 +124,13 @@ type TaskHandlerQueue struct {
 	Reads  int32  `xml:"Reads,omitempty" json:"Reads,omitempty"`
 }
 
-type ArrayOfTaskHandlerQueue struct {
-	Item []*TaskHandlerQueue `xml:"item,omitempty" json:"item,omitempty"`
-}
-
-type ArrayOfString struct {
-	Item []string `xml:"item,omitempty" json:"item,omitempty"`
-}
-
 type HACheckConfig struct {
 	XMLName xml.Name `xml:"urn:SAPControl HACheckConfig"`
 }
 
 type HACheckConfigResponse struct {
-	XMLName xml.Name        `xml:"urn:SAPControl HACheckConfigResponse"`
-	Check   *ArrayOfHACheck `xml:"check,omitempty" json:"check,omitempty"`
+	XMLName xml.Name   `xml:"urn:SAPControl HACheckConfigResponse"`
+	Checks  []*HACheck `xml:"check>item,omitempty" json:"check,omitempty"`
 }
 
 type HACheckFailoverConfig struct {
@@ -122,26 +138,12 @@ type HACheckFailoverConfig struct {
 }
 
 type HACheckFailoverConfigResponse struct {
-	XMLName xml.Name        `xml:"urn:SAPControl HACheckFailoverConfigResponse"`
-	Check   *ArrayOfHACheck `xml:"check,omitempty" json:"check,omitempty"`
+	XMLName xml.Name   `xml:"urn:SAPControl HACheckFailoverConfigResponse"`
+	Checks  []*HACheck `xml:"check>item,omitempty" json:"check,omitempty"`
 }
 
 type HAGetFailoverConfig struct {
 	XMLName xml.Name `xml:"urn:SAPControl HAGetFailoverConfig"`
-}
-
-type HAGetFailoverConfigResponse struct {
-	XMLName               xml.Name       `xml:"urn:SAPControl HAGetFailoverConfigResponse"`
-	HAActive              bool           `xml:"HAActive,omitempty" json:"HAActive,omitempty"`
-	HAProductVersion      string         `xml:"HAProductVersion,omitempty" json:"HAProductVersion,omitempty"`
-	HASAPInterfaceVersion string         `xml:"HASAPInterfaceVersion,omitempty" json:"HASAPInterfaceVersion,omitempty"`
-	HADocumentation       string         `xml:"HADocumentation,omitempty" json:"HADocumentation,omitempty"`
-	HAActiveNode          string         `xml:"HAActiveNode,omitempty" json:"HAActiveNode,omitempty"`
-	HANodes               *ArrayOfString `xml:"HANodes,omitempty" json:"HANodes,omitempty"`
-}
-
-type ArrayOfHACheck struct {
-	Item []*HACheck `xml:"item,omitempty" json:"item,omitempty"`
 }
 
 type HACheck struct {
@@ -150,27 +152,6 @@ type HACheck struct {
 	Description string              `xml:"description,omitempty" json:"description,omitempty"`
 	Comment     string              `xml:"comment,omitempty" json:"comment,omitempty"`
 }
-
-type HAVerificationState string
-type HAVerificationStateCode int
-
-const (
-	HA_VERIFICATION_STATE_SUCCESS      HAVerificationState     = "SAPControl-HA-SUCCESS"
-	HA_VERIFICATION_STATE_WARNING      HAVerificationState     = "SAPControl-HA-WARNING"
-	HA_VERIFICATION_STATE_ERROR        HAVerificationState     = "SAPControl-HA-ERROR"
-	HA_VERIFICATION_STATE_CODE_SUCCESS HAVerificationStateCode = 0
-	HA_VERIFICATION_STATE_CODE_WARNING HAVerificationStateCode = 1
-	HA_VERIFICATION_STATE_CODE_ERROR   HAVerificationStateCode = 2
-)
-
-type HACheckCategory string
-
-const (
-	HA_CHECK_CATEGORY_SAP_CONFIGURATION HACheckCategory = "SAPControl-SAP-CONFIGURATION"
-	HA_CHECK_CATEGORY_SAP_STATE         HACheckCategory = "SAPControl-SAP-STATE"
-	HA_CHECK_CATEGORY_HA_CONFIGURATION  HACheckCategory = "SAPControl-HA-CONFIGURATION"
-	HA_CHECK_CATEGORY_HA_STATE          HACheckCategory = "SAPControl-HA-STATE"
-)
 
 type WebService interface {
 	/* Returns a list of all processes directly started by the webservice according to the SAP start profile. */

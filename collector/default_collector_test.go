@@ -35,8 +35,8 @@ func TestRecordConcurrently(t *testing.T) {
 
 	err := RecordConcurrently([]func(ch chan<- prometheus.Metric) error{recorder1, recorder2}, metrics)
 	assert.NoError(t, err)
-	assert.Equal(t, metric2, <- metrics)
-	assert.Equal(t, metric1, <- metrics)
+	assert.Equal(t, metric2, <-metrics)
+	assert.Equal(t, metric1, <-metrics)
 }
 
 func TestRecordConcurrentlyErrors(t *testing.T) {

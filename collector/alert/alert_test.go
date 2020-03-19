@@ -29,19 +29,15 @@ func TestHACheckMetrics(t *testing.T) {
 	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
 
 	mockHACheckConfigResponse := &sapcontrol.HACheckConfigResponse{
-		Check: &sapcontrol.ArrayOfHACheck{
-			Item: []*sapcontrol.HACheck{
-				{State: sapcontrol.HA_VERIFICATION_STATE_ERROR, Category: sapcontrol.HA_CHECK_CATEGORY_HA_STATE, Description: "foo", Comment: "bar"},
-				{State: sapcontrol.HA_VERIFICATION_STATE_WARNING, Category: sapcontrol.HA_CHECK_CATEGORY_SAP_STATE, Description: "foo2", Comment: "bar2"},
-				{State: sapcontrol.HA_VERIFICATION_STATE_SUCCESS, Category: sapcontrol.HA_CHECK_CATEGORY_SAP_CONFIGURATION, Description: "foo3", Comment: "bar3"},
-			},
+		Checks: []*sapcontrol.HACheck{
+			{State: sapcontrol.HA_VERIFICATION_STATE_ERROR, Category: sapcontrol.HA_CHECK_CATEGORY_HA_STATE, Description: "foo", Comment: "bar"},
+			{State: sapcontrol.HA_VERIFICATION_STATE_WARNING, Category: sapcontrol.HA_CHECK_CATEGORY_SAP_STATE, Description: "foo2", Comment: "bar2"},
+			{State: sapcontrol.HA_VERIFICATION_STATE_SUCCESS, Category: sapcontrol.HA_CHECK_CATEGORY_SAP_CONFIGURATION, Description: "foo3", Comment: "bar3"},
 		},
 	}
 	mockHACheckFailoverConfigResponse := &sapcontrol.HACheckFailoverConfigResponse{
-		Check: &sapcontrol.ArrayOfHACheck{
-			Item: []*sapcontrol.HACheck{
-				{State: sapcontrol.HA_VERIFICATION_STATE_SUCCESS, Category: sapcontrol.HA_CHECK_CATEGORY_SAP_CONFIGURATION, Description: "foo4", Comment: "bar4"},
-			},
+		Checks: []*sapcontrol.HACheck{
+			{State: sapcontrol.HA_VERIFICATION_STATE_SUCCESS, Category: sapcontrol.HA_CHECK_CATEGORY_SAP_CONFIGURATION, Description: "foo4", Comment: "bar4"},
 		},
 	}
 	mockWebService.EXPECT().HACheckConfig().Return(mockHACheckConfigResponse, nil)

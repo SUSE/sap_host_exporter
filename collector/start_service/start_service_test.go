@@ -27,26 +27,24 @@ func TestProcessesMetric(t *testing.T) {
 
 	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
 	mockWebService.EXPECT().GetProcessList().Return(&sapcontrol.GetProcessListResponse{
-		Process: &sapcontrol.ArrayOfOSProcess{
-			Item: []*sapcontrol.OSProcess{
-				{
-					Name:        "enserver",
-					Description: "foobar",
-					Dispstatus:  sapcontrol.STATECOLOR_GREEN,
-					Textstatus:  "Running",
-					Starttime:   "",
-					Elapsedtime: "",
-					Pid:         30787,
-				},
-				{
-					Name:        "msg_server",
-					Description: "foobar2",
-					Dispstatus:  sapcontrol.STATECOLOR_GREEN,
-					Textstatus:  "Running",
-					Starttime:   "",
-					Elapsedtime: "",
-					Pid:         30786,
-				},
+		Processes: []*sapcontrol.OSProcess{
+			{
+				Name:        "enserver",
+				Description: "foobar",
+				Dispstatus:  sapcontrol.STATECOLOR_GREEN,
+				Textstatus:  "Running",
+				Starttime:   "",
+				Elapsedtime: "",
+				Pid:         30787,
+			},
+			{
+				Name:        "msg_server",
+				Description: "foobar2",
+				Dispstatus:  sapcontrol.STATECOLOR_GREEN,
+				Textstatus:  "Running",
+				Starttime:   "",
+				Elapsedtime: "",
+				Pid:         30786,
 			},
 		},
 	}, nil)
