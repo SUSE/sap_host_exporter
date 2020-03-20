@@ -10,7 +10,7 @@ These are the currently implemented subsystems.
 
 1. [SAP Start Service](#sap_start_service)
 2. [SAP Enqueue Server](#sap_enqueue_server)
-
+3. [Alerts](#Alerts)
 
 ## SAP Start Service
 
@@ -454,3 +454,71 @@ sap_dispatcher_queue_reads{type="ABAP/UP2"} 3743
 sap_dispatcher_queue_reads{type="ABAP/UPD"} 3746
 sap_dispatcher_queue_reads{type="ICM/Intern"} 37426
 ```
+
+
+## Alerts
+
+A SAP system has multiple internal monitoring mechanisms, and we monitor all of them under the `alerts` metrics subsystem.
+
+1. [`sap_alert_ha_check`](#sap_alert_ha_check) 
+2. [`sap_alert_ha_failover_active`](#sap_alert_ha_check) 
+
+### `sap_alert_ha_check`
+
+#### Description
+
+This metric represents various High Availability system configuration and status checks.
+
+Each check can be identified its labels, while the value is an integer status code, as follows.
+- `0`: success.
+- `1`: warning.
+- `2`: error.
+
+#### Labels
+
+- `description`: a short textual description identifying the check
+- `category`: a textual code representing check groups, e.g. `HA-STATE`, `HA-CONFIGURATION`, `SAP-STATE`, `SAP-CONFIGURATION` 
+- `comment`: a more in-dept textual description to help understand what's the check is about
+
+#### Example
+
+```
+# HELP sap_alert_ha_check High Availability system configuration and status checks
+# TYPE sap_alert_ha_check gauge
+sap_alert_ha_check{category="SAP-CONFIGURATION",comment="0 Java instances detected",description="Redundant Java instance configuration"} 0
+sap_alert_ha_check{category="SAP-CONFIGURATION",comment="2 ABAP instances detected",description="Redundant ABAP instance configuration"} 0
+sap_alert_ha_check{category="SAP-CONFIGURATION",comment="2 ABAP instances with BATCH service detected",description="Redundant ABAP BATCH service configuration"} 0
+sap_alert_ha_check{category="SAP-CONFIGURATION",comment="2 ABAP instances with DIALOG service detected",description="Redundant ABAP DIALOG service configuration"} 0
+sap_alert_ha_check{category="SAP-CONFIGURATION",comment="2 ABAP instances with SPOOL service detected",description="Redundant ABAP SPOOL service configuration"} 0
+sap_alert_ha_check{category="SAP-CONFIGURATION",comment="2 ABAP instances with UPDATE service detected",description="Redundant ABAP UPDATE service configuration"} 0
+sap_alert_ha_check{category="SAP-CONFIGURATION",comment="ABAP instances on multiple hosts detected",description="ABAP instances on multiple hosts"} 0
+sap_alert_ha_check{category="SAP-CONFIGURATION",comment="All Enqueue server separated from application server",description="Enqueue separation"} 0
+sap_alert_ha_check{category="SAP-CONFIGURATION",comment="All MessageServer separated from application server",description="MessageServer separation"} 0
+sap_alert_ha_check{category="SAP-CONFIGURATION",comment="Enqueue replication enabled",description="Enqueue replication (sapha1as_HA1_00)"} 0
+sap_alert_ha_check{category="SAP-CONFIGURATION",comment="SAPInstance includes is-ers patch",description="SAPInstance RA sufficient version"} 0
+sap_alert_ha_check{category="SAP-CONFIGURATION",comment="SAPInstance includes is-ers patch",description="SAPInstance RA sufficient version (sapha1as_HA1_00)"} 0
+sap_alert_ha_check{category="SAP-STATE",comment="2 ABAP instances with active BATCH service detected",description="Redundant ABAP BATCH service state"} 0
+sap_alert_ha_check{category="SAP-STATE",comment="2 ABAP instances with active DIALOG service detected",description="Redundant ABAP DIALOG service state"} 0
+sap_alert_ha_check{category="SAP-STATE",comment="2 ABAP instances with active SPOOL service detected",description="Redundant ABAP SPOOL service state"} 0
+sap_alert_ha_check{category="SAP-STATE",comment="2 ABAP instances with active UPDATE service detected",description="Redundant ABAP UPDATE service state"} 0
+sap_alert_ha_check{category="SAP-STATE",comment="ABAP instances with active ABAP BATCH service on multiple hosts detected",description="ABAP instances with ABAP BATCH service on multiple hosts"} 0
+sap_alert_ha_check{category="SAP-STATE",comment="ABAP instances with active ABAP DIALOG service on multiple hosts detected",description="ABAP instances with ABAP DIALOG service on multiple hosts"} 0
+sap_alert_ha_check{category="SAP-STATE",comment="ABAP instances with active ABAP SPOOL service on multiple hosts detected",description="ABAP instances with ABAP SPOOL service on multiple hosts"} 0
+sap_alert_ha_check{category="SAP-STATE",comment="ABAP instances with active ABAP UPDATE service on multiple hosts detected",description="ABAP instances with ABAP UPDATE service on multiple hosts"} 0
+sap_alert_ha_check{category="SAP-STATE",comment="Enqueue replication not active",description="Enqueue replication state (sapha1as_HA1_00)"} 2
+sap_alert_ha_check{category="SAP-STATE",comment="SCS instance status ok",description="SCS instance running"} 0
+```
+
+### `sap_alert_ha_failover_active`
+
+#### Description
+
+Whether or not High Availability Failover is active, 0 being false and 1 being true.
+
+#### Example
+
+```
+# HELP sap_alert_ha_failover_active Whether or not High Availability Failover is active
+# TYPE sap_alert_ha_failover_active gauge
+sap_alert_ha_failover_active 1
+```  

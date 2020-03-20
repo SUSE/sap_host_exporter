@@ -27,7 +27,7 @@ func TestProcessesMetric(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
-	mockWebService.EXPECT().EnqGetStatistic().Return(&sapcontrol.EnqStatisticResponse{
+	mockWebService.EXPECT().EnqGetStatistic().Return(&sapcontrol.EnqGetStatisticResponse{
 		OwnerNow:           1,
 		OwnerHigh:          2,
 		OwnerMax:           3,

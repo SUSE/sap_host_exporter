@@ -45,7 +45,7 @@ func (c *dispatcherCollector) recordWorkProcessQueueStats(ch chan<- prometheus.M
 	}
 
 	// for each work queue, we record a different line for each stat of that queue, with the type as a common label
-	for _, queue := range queueStatistic.Queue.Item {
+	for _, queue := range queueStatistic.Queues {
 		ch <- c.MakeGaugeMetric("queue_now", float64(queue.Now), queue.Type)
 		ch <- c.MakeGaugeMetric("queue_high", float64(queue.High), queue.Type)
 		ch <- c.MakeGaugeMetric("queue_max", float64(queue.Max), queue.Type)

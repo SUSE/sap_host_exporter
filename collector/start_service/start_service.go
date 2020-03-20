@@ -42,7 +42,7 @@ func (c *startServiceCollector) recordProcesses(ch chan<- prometheus.Metric) {
 		return
 	}
 
-	for _, process := range processList.Process.Item {
+	for _, process := range processList.Processes {
 		dispStatus, _ := sapcontrol.StateColorToString(process.Dispstatus)
 		ch <- c.MakeGaugeMetric("processes", 1, process.Name, strconv.Itoa(int(process.Pid)), process.Textstatus, dispStatus)
 	}

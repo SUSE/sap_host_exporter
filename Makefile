@@ -13,7 +13,7 @@ REPOSITORY ?= SUSE/sap_host_exporter
 # the Go archs we crosscompile to
 ARCHS ?= amd64 arm64 ppc64le s390x
 
-default: clean mod-tidy fmt vet-check test build
+default: clean download mod-tidy generate fmt vet-check test build
 
 download:
 	go mod download
@@ -43,6 +43,9 @@ mod-tidy:
 
 fmt-check:
 	.ci/go_lint.sh
+
+generate:
+	go generate ./...
 
 test: download
 	go test -v ./...
@@ -75,4 +78,4 @@ obs-commit: obs-workdir
 	cd build/obs; osc addremove
 	cd build/obs; osc commit -m "Automated $(VERSION) release"
 
-.PHONY: default download install static-checks vet-check fmt fmt-check mod-tidy test clean clean-bin clean-obs build build-all obs-commit obs-workdir $(ARCHS)
+.PHONY: default download install static-checks vet-check fmt fmt-check mod-tidy generate test clean clean-bin clean-obs build build-all obs-commit obs-workdir $(ARCHS)

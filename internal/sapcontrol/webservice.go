@@ -7,37 +7,67 @@ import (
 	"github.com/pkg/errors"
 )
 
+//go:generate mockgen -destination ../../test/mock_sapcontrol/webservice.go github.com/SUSE/sap_host_exporter/internal/sapcontrol WebService
+
+// the main interface exposed by this package
+type WebService interface {
+	/* Returns a list of all processes directly started by the webservice according to the SAP start profile. */
+	GetProcessList() (*GetProcessListResponse, error)
+
+	/* Returns enque statistic. */
+	EnqGetStatistic() (*EnqGetStatisticResponse, error)
+
+	/* Returns a list of queue information of work processes and icm (similar to dpmon). */
+	GetQueueStatistic() (*GetQueueStatisticResponse, error)
+
+	/* Checks high availability configuration and status of the system. */
+	HACheckConfig() (*HACheckConfigResponse, error)
+
+	/* Checks HA failover third party configuration and status of an instnace. */
+	HACheckFailoverConfig() (*HACheckFailoverConfigResponse, error)
+
+	/* Returns HA failover third party information. */
+	HAGetFailoverConfig() (*HAGetFailoverConfigResponse, error)
+}
+
+type HACheckCategory string
+type HAVerificationState string
+type HAVerificationStateCode int
 type STATECOLOR string
 type STATECOLOR_CODE int
 
-type GetProcessList struct {
-	XMLName xml.Name `xml:"urn:SAPControl GetProcessList"`
-}
+const (
+	HA_CHECK_CATEGORY_SAP_CONFIGURATION HACheckCategory = "SAPControl-SAP-CONFIGURATION"
+	HA_CHECK_CATEGORY_SAP_STATE         HACheckCategory = "SAPControl-SAP-STATE"
+	HA_CHECK_CATEGORY_HA_CONFIGURATION  HACheckCategory = "SAPControl-HA-CONFIGURATION"
+	HA_CHECK_CATEGORY_HA_STATE          HACheckCategory = "SAPControl-HA-STATE"
+)
 
-type GetProcessListResponse struct {
-	XMLName xml.Name          `xml:"urn:SAPControl GetProcessListResponse"`
-	Process *ArrayOfOSProcess `xml:"process,omitempty" json:"process,omitempty"`
-}
+const (
+	HA_VERIFICATION_STATE_SUCCESS      HAVerificationState     = "SAPControl-HA-SUCCESS"
+	HA_VERIFICATION_STATE_WARNING      HAVerificationState     = "SAPControl-HA-WARNING"
+	HA_VERIFICATION_STATE_ERROR        HAVerificationState     = "SAPControl-HA-ERROR"
+	HA_VERIFICATION_STATE_CODE_SUCCESS HAVerificationStateCode = 0
+	HA_VERIFICATION_STATE_CODE_WARNING HAVerificationStateCode = 1
+	HA_VERIFICATION_STATE_CODE_ERROR   HAVerificationStateCode = 2
+)
 
-type OSProcess struct {
-	Name        string     `xml:"name,omitempty" json:"name,omitempty"`
-	Description string     `xml:"description,omitempty" json:"description,omitempty"`
-	Dispstatus  STATECOLOR `xml:"dispstatus,omitempty" json:"dispstatus,omitempty"`
-	Textstatus  string     `xml:"textstatus,omitempty" json:"textstatus,omitempty"`
-	Starttime   string     `xml:"starttime,omitempty" json:"starttime,omitempty"`
-	Elapsedtime string     `xml:"elapsedtime,omitempty" json:"elapsedtime,omitempty"`
-	Pid         int32      `xml:"pid,omitempty" json:"pid,omitempty"`
-}
-
-type ArrayOfOSProcess struct {
-	Item []*OSProcess `xml:"item,omitempty" json:"item,omitempty"`
-}
+const (
+	STATECOLOR_GRAY        STATECOLOR      = "SAPControl-GRAY"
+	STATECOLOR_GREEN       STATECOLOR      = "SAPControl-GREEN"
+	STATECOLOR_YELLOW      STATECOLOR      = "SAPControl-YELLOW"
+	STATECOLOR_RED         STATECOLOR      = "SAPControl-RED"
+	STATECOLOR_CODE_GRAY   STATECOLOR_CODE = 1
+	STATECOLOR_CODE_GREEN  STATECOLOR_CODE = 2
+	STATECOLOR_CODE_YELLOW STATECOLOR_CODE = 3
+	STATECOLOR_CODE_RED    STATECOLOR_CODE = 4
+)
 
 type EnqGetStatistic struct {
 	XMLName xml.Name `xml:"urn:SAPControl EnqGetStatistic"`
 }
 
-type EnqStatisticResponse struct {
+type EnqGetStatisticResponse struct {
 	XMLName            xml.Name   `xml:"urn:SAPControl EnqStatistic"`
 	OwnerNow           int32      `xml:"owner-now,omitempty" json:"owner-now,omitempty"`
 	OwnerHigh          int32      `xml:"owner-high,omitempty" json:"owner-high,omitempty"`
@@ -68,14 +98,71 @@ type EnqStatisticResponse struct {
 	ReplicationState   STATECOLOR `xml:"replication-state,omitempty" json:"replication-state,omitempty"`
 }
 
+type GetProcessList struct {
+	XMLName xml.Name `xml:"urn:SAPControl GetProcessList"`
+}
+
+type GetProcessListResponse struct {
+	XMLName   xml.Name     `xml:"urn:SAPControl GetProcessListResponse"`
+	Processes []*OSProcess `xml:"process>item,omitempty" json:"process>item,omitempty"`
+}
+
 type GetQueueStatistic struct {
 	XMLName xml.Name `xml:"urn:SAPControl GetQueueStatistic"`
 }
 
 type GetQueueStatisticResponse struct {
-	XMLName xml.Name `xml:"urn:SAPControl GetQueueStatisticResponse"`
+	XMLName xml.Name            `xml:"urn:SAPControl GetQueueStatisticResponse"`
+	Queues  []*TaskHandlerQueue `xml:"queue>item,omitempty" json:"queue,omitempty"`
+}
 
-	Queue *ArrayOfTaskHandlerQueue `xml:"queue,omitempty" json:"queue,omitempty"`
+type HACheck struct {
+	State       HAVerificationState `xml:"state,omitempty" json:"state,omitempty"`
+	Category    HACheckCategory     `xml:"category,omitempty" json:"category,omitempty"`
+	Description string              `xml:"description,omitempty" json:"description,omitempty"`
+	Comment     string              `xml:"comment,omitempty" json:"comment,omitempty"`
+}
+
+type HACheckConfig struct {
+	XMLName xml.Name `xml:"urn:SAPControl HACheckConfig"`
+}
+
+type HACheckConfigResponse struct {
+	XMLName xml.Name   `xml:"urn:SAPControl HACheckConfigResponse"`
+	Checks  []*HACheck `xml:"check>item,omitempty" json:"check,omitempty"`
+}
+
+type HACheckFailoverConfig struct {
+	XMLName xml.Name `xml:"urn:SAPControl HACheckFailoverConfig"`
+}
+
+type HACheckFailoverConfigResponse struct {
+	XMLName xml.Name   `xml:"urn:SAPControl HACheckFailoverConfigResponse"`
+	Checks  []*HACheck `xml:"check>item,omitempty" json:"check,omitempty"`
+}
+
+type HAGetFailoverConfigResponse struct {
+	XMLName               xml.Name `xml:"urn:SAPControl HAGetFailoverConfigResponse"`
+	HAActive              bool     `xml:"HAActive,omitempty" json:"HAActive,omitempty"`
+	HAProductVersion      string   `xml:"HAProductVersion,omitempty" json:"HAProductVersion,omitempty"`
+	HASAPInterfaceVersion string   `xml:"HASAPInterfaceVersion,omitempty" json:"HASAPInterfaceVersion,omitempty"`
+	HADocumentation       string   `xml:"HADocumentation,omitempty" json:"HADocumentation,omitempty"`
+	HAActiveNode          string   `xml:"HAActiveNode,omitempty" json:"HAActiveNode,omitempty"`
+	HANodes               []string `xml:"HANodes>item,omitempty" json:"HANodes,omitempty"`
+}
+
+type HAGetFailoverConfig struct {
+	XMLName xml.Name `xml:"urn:SAPControl HAGetFailoverConfig"`
+}
+
+type OSProcess struct {
+	Name        string     `xml:"name,omitempty" json:"name,omitempty"`
+	Description string     `xml:"description,omitempty" json:"description,omitempty"`
+	Dispstatus  STATECOLOR `xml:"dispstatus,omitempty" json:"dispstatus,omitempty"`
+	Textstatus  string     `xml:"textstatus,omitempty" json:"textstatus,omitempty"`
+	Starttime   string     `xml:"starttime,omitempty" json:"starttime,omitempty"`
+	Elapsedtime string     `xml:"elapsedtime,omitempty" json:"elapsedtime,omitempty"`
+	Pid         int32      `xml:"pid,omitempty" json:"pid,omitempty"`
 }
 
 type TaskHandlerQueue struct {
@@ -87,34 +174,15 @@ type TaskHandlerQueue struct {
 	Reads  int32  `xml:"Reads,omitempty" json:"Reads,omitempty"`
 }
 
-type ArrayOfTaskHandlerQueue struct {
-	Item []*TaskHandlerQueue `xml:"item,omitempty" json:"item,omitempty"`
-}
-
-const (
-	STATECOLOR_GRAY        STATECOLOR      = "SAPControl-GRAY"
-	STATECOLOR_GREEN       STATECOLOR      = "SAPControl-GREEN"
-	STATECOLOR_YELLOW      STATECOLOR      = "SAPControl-YELLOW"
-	STATECOLOR_RED         STATECOLOR      = "SAPControl-RED"
-	STATECOLOR_CODE_GRAY   STATECOLOR_CODE = 1
-	STATECOLOR_CODE_GREEN  STATECOLOR_CODE = 2
-	STATECOLOR_CODE_YELLOW STATECOLOR_CODE = 3
-	STATECOLOR_CODE_RED    STATECOLOR_CODE = 4
-)
-
-type WebService interface {
-	/* Returns a list of all processes directly started by the webservice according to the SAP start profile. */
-	GetProcessList() (*GetProcessListResponse, error)
-
-	/* Returns enque statistic. */
-	EnqGetStatistic() (*EnqStatisticResponse, error)
-
-	/* Returns a list of queue information of work processes and icm (similar to dpmon). */
-	GetQueueStatistic() (*GetQueueStatisticResponse, error)
-}
-
 type webService struct {
 	client *soap.Client
+}
+
+// constructor of a WebService interface
+func NewWebService(client *soap.Client) WebService {
+	return &webService{
+		client: client,
+	}
 }
 
 // implements WebService.GetProcessList()
@@ -130,9 +198,9 @@ func (service *webService) GetProcessList() (*GetProcessListResponse, error) {
 }
 
 // implements WebService.EnqGetStatistic()
-func (service *webService) EnqGetStatistic() (*EnqStatisticResponse, error) {
+func (service *webService) EnqGetStatistic() (*EnqGetStatisticResponse, error) {
 	request := &EnqGetStatistic{}
-	response := &EnqStatisticResponse{}
+	response := &EnqGetStatisticResponse{}
 	err := service.client.Call("''", request, response)
 	if err != nil {
 		return nil, err
@@ -153,11 +221,40 @@ func (service *webService) GetQueueStatistic() (*GetQueueStatisticResponse, erro
 	return response, nil
 }
 
-// constructor of a WebService interface
-func NewWebService(client *soap.Client) WebService {
-	return &webService{
-		client: client,
+// implements WebService.HACheckConfig()
+func (service *webService) HACheckConfig() (*HACheckConfigResponse, error) {
+	request := &HACheckConfig{}
+	response := &HACheckConfigResponse{}
+	err := service.client.Call("''", request, response)
+	if err != nil {
+		return nil, err
 	}
+
+	return response, nil
+}
+
+// implements WebService.HACheckFailoverConfig()
+func (service *webService) HACheckFailoverConfig() (*HACheckFailoverConfigResponse, error) {
+	request := &HACheckFailoverConfig{}
+	response := &HACheckFailoverConfigResponse{}
+	err := service.client.Call("''", request, response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+// implements WebService.HAGetFailoverConfig()
+func (service *webService) HAGetFailoverConfig() (*HAGetFailoverConfigResponse, error) {
+	request := &HAGetFailoverConfig{}
+	response := &HAGetFailoverConfigResponse{}
+	err := service.client.Call("''", request, response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 // makes the STATECOLOR values more human-readable
@@ -188,6 +285,36 @@ func StateColorToFloat(statecolor STATECOLOR) (float64, error) {
 	case STATECOLOR_RED:
 		return float64(STATECOLOR_CODE_RED), nil
 	default:
-		return 0, errors.New("Invalid STATECOLOR value")
+		return -1, errors.New("Invalid STATECOLOR value")
+	}
+}
+
+// makes HACheckCategory values more human-readable
+func HaCheckCategoryToString(category HACheckCategory) (string, error) {
+	switch category {
+	case HA_CHECK_CATEGORY_HA_CONFIGURATION:
+		return "HA-CONFIGURATION", nil
+	case HA_CHECK_CATEGORY_HA_STATE:
+		return "HA-STATE", nil
+	case HA_CHECK_CATEGORY_SAP_CONFIGURATION:
+		return "SAP-CONFIGURATION", nil
+	case HA_CHECK_CATEGORY_SAP_STATE:
+		return "SAP-STATE", nil
+	default:
+		return "", errors.New("Invalid HACheckCategory value")
+	}
+}
+
+// makes HAVerificationState values more metric friendly
+func HaVerificationStateToFloat(state HAVerificationState) (float64, error) {
+	switch state {
+	case HA_VERIFICATION_STATE_SUCCESS:
+		return float64(HA_VERIFICATION_STATE_CODE_SUCCESS), nil
+	case HA_VERIFICATION_STATE_WARNING:
+		return float64(HA_VERIFICATION_STATE_CODE_WARNING), nil
+	case HA_VERIFICATION_STATE_ERROR:
+		return float64(HA_VERIFICATION_STATE_CODE_ERROR), nil
+	default:
+		return -1, errors.New("Invalid HAVerificationState value")
 	}
 }

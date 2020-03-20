@@ -14,10 +14,7 @@ For reference, you can find the full, generated, web service code [here](_genera
 
 We generate the mocks with the [GoMock](https://github.com/golang/mock) library.
 
-For example, the [`sapcontrol.WebService`](internal/sapcontrol/webservice.go) interface is mocked with the following command:
-```
-mockgen --source ./internal/sapcontrol/webservice.go WebService > test/mock_sapcontrol/webservice.go
-```
+You can use the `make generate` target (which in turn runs `go generate`) to update generated code by taking advantage of the `//go:generate` annotation in the code. 
 
 All the mocked packages should follow the same convention and be put in the corresponding `mock_*` package inside the `test` directory.
 
