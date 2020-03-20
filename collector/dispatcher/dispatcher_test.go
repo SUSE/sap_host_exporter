@@ -41,8 +41,8 @@ func TestWorkProcessQueueStatsMetric(t *testing.T) {
 	}, nil)
 
 	expectedMetrics := `
-	# HELP sap_dispatcher_queue_high Work process highest queue length
-	# TYPE sap_dispatcher_queue_high gauge
+	# HELP sap_dispatcher_queue_high Work process peak queue length
+	# TYPE sap_dispatcher_queue_high counter
 	sap_dispatcher_queue_high{type="ABAP/BTC"} 2
 	sap_dispatcher_queue_high{type="ABAP/DIA"} 5
 	sap_dispatcher_queue_high{type="ABAP/ENQ"} 0
@@ -72,7 +72,7 @@ func TestWorkProcessQueueStatsMetric(t *testing.T) {
 	sap_dispatcher_queue_now{type="ABAP/UPD"} 0
 	sap_dispatcher_queue_now{type="ICM/Intern"} 0
 	# HELP sap_dispatcher_queue_reads Work process queue reads
-	# TYPE sap_dispatcher_queue_reads gauge
+	# TYPE sap_dispatcher_queue_reads counter
 	sap_dispatcher_queue_reads{type="ABAP/BTC"} 10464
 	sap_dispatcher_queue_reads{type="ABAP/DIA"} 447173
 	sap_dispatcher_queue_reads{type="ABAP/ENQ"} 0
@@ -82,7 +82,7 @@ func TestWorkProcessQueueStatsMetric(t *testing.T) {
 	sap_dispatcher_queue_reads{type="ABAP/UPD"} 3491
 	sap_dispatcher_queue_reads{type="ICM/Intern"} 34877
 	# HELP sap_dispatcher_queue_writes Work process queue writes
-	# TYPE sap_dispatcher_queue_writes gauge
+	# TYPE sap_dispatcher_queue_writes counter
 	sap_dispatcher_queue_writes{type="ABAP/BTC"} 10464
 	sap_dispatcher_queue_writes{type="ABAP/DIA"} 447173
 	sap_dispatcher_queue_writes{type="ABAP/ENQ"} 0
