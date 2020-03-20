@@ -40,8 +40,8 @@ func TestProcessesMetric(t *testing.T) {
 			{
 				Name:        "msg_server",
 				Description: "foobar2",
-				Dispstatus:  sapcontrol.STATECOLOR_GREEN,
-				Textstatus:  "Running",
+				Dispstatus:  sapcontrol.STATECOLOR_YELLOW,
+				Textstatus:  "Stopping",
 				Starttime:   "",
 				Elapsedtime: "",
 				Pid:         30786,
@@ -52,8 +52,8 @@ func TestProcessesMetric(t *testing.T) {
 	expectedMetrics := `
 	# HELP sap_start_service_processes The processes started by the SAP Start Service
 	# TYPE sap_start_service_processes gauge
-	sap_start_service_processes{dispstatus="GREEN",name="enserver",pid="30787",textstatus="Running"} 1
-	sap_start_service_processes{dispstatus="GREEN",name="msg_server",pid="30786",textstatus="Running"} 1
+	sap_start_service_processes{name="enserver",pid="30787",status="Running"} 2
+	sap_start_service_processes{name="msg_server",pid="30786",status="Stopping"} 3
 	`
 
 	var err error

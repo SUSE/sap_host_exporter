@@ -3,6 +3,7 @@ package start_service
 import (
 	"strconv"
 
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -18,7 +19,7 @@ func NewCollector(webService sapcontrol.WebService) (*startServiceCollector, err
 		webService,
 	}
 
-	c.SetDescriptor("processes", "The processes started by the SAP Start Service", []string{"name", "pid", "textstatus", "dispstatus"})
+	c.SetDescriptor("processes", "The processes started by the SAP Start Service", []string{"name", "pid", "status"})
 
 	return c, nil
 }
@@ -31,19 +32,27 @@ type startServiceCollector struct {
 func (c *startServiceCollector) Collect(ch chan<- prometheus.Metric) {
 	log.Debugln("Collecting SAP Start Service metrics")
 
-	c.recordProcesses(ch)
+	err := c.recordProcesses(ch)
+	if err != nil {
+		log.Warnf("Some metrics could not be recorded: %s", err)
+		return
+	}
 }
 
-func (c *startServiceCollector) recordProcesses(ch chan<- prometheus.Metric) {
+func (c *startServiceCollector) recordProcesses(ch chan<- prometheus.Metric) error {
 	processList, err := c.webService.GetProcessList()
 
 	if err != nil {
-		log.Warnf("SAPControl web service error: %s", err)
-		return
+		return errors.Wrap(err, "SAPControl web service error")
 	}
 
 	for _, process := range processList.Processes {
-		dispStatus, _ := sapcontrol.StateColorToString(process.Dispstatus)
-		ch <- c.MakeGaugeMetric("processes", 1, process.Name, strconv.Itoa(int(process.Pid)), process.Textstatus, dispStatus)
+		state, err := sapcontrol.StateColorToFloat(process.Dispstatus)
+		if err != nil {
+			return errors.Wrapf(err, "Unable to process SAPControl OSProcess data: %v", *process)
+		}
+		ch <- c.MakeGaugeMetric("processes", state, process.Name, strconv.Itoa(int(process.Pid)), process.Textstatus)
 	}
+
+	return nil
 }
