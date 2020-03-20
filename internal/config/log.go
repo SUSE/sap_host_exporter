@@ -1,8 +1,8 @@
-package internal
+package config
 
 import log "github.com/sirupsen/logrus"
 
-func SetLogLevel(level string) {
+func setLogLevel(level string) {
 	switch level {
 	case "error":
 		log.SetLevel(log.ErrorLevel)
