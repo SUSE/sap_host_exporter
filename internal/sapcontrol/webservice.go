@@ -257,22 +257,6 @@ func (service *webService) HAGetFailoverConfig() (*HAGetFailoverConfigResponse, 
 	return response, nil
 }
 
-// makes the STATECOLOR values more human-readable
-func StateColorToString(statecolor STATECOLOR) (string, error) {
-	switch statecolor {
-	case STATECOLOR_GRAY:
-		return "GRAY", nil
-	case STATECOLOR_GREEN:
-		return "GREEN", nil
-	case STATECOLOR_YELLOW:
-		return "YELLOW", nil
-	case STATECOLOR_RED:
-		return "RED", nil
-	default:
-		return "", errors.New("Invalid STATECOLOR value")
-	}
-}
-
 // makes the STATECOLOR values more metric friendly
 func StateColorToFloat(statecolor STATECOLOR) (float64, error) {
 	switch statecolor {
