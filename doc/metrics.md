@@ -21,14 +21,14 @@ The Start Service subsystem collects generic host-related metrics.
 ### `sap_start_service_processes`
 
 The processes started by the SAP Start Service.
-For each process there will be a line with value `1`.
+
+The value of this metric follows the [SAP state colors](#sap-state-colors) convention.
 
 #### Labels
 
-- `dispstatus`: the display status; one of `GRAY|GREEN|YELLOW|RED`.
 - `name`: the name of the process.
 - `pid`: the PID of the process.
-- `textstatus`: a textual status of the process, e.g. `Running`
+- `status`: a textual status of the process, e.g. `Running`
 
 The total number of lines for this metric will be the cardinality of `pid`.
 
@@ -36,8 +36,8 @@ The total number of lines for this metric will be the cardinality of `pid`.
 
 ```
 # TYPE sap_start_service_processes gauge
-sap_start_service_processes{dispstatus="GREEN",name="enserver",pid="30787",textstatus="Running"} 1
-sap_start_service_processes{dispstatus="GREEN",name="msg_server",pid="30786",textstatus="Running"} 1
+sap_start_service_processes{name="enserver",pid="30787",status="Stopping"} 3
+sap_start_service_processes{name="msg_server",pid="30786",status="Running"} 2
 ```
 
 
@@ -398,7 +398,7 @@ Work process highest queue length
 #### Example
 
 ```
-# TYPE sap_dispatcher_queue_high gauge
+# TYPE sap_dispatcher_queue_high counter
 sap_dispatcher_queue_high{type="ABAP/BTC"} 2
 sap_dispatcher_queue_high{type="ABAP/DIA"} 5
 sap_dispatcher_queue_high{type="ABAP/ENQ"} 0
@@ -442,7 +442,7 @@ Work process queue writes
 #### Example
 
 ```
-# TYPE sap_dispatcher_queue_writes gauge
+# TYPE sap_dispatcher_queue_writes counter
 sap_dispatcher_queue_writes{type="ABAP/BTC"} 11229
 sap_dispatcher_queue_writes{type="ABAP/DIA"} 479801
 sap_dispatcher_queue_writes{type="ABAP/ENQ"} 0
@@ -464,7 +464,7 @@ Work process queue reads.
 #### Example
 
 ```
-# TYPE sap_dispatcher_queue_reads gauge
+# TYPE sap_dispatcher_queue_reads counter
 sap_dispatcher_queue_reads{type="ABAP/BTC"} 11229
 sap_dispatcher_queue_reads{type="ABAP/DIA"} 479801
 sap_dispatcher_queue_reads{type="ABAP/ENQ"} 0
