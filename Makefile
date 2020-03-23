@@ -71,12 +71,13 @@ build/obs:
 	osc checkout $(OBS_PROJECT)/$(OBS_PACKAGE) -o build/obs
 	rm -f build/obs/*.tar.gz
 	cp -rv packaging/obs/* build/obs/
-	sed -i 's/%%VERSION%%/$(VERSION)/' build/obs/_service
+	sed -i 's~%%VERSION%%~$(VERSION)~' build/obs/_service
+	sed -i 's~%%REPOSITORY%%~$(REPOSITORY)~' build/obs/_service
 	cd build/obs; osc service runall
 	.ci/gh_release_to_obs_changeset.py $(REPOSITORY) -a $(AUTHOR) -t $(VERSION) -f build/obs/$(OBS_PACKAGE).changes || true
 
 obs-commit: obs-workdir
 	cd build/obs; osc addremove
-	cd build/obs; osc commit -m "Automated $(VERSION) release"
+	cd build/obs; osc commit -m "Update to git ref $(VERSION)"
 
 .PHONY: default download install static-checks vet-check fmt fmt-check mod-tidy generate test clean clean-bin clean-obs build build-all obs-commit obs-workdir $(ARCHS)
