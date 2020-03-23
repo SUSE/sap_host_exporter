@@ -1,6 +1,6 @@
 # this is the what ends up in the RPM "Version" field and it is also used as suffix for the built binaries
-# it can be arbitrary for local builds, but it if you want to commit to OBS it must correspond to a Git tag with an associated GitHub release
-VERSION ?= dev
+# if you want to commit to OBS it must be a remotely available Git reference
+VERSION ?= $(shell git rev-parse --short HEAD)
 
 # we only use this to comply with RPM changelog conventions at SUSE
 AUTHOR ?= shap-staff@suse.de
@@ -70,12 +70,14 @@ build/obs:
 	osc checkout $(OBS_PROJECT)/$(OBS_PACKAGE) -o build/obs
 	rm -f build/obs/*.tar.gz
 	cp -rv packaging/obs/* build/obs/
-	sed -i 's/%%VERSION%%/$(VERSION)/' build/obs/_service
+	# we interpolate environment variables in OBS _service file so that we control what is downloaded by the tar_scm source service
+	sed -i 's~%%VERSION%%~$(VERSION)~' build/obs/_service
+	sed -i 's~%%REPOSITORY%%~$(REPOSITORY)~' build/obs/_service
 	cd build/obs; osc service runall
 	.ci/gh_release_to_obs_changeset.py $(REPOSITORY) -a $(AUTHOR) -t $(VERSION) -f build/obs/$(OBS_PACKAGE).changes || true
 
 obs-commit: obs-workdir
 	cd build/obs; osc addremove
-	cd build/obs; osc commit -m "Automated $(VERSION) release"
+	cd build/obs; osc commit -m "Update to git ref $(VERSION)"
 
 .PHONY: default download install static-checks vet-check fmt fmt-check mod-tidy generate test clean clean-bin clean-obs build build-all obs-commit obs-workdir $(ARCHS)
