@@ -33,17 +33,18 @@ func New() (*viper.Viper, error) {
 
 	setLogLevel(config.GetString("log-level"))
 
-	err = validateConfigValues(config)
+	err = validateSapControlUrl(config)
 	if err != nil {
 		return nil, errors.Wrap(err, "invalid configuration value")
 	}
 
-	sanitizeConfigValues(config)
+	sanitizeSapControlUrl(config)
 
 	return config, nil
 }
 
-func validateConfigValues(config *viper.Viper) error {
+// returns an error in case the sap-control-url config value cannot be parsed as URL
+func validateSapControlUrl(config *viper.Viper) error {
 	sapControlUrl := config.GetString("sap-control-url")
 	if _, err := url.ParseRequestURI(sapControlUrl); err != nil {
 		return errors.Wrap(err, "invalid config value for sap-control-url")
@@ -51,7 +52,9 @@ func validateConfigValues(config *viper.Viper) error {
 	return nil
 }
 
-func sanitizeConfigValues(config *viper.Viper) {
+// automatically adds an http:// prefix in case it's missing from the value, to avoid the downstream consumer
+// throw errors due to missing schema URL component
+func sanitizeSapControlUrl(config *viper.Viper) {
 	sapControlUrl := config.GetString("sap-control-url")
 	hasScheme, _ := regexp.MatchString("^https?://", sapControlUrl)
 	if !hasScheme {
