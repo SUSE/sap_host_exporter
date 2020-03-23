@@ -9,8 +9,10 @@ This is a bespoke Prometheus exporter enabling the monitoring of SAP systems (a.
 1. [Features](#features)
 2. [Installation](#installation)
 3. [Usage](#usage)
-4. [Development](doc/development.md)
+   1. [Metrics](doc/metrics.md)
 5. [Contributing](#contributing)
+   1. [Design](doc/design.md)
+   2. [Development](doc/development.md)
 6. [License](#license)
 
 
@@ -71,7 +73,9 @@ It will export the metrics under the `/metrics` path, on port `9680` by default.
 Though not strictly required, it is advised to run it in the nodes of the cluster and access the SAPControl web service locally.
 
 The exporter won't export any metric it can't collect, but since it doesn't care about which subsystems are present in the monitored target, failing to collect metrics is _not_ considered a hard failure condition.
-Instead, in case some of the collectors fail to either register or perform collect cycles, a soft warning will be printed out in the log.  
+Instead, in case some of the collectors fail to either register or perform collect cycles, a soft warning will be printed out in the log.
+
+Refer to [doc/metrics.md](doc/metrics.md) for extensive details about all the exported metrics.
 
 **Hint:**
 You can deploy a full SAP NetWeaver cluster via Terraform with [SUSE/ha-sap-terraform-deployments](https://github.com/SUSE/ha-sap-terraform-deployments); 

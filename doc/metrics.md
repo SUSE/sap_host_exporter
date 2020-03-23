@@ -8,9 +8,9 @@ General notes:
 
 These are the currently implemented subsystems.
 
-1. [SAP Start Service](#sap_start_service)
-2. [SAP Enqueue Server](#sap_enqueue_server)
-3. [Alerts](#Alerts)
+1. [SAP Start Service](#sap-start-service)
+2. [SAP Enqueue Server](#sap-enqueue-server)
+3. [Alerts](#alerts)
 
 ## SAP Start Service
 
