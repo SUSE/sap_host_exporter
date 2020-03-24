@@ -8,7 +8,7 @@
 
 ## Makefile
 
-Most development tasks can be accomplished via [make](Makefile).
+Most development tasks can be accomplished via [make](../Makefile).
 
 For starters, you can run the default target with just `make`.
 
