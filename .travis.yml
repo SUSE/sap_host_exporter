@@ -21,7 +21,7 @@ jobs:
       script: make test
     - stage: OBS commit
       if: branch = master OR tag IS present
-      name: Commit to dev project
+      name: Commit to OBS dev project
       services:
         - docker
       env:
@@ -33,7 +33,7 @@ jobs:
           shap/continuous_deliver \
           bash -c "/scripts/init_osc_creds.sh && make obs-commit"
     - stage: Release
-      name: Build and deploy binaries
+      name: Build and upload binaries on GitHub
       if: tag IS present
       services:
         - docker
@@ -52,7 +52,7 @@ jobs:
         on:
           tags: true
     - stage: Release
-      name: Submit request to stable project
+      name: Perform OBS Submit Request
       if: tag IS present
       services:
         - docker
