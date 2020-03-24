@@ -74,7 +74,7 @@ Since we don't control the sources, some small changes may be introduced in the 
 
 ### Exploring the SAPControl web service
 
-You can find the full documentation here: https://www.sap.com/documents/2016/09/0a40e60d-8b7c-0010-82c7-eda71af511fa.html
+You can find the full SAPControl official documentation [here](https://www.sap.com/documents/2016/09/0a40e60d-8b7c-0010-82c7-eda71af511fa.html).
 
 In order to learn the SOAP interface, you can use the following Python script (an example and adapted extracted from the previous link):
 
