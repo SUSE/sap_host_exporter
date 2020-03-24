@@ -29,7 +29,6 @@ jobs:
         file_glob: true
         file: build/bin/*
         name: $TRAVIS_TAG
-        # ignore Travis alias warning, using "cleanup" doesn't work
         skip_cleanup: true
         overwrite: true
         on:
