@@ -50,14 +50,13 @@ generate:
 test: download
 	go test -v ./...
 
-coverage: coverage.out
-coverage.out:
-	go test -cover -coverprofile=coverage.out ./...
-	go tool cover -html=coverage.out
+coverage:
+	go test -cover -coverprofile=build/coverage ./...
+	go tool cover -html=build/coverage
 
 clean: clean-bin clean-obs
 	go clean
-	rm -f coverage.out
+	rm -rf build
 
 clean-bin:
 	rm -rf build/bin
@@ -65,12 +64,12 @@ clean-bin:
 clean-obs:
 	rm -rf build/obs
 
-obs-workdir: build/obs
-build/obs:
-	osc checkout $(OBS_PROJECT)/$(OBS_PACKAGE) -o build/obs
+obs-workdir: clean-obs
+	mkdir -p build/obs
+	osc checkout $(OBS_PROJECT) $(OBS_PACKAGE) -o build/obs
 	rm -f build/obs/*.tar.gz
 	cp -rv packaging/obs/* build/obs/
-	# we interpolate environment variables in OBS _service file so that we control what is downloaded by the tar_scm source service
+# we interpolate environment variables in OBS _service file so that we control what is downloaded by the tar_scm source service
 	sed -i 's~%%VERSION%%~$(VERSION)~' build/obs/_service
 	sed -i 's~%%REPOSITORY%%~$(REPOSITORY)~' build/obs/_service
 	cd build/obs; osc service runall
@@ -80,4 +79,4 @@ obs-commit: obs-workdir
 	cd build/obs; osc addremove
 	cd build/obs; osc commit -m "Update to git ref $(VERSION)"
 
-.PHONY: default download install static-checks vet-check fmt fmt-check mod-tidy generate test clean clean-bin clean-obs build build-all obs-commit obs-workdir $(ARCHS)
+.PHONY: default download install static-checks vet-check fmt fmt-check mod-tidy generate test coverage clean clean-bin clean-obs build build-all obs-commit obs-workdir $(ARCHS)
