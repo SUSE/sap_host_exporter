@@ -14,7 +14,7 @@ jobs:
     - stage: Test
       name: Unit tests
       script: make test
-    - stage: Release
+    - stage: Delivery
       if: type != pull_request AND branch = master
       name: OBS Commit to dev project
       services:
@@ -27,7 +27,7 @@ jobs:
           -e OBS_USER -e OBS_PASS -e OBS_PROJECT -e OBS_PACKAGE -e VERSION -e REPOSITORY=$TRAVIS_REPO_SLUG \
           shap/continuous_deliver \
           bash -c "/scripts/init_osc_creds.sh && make obs-commit"
-    - stage: Release
+    - stage: Delivery
       name: Build and deploy binaries on GitHub release
       if: tag IS present
       services:
@@ -46,7 +46,7 @@ jobs:
         overwrite: true
         on:
           tags: true
-    - stage: Release
+    - stage: Delivery
       name: OBS Submit Request to stable project
       if: tag IS present
       services:
