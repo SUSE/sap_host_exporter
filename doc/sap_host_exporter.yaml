@@ -1,7 +1,26 @@
-# sample config
-port: "9680"
+## Example configuration ##
+# The values displayed below are the defaults, used in case no configuration is provided.
+
+# The listening TCP/IP address and port.
 address: "0.0.0.0"
+port: "9680"
+
+# The log level.
+#
+# Possible values, from less to most verbose: error, warn, info, debug.
 log-level: "info"
-sap-control-url: ""
+
+# The url of the SAPControl web service.
+#
+# Per SAP conventions, the port should usually be 5<instance number>13 for HTTP and 5<instance number>14 for HTTPS.
+# More info at https://www.sap.com/documents/2016/09/0a40e60d-8b7c-0010-82c7-eda71af511fa.html
+#
+# The default value will try to connect locally to instance number 00, without TLS.
+sap-control-url: "localhost:50013"
+
+# Authentication credentials for the SAPControl web service, e.g. <sid>adm user and password.
+#
+# These are empty by default, which will cause the exporter to gracefully fail at collecting most metrics.
+# Make sure this file's permissions are set to 600.
 sap-control-user: ""
 sap-control-password: ""
