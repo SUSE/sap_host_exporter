@@ -14,7 +14,7 @@ jobs:
     - stage: Test
       name: Unit tests
       script: make test
-    - stage: OBS release
+    - stage: Release
       if: type != pull_request AND branch = master
       name: OBS Commit to dev project
       services:
@@ -26,9 +26,9 @@ jobs:
           docker run --rm -t -v "$(pwd):/package" -v "$GOPATH/pkg/mod:/root/go/pkg/mod" -w /package \
           -e OBS_USER -e OBS_PASS -e OBS_PROJECT -e OBS_PACKAGE -e VERSION -e REPOSITORY=$TRAVIS_REPO_SLUG \
           shap/continuous_deliver \
-          bash -c "/scripts/init_osc_creds.sh && make obs-commit" || travis_terminate 1
-    - stage: OBS release
-      name: OBS Submit Request to stable project
+          bash -c "/scripts/init_osc_creds.sh && make obs-commit"
+    - stage: Release
+      name: Build and deploy binaries on GitHub release
       if: tag IS present
       services:
         - docker
@@ -38,16 +38,24 @@ jobs:
         - make -j4 build-all
       deploy:
         provider: releases
-        api_key: $GITHUB_OAUTH_TOKEN
+        token: $GITHUB_OAUTH_TOKEN
         file_glob: true
         file: build/bin/*
         name: $TRAVIS_TAG
-        skip_cleanup: true
+        cleanup: false
+        overwrite: true
         on:
           tags: true
-      after_deploy:
+    - stage: Release
+      name: OBS Submit Request to stable project
+      if: tag IS present
+      services:
+        - docker
+      env:
+        - VERSION=$TRAVIS_TAG
+      script:
         - |
           docker run --rm -t -v "$(pwd):/package" -w /package \
           -e OBS_USER -e OBS_PASS -e OBS_PROJECT -e PACKAGE_NAME=$OBS_PACKAGE -e TARGET_PROJECT=$OBS_DOWNSTREAM_PROJECT \
           shap/continuous_deliver \
-          bash -c "/scripts/submit.sh" || travis_terminate 1
+          bash -c "/scripts/submit.sh"
