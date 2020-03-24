@@ -29,7 +29,7 @@ jobs:
       script:
         - |
           docker run --rm -t -v "$(pwd):/package" -w /package \
-          -e OBS_USER -e OBS_PASS -e OBS_PROJECT -e OBS_PACKAGE -e VERSION -e REPOSITORY=$TRAVIS_REPO_SLUG \
+          -e OBS_USER -e OBS_PASS -e OBS_PROJECT -e OBS_PACKAGE -e VERSION -e REPOSITORY=$TRAVIS_REPO_SLUG -e GITHUB_OAUTH_TOKEN \
           shap/continuous_deliver \
           bash -c "/scripts/init_osc_creds.sh && make obs-commit"
     - stage: Release
