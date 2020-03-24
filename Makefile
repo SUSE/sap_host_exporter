@@ -51,6 +51,7 @@ test: download
 	go test -v ./...
 
 coverage:
+	@mkdir build
 	go test -cover -coverprofile=build/coverage ./...
 	go tool cover -html=build/coverage
 
@@ -65,7 +66,7 @@ clean-obs:
 	rm -rf build/obs
 
 obs-workdir: clean-obs
-	mkdir -p build/obs
+	@mkdir -p build/obs
 	osc checkout $(OBS_PROJECT) $(OBS_PACKAGE) -o build/obs
 	rm -f build/obs/*.tar.gz
 	cp -rv packaging/obs/* build/obs/
