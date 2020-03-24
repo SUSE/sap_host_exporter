@@ -6,12 +6,6 @@ cache:
   directories:
     - $GOPATH/pkg/mod
 
-stages:
-  - Test
-  - Release
-  - OBS Commit
-  - OBS Submit Request
-
 jobs:
   include:
     - stage: Test
