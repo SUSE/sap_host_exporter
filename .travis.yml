@@ -40,20 +40,20 @@ jobs:
         overwrite: true
         on:
           tags: true
-    - stage: OBS commit
+    - stage: OBS delivery
       name: Commit to OBS dev project
-      if: branch = master OR tag IS present
+      if: branch = master
       services:
         - docker
       env:
-        - VERSION=$TRAVIS_BRANCH
+        - VERSION=$TRAVIS_COMMIT
       script:
         - |
           docker run --rm -t -v "$(pwd):/package" -w /package \
           -e OBS_USER -e OBS_PASS -e OBS_PROJECT -e OBS_PACKAGE -e VERSION -e REPOSITORY=$TRAVIS_REPO_SLUG -e GITHUB_OAUTH_TOKEN \
           shap/continuous_deliver \
           bash -c "/scripts/init_osc_creds.sh && make obs-commit"
-    - stage: OBS Submit Request
+    - stage: OBS delivery
       name: Submit Request to OBS stable project
       if: tag IS present
       services:
@@ -63,6 +63,7 @@ jobs:
       script:
         - |
           docker run --rm -t -v "$(pwd):/package" -w /package \
-          -e OBS_USER -e OBS_PASS -e OBS_PROJECT -e PACKAGE_NAME=$OBS_PACKAGE -e TARGET_PROJECT=$OBS_DOWNSTREAM_PROJECT \
+          -e OBS_USER -e OBS_PASS -e OBS_PROJECT -e OBS_PACKAGE -e VERSION -e REPOSITORY=$TRAVIS_REPO_SLUG -e GITHUB_OAUTH_TOKEN \
+          -e PACKAGE_NAME=$OBS_PACKAGE -e TARGET_PROJECT=$OBS_DOWNSTREAM_PROJECT \
           shap/continuous_deliver \
-          bash -c "/scripts/submit.sh"
+          bash -c "/scripts/init_osc_creds.sh && make obs-commit && /scripts/submit.sh"
