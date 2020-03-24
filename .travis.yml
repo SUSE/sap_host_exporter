@@ -6,6 +6,11 @@ cache:
   directories:
     - $GOPATH/pkg/mod
 
+stages:
+  - Test
+  - OBS commit
+  - Release
+
 jobs:
   include:
     - stage: Test
@@ -14,9 +19,9 @@ jobs:
     - stage: Test
       name: Unit tests
       script: make test
-    - stage: Delivery
-      if: type != pull_request AND branch = master
-      name: OBS Commit to dev project
+    - stage: OBS commit
+      if: branch = master OR tag IS present
+      name: Commit to dev project
       services:
         - docker
       env:
@@ -27,8 +32,8 @@ jobs:
           -e OBS_USER -e OBS_PASS -e OBS_PROJECT -e OBS_PACKAGE -e VERSION -e REPOSITORY=$TRAVIS_REPO_SLUG \
           shap/continuous_deliver \
           bash -c "/scripts/init_osc_creds.sh && make obs-commit"
-    - stage: Delivery
-      name: Build and deploy binaries on GitHub release
+    - stage: Release
+      name: Build and deploy binaries
       if: tag IS present
       services:
         - docker
@@ -46,8 +51,8 @@ jobs:
         overwrite: true
         on:
           tags: true
-    - stage: Delivery
-      name: OBS Submit Request to stable project
+    - stage: Release
+      name: Submit request to stable project
       if: tag IS present
       services:
         - docker
