@@ -8,8 +8,9 @@ cache:
 
 stages:
   - Test
-  - OBS commit
   - Release
+  - OBS Commit
+  - OBS Submit Request
 
 jobs:
   include:
@@ -19,19 +20,6 @@ jobs:
     - stage: Test
       name: Unit tests
       script: make test
-    - stage: OBS commit
-      if: branch = master OR tag IS present
-      name: Commit to OBS dev project
-      services:
-        - docker
-      env:
-        - VERSION=$TRAVIS_BRANCH
-      script:
-        - |
-          docker run --rm -t -v "$(pwd):/package" -w /package \
-          -e OBS_USER -e OBS_PASS -e OBS_PROJECT -e OBS_PACKAGE -e VERSION -e REPOSITORY=$TRAVIS_REPO_SLUG -e GITHUB_OAUTH_TOKEN \
-          shap/continuous_deliver \
-          bash -c "/scripts/init_osc_creds.sh && make obs-commit"
     - stage: Release
       name: Build and upload binaries on GitHub
       if: tag IS present
@@ -47,12 +35,26 @@ jobs:
         file_glob: true
         file: build/bin/*
         name: $TRAVIS_TAG
-        cleanup: false
+        # ignore Travis alias warning, using "cleanup" doesn't work
+        skip_cleanup: true
         overwrite: true
         on:
           tags: true
-    - stage: Release
-      name: Perform OBS Submit Request
+    - stage: OBS commit
+      name: Commit to OBS dev project
+      if: branch = master OR tag IS present
+      services:
+        - docker
+      env:
+        - VERSION=$TRAVIS_BRANCH
+      script:
+        - |
+          docker run --rm -t -v "$(pwd):/package" -w /package \
+          -e OBS_USER -e OBS_PASS -e OBS_PROJECT -e OBS_PACKAGE -e VERSION -e REPOSITORY=$TRAVIS_REPO_SLUG -e GITHUB_OAUTH_TOKEN \
+          shap/continuous_deliver \
+          bash -c "/scripts/init_osc_creds.sh && make obs-commit"
+    - stage: OBS Submit Request
+      name: Submit Request to OBS stable project
       if: tag IS present
       services:
         - docker
