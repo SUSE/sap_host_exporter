@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/hooklift/gowsdl/soap"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
@@ -24,6 +23,7 @@ func init() {
 	flag.String("address", "0.0.0.0", "The address to listen on for HTTP requests")
 	flag.String("log-level", "info", "The minimum logging level; levels are, in ascending order: debug, info, warn, error")
 	flag.String("sap-control-url", "localhost:50013", "The URL of the SAPControl SOAP web service, e.g. $HOST:$PORT")
+	flag.String("sap-control-uds", "", "The path to the SAPControl Unix Domain Socket. If set, this will be used instead of the URL.")
 	flag.StringP("config", "c", "", "The path to a custom configuration file. NOTE: it must be in yaml format.")
 }
 
@@ -37,13 +37,7 @@ func main() {
 		log.Fatalf("Could not initialize config: %s", err)
 	}
 
-	client := soap.NewClient(
-		config.GetString("sap-control-url"),
-		soap.WithBasicAuth(
-			config.GetString("sap-control-user"),
-			config.GetString("sap-control-password"),
-		),
-	)
+	client := sapcontrol.NewSoapClient(config)
 	webService := sapcontrol.NewWebService(client)
 
 	startServiceCollector, err := start_service.NewCollector(webService)
