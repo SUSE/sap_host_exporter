@@ -21,7 +21,7 @@ func NewSoapClient(config *viper.Viper) *soap.Client {
 				},
 			},
 		}
-		return soap.NewClient("", soap.WithHTTPClient(udsClient))
+		return soap.NewClient("http://unix", soap.WithHTTPClient(udsClient))
 	}
 
 	client := soap.NewClient(
