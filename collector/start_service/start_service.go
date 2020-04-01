@@ -34,7 +34,7 @@ func (c *startServiceCollector) Collect(ch chan<- prometheus.Metric) {
 
 	err := c.recordProcesses(ch)
 	if err != nil {
-		log.Warnf("Some metrics could not be recorded: %s", err)
+		log.Warnf("Start Service Collector scrape failed: %s", err)
 		return
 	}
 }

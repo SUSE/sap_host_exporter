@@ -1,6 +1,7 @@
 package dispatcher
 
 import (
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -33,15 +34,18 @@ type dispatcherCollector struct {
 func (c *dispatcherCollector) Collect(ch chan<- prometheus.Metric) {
 	log.Debugln("Collecting Dispatcher metrics")
 
-	c.recordWorkProcessQueueStats(ch)
+	err := c.recordWorkProcessQueueStats(ch)
+	if err != nil {
+		log.Warnf("Dispatcher Collector scrape failed: %s", err)
+		return
+	}
 }
 
-func (c *dispatcherCollector) recordWorkProcessQueueStats(ch chan<- prometheus.Metric) {
+func (c *dispatcherCollector) recordWorkProcessQueueStats(ch chan<- prometheus.Metric) error {
 	queueStatistic, err := c.webService.GetQueueStatistic()
 
 	if err != nil {
-		log.Warnf("SAPControl web service error: %s", err)
-		return
+		return errors.Wrap(err, "SAPControl web service error")
 	}
 
 	// for each work queue, we record a different line for each stat of that queue, with the type as a common label
@@ -52,4 +56,6 @@ func (c *dispatcherCollector) recordWorkProcessQueueStats(ch chan<- prometheus.M
 		ch <- c.MakeCounterMetric("queue_writes", float64(queue.Writes), queue.Type)
 		ch <- c.MakeCounterMetric("queue_reads", float64(queue.Reads), queue.Type)
 	}
+
+	return nil
 }
