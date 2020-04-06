@@ -67,7 +67,7 @@ func (c *alertCollector) recordHAFailoverConfigChecks(ch chan<- prometheus.Metri
 
 	err = c.recordHAChecks(response.Checks, ch)
 	if err != nil {
-		return errors.Wrap(err, "Could not record HACheck")
+		return errors.Wrap(err, "could not record HACheck")
 	}
 
 	return nil
@@ -87,7 +87,7 @@ func (c *alertCollector) recordHACheck(check *sapcontrol.HACheck, ch chan<- prom
 	stateCode, err := sapcontrol.HaVerificationStateToFloat(check.State)
 	category, err := sapcontrol.HaCheckCategoryToString(check.Category)
 	if err != nil {
-		return errors.Wrapf(err, "Unable to process SAPControl HACheck data: %v", *check)
+		return errors.Wrapf(err, "unable to process SAPControl HACheck data: %v", *check)
 	}
 	ch <- c.MakeGaugeMetric("ha_check", stateCode, check.Description, category, check.Comment)
 

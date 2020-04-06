@@ -49,7 +49,7 @@ func (c *startServiceCollector) recordProcesses(ch chan<- prometheus.Metric) err
 	for _, process := range processList.Processes {
 		state, err := sapcontrol.StateColorToFloat(process.Dispstatus)
 		if err != nil {
-			return errors.Wrapf(err, "Unable to process SAPControl OSProcess data: %v", *process)
+			return errors.Wrapf(err, "unable to process SAPControl OSProcess data: %v", *process)
 		}
 		ch <- c.MakeGaugeMetric("processes", state, process.Name, strconv.Itoa(int(process.Pid)), process.Textstatus)
 	}
