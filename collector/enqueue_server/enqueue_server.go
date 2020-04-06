@@ -1,6 +1,7 @@
 package enqueue_server
 
 import (
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -55,15 +56,16 @@ type enqueueServerCollector struct {
 func (c *enqueueServerCollector) Collect(ch chan<- prometheus.Metric) {
 	log.Debugln("Collecting Enqueue Server metrics")
 
-	c.recordEnqStats(ch)
+	err := c.recordEnqStats(ch)
+	if err != nil {
+		log.Warnf("Enqueue Server Collector scrape failed: %s", err)
+	}
 }
 
-func (c *enqueueServerCollector) recordEnqStats(ch chan<- prometheus.Metric) {
+func (c *enqueueServerCollector) recordEnqStats(ch chan<- prometheus.Metric) error {
 	enqStatistic, err := c.webService.EnqGetStatistic()
-
 	if err != nil {
-		log.Warnf("SAPControl web service error: %s", err)
-		return
+		return errors.Wrap(err, "SAPControl web service error")
 	}
 
 	ch <- c.MakeGaugeMetric("owner_now", float64(enqStatistic.OwnerNow))
@@ -123,4 +125,6 @@ func (c *enqueueServerCollector) recordEnqStats(ch chan<- prometheus.Metric) {
 	} else {
 		ch <- c.MakeGaugeMetric("replication_state", replicationState)
 	}
+
+	return nil
 }
