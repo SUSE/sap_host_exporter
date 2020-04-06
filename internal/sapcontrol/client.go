@@ -21,6 +21,8 @@ func NewSoapClient(config *viper.Viper) *soap.Client {
 				},
 			},
 		}
+		// The url used here is just phony:
+		// we need a well formed url to create the instance but the above DialContext function won't actually use it.
 		return soap.NewClient("http://unix", soap.WithHTTPClient(udsClient))
 	}
 
