@@ -18,9 +18,19 @@ log-level: "info"
 # The default value will try to connect locally to instance number 00, without TLS.
 sap-control-url: "localhost:50013"
 
-# Authentication credentials for the SAPControl web service, e.g. <sid>adm user and password.
+# HTTP Basic Authentication credentials for the SAPControl web service, e.g. <sid>adm user and password.
 #
 # These are empty by default, which will cause the exporter to gracefully fail at collecting most metrics.
 # Make sure this file's permissions are set to 600.
+#
+# It is strongly suggested to use the TLS endpoint when using this authentication scheme.
 sap-control-user: ""
 sap-control-password: ""
+
+# The path to a Unix Domain Socket to access SAPControl locally.
+#
+# This is usually /tmp/.sapstream5<instance number>13
+#
+# If this is specified, sap-control-url setting will be ignored.
+# UDS connection doesn't require authentication
+sap-control-uds: ""

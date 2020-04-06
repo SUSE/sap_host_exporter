@@ -94,12 +94,6 @@ The program will scan, in order, the current working directory, `$HOME/.config`,
 The first match has precedence, and the CLI flags have precedence over the config file.
 
 Please refer to the [example YAML configuration](doc/sap_host_exporter.yaml) for more details.
- 
-The SAPControl web service requires HTTP Basic authentication for most of its methods, hence it is strongly advised to configure these credentials in the configuration file; note that, by design, these values cannot be set via CLI flag.
-
-For the time being, these credentials are stored in plain-text, so be sure to properly take care of the file permissions (e.g. `chmod 600` it). 
-
-As a reminder, HTTP Basic authentication usually implies the usage of Transport Layer Security.
 
 ### systemd integration
 
