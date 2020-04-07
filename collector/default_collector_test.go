@@ -33,8 +33,8 @@ func TestRecordConcurrently(t *testing.T) {
 		return nil
 	}
 
-	err := RecordConcurrently([]func(ch chan<- prometheus.Metric) error{recorder1, recorder2}, metrics)
-	assert.NoError(t, err)
+	errs := RecordConcurrently([]func(ch chan<- prometheus.Metric) error{recorder1, recorder2}, metrics)
+	assert.Len(t, errs, 0)
 	assert.Equal(t, metric2, <-metrics)
 	assert.Equal(t, metric1, <-metrics)
 }
@@ -52,8 +52,8 @@ func TestRecordConcurrentlyErrors(t *testing.T) {
 		return nil
 	}
 
-	err := RecordConcurrently([]func(ch chan<- prometheus.Metric) error{recorder1, recorder2}, metrics)
-	assert.Equal(t, expectedError, err)
-	time.Sleep(time.Millisecond * 50)
+	errs := RecordConcurrently([]func(ch chan<- prometheus.Metric) error{recorder1, recorder2}, metrics)
+	assert.Len(t, errs, 1)
+	assert.Equal(t, expectedError, errs[0])
 	assert.Equal(t, metric2, <-metrics) // even if the first recorder returned an error, the second one should still run to completion
 }

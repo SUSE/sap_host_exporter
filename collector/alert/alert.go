@@ -31,15 +31,13 @@ type alertCollector struct {
 func (c *alertCollector) Collect(ch chan<- prometheus.Metric) {
 	log.Debugln("Collecting Alert metrics")
 
-	var err error
-
-	err = collector.RecordConcurrently([]func(ch chan<- prometheus.Metric) error{
+	errs := collector.RecordConcurrently([]func(ch chan<- prometheus.Metric) error{
 		c.recordHAConfigChecks,
 		c.recordHAFailoverConfigChecks,
 		c.recordHAFailoverActive,
 	}, ch)
 
-	if err != nil {
+	for _, err := range errs {
 		log.Warnf("Alert Collector scrape failed: %s", err)
 	}
 }
