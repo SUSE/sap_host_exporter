@@ -50,6 +50,8 @@ generate:
 test: download
 	go test -v ./...
 
+checks: static-checks test
+
 coverage:
 	@mkdir build
 	go test -cover -coverprofile=build/coverage ./...
