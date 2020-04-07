@@ -1,4 +1,4 @@
-package alert
+package ha_check
 
 import (
 	"github.com/pkg/errors"
@@ -10,26 +10,26 @@ import (
 	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
 )
 
-func NewCollector(webService sapcontrol.WebService) (*alertCollector, error) {
+func NewCollector(webService sapcontrol.WebService) (*checkCollector, error) {
 
-	c := &alertCollector{
-		collector.NewDefaultCollector("alert"),
+	c := &checkCollector{
+		collector.NewDefaultCollector("ha_check"),
 		webService,
 	}
 
-	c.SetDescriptor("ha_check", "High Availability system configuration and status checks", []string{"description", "category", "comment"})
-	c.SetDescriptor("ha_failover_active", "Whether or not High Availability Failover is active", nil)
+	c.SetDescriptor("config", "High Availability system configuration and status checks", []string{"description", "category", "comment"})
+	c.SetDescriptor("failover_active", "Whether or not High Availability Failover is active", nil)
 
 	return c, nil
 }
 
-type alertCollector struct {
+type checkCollector struct {
 	collector.DefaultCollector
 	webService sapcontrol.WebService
 }
 
-func (c *alertCollector) Collect(ch chan<- prometheus.Metric) {
-	log.Debugln("Collecting Alert metrics")
+func (c *checkCollector) Collect(ch chan<- prometheus.Metric) {
+	log.Debugln("Collecting Check metrics")
 
 	errs := collector.RecordConcurrently([]func(ch chan<- prometheus.Metric) error{
 		c.recordHAConfigChecks,
@@ -38,17 +38,17 @@ func (c *alertCollector) Collect(ch chan<- prometheus.Metric) {
 	}, ch)
 
 	for _, err := range errs {
-		log.Warnf("Alert Collector scrape failed: %s", err)
+		log.Warnf("Check Collector scrape failed: %s", err)
 	}
 }
 
-func (c *alertCollector) recordHAConfigChecks(ch chan<- prometheus.Metric) error {
+func (c *checkCollector) recordHAConfigChecks(ch chan<- prometheus.Metric) error {
 	response, err := c.webService.HACheckConfig()
 	if err != nil {
 		return errors.Wrap(err, "SAPControl web service error")
 	}
 
-	err = c.recordHAChecks(response.Checks, ch)
+	err = c.recordConfigChecks(response.Checks, ch)
 	if err != nil {
 		return err
 	}
@@ -56,14 +56,14 @@ func (c *alertCollector) recordHAConfigChecks(ch chan<- prometheus.Metric) error
 	return nil
 }
 
-func (c *alertCollector) recordHAFailoverConfigChecks(ch chan<- prometheus.Metric) error {
+func (c *checkCollector) recordHAFailoverConfigChecks(ch chan<- prometheus.Metric) error {
 	response, err := c.webService.HACheckFailoverConfig()
 
 	if err != nil {
 		return errors.Wrap(err, "SAPControl web service error")
 	}
 
-	err = c.recordHAChecks(response.Checks, ch)
+	err = c.recordConfigChecks(response.Checks, ch)
 	if err != nil {
 		return errors.Wrap(err, "could not record HACheck")
 	}
@@ -71,9 +71,9 @@ func (c *alertCollector) recordHAFailoverConfigChecks(ch chan<- prometheus.Metri
 	return nil
 }
 
-func (c *alertCollector) recordHAChecks(checks []*sapcontrol.HACheck, ch chan<- prometheus.Metric) error {
+func (c *checkCollector) recordConfigChecks(checks []*sapcontrol.HACheck, ch chan<- prometheus.Metric) error {
 	for _, check := range checks {
-		err := c.recordHACheck(check, ch)
+		err := c.recordConfigCheck(check, ch)
 		if err != nil {
 			return err
 		}
@@ -81,18 +81,18 @@ func (c *alertCollector) recordHAChecks(checks []*sapcontrol.HACheck, ch chan<- 
 	return nil
 }
 
-func (c *alertCollector) recordHACheck(check *sapcontrol.HACheck, ch chan<- prometheus.Metric) error {
+func (c *checkCollector) recordConfigCheck(check *sapcontrol.HACheck, ch chan<- prometheus.Metric) error {
 	stateCode, err := sapcontrol.HaVerificationStateToFloat(check.State)
 	category, err := sapcontrol.HaCheckCategoryToString(check.Category)
 	if err != nil {
 		return errors.Wrapf(err, "unable to process SAPControl HACheck data: %v", *check)
 	}
-	ch <- c.MakeGaugeMetric("ha_check", stateCode, check.Description, category, check.Comment)
+	ch <- c.MakeGaugeMetric("config", stateCode, check.Description, category, check.Comment)
 
 	return nil
 }
 
-func (c *alertCollector) recordHAFailoverActive(ch chan<- prometheus.Metric) error {
+func (c *checkCollector) recordHAFailoverActive(ch chan<- prometheus.Metric) error {
 	response, err := c.webService.HAGetFailoverConfig()
 
 	if err != nil {
@@ -103,7 +103,7 @@ func (c *alertCollector) recordHAFailoverActive(ch chan<- prometheus.Metric) err
 	if response.HAActive {
 		haActive = 1
 	}
-	ch <- c.MakeGaugeMetric("ha_failover_active", haActive)
+	ch <- c.MakeGaugeMetric("failover_active", haActive)
 
 	return nil
 }
