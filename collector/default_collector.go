@@ -65,7 +65,7 @@ func RecordConcurrently(recorders []func(ch chan<- prometheus.Metric) error, ch 
 	var wg sync.WaitGroup
 
 	// For each recorder we start a goroutine which will send its result in a channel.
-	// A Waitgroup is used to later wait on all of them.
+	// A Waitgroup is used to later wait for all of them.
 	for _, recorder := range recorders {
 		wg.Add(1)
 		go func(recorder func(ch chan<- prometheus.Metric) error, wg *sync.WaitGroup) {
