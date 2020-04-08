@@ -1,6 +1,8 @@
 package collector
 
 import (
+	"sync"
+
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 )
@@ -56,22 +58,34 @@ func (c *DefaultCollector) makeMetric(name string, value float64, valueType prom
 	return prometheus.MustNewConstMetric(desc, valueType, value, labelValues...)
 }
 
-// run multiple metric recording functions concurrently
-func RecordConcurrently(recorders []func(ch chan<- prometheus.Metric) error, ch chan<- prometheus.Metric) error {
-	errs := make(chan error, len(recorders))
+// Run multiple metric recording functions concurrently
+func RecordConcurrently(recorders []func(ch chan<- prometheus.Metric) error, ch chan<- prometheus.Metric) []error {
+	results := make(chan error, len(recorders))
+	var errs []error
+	var wg sync.WaitGroup
 
+	// For each recorder we start a goroutine which will send its result in a channel.
+	// A Waitgroup is used to later wait for all of them.
 	for _, recorder := range recorders {
-		go func(recorder func(ch chan<- prometheus.Metric) error) {
-			errs <- recorder(ch)
-		}(recorder)
+		wg.Add(1)
+		go func(recorder func(ch chan<- prometheus.Metric) error, wg *sync.WaitGroup) {
+			defer wg.Done()
+			results <- recorder(ch)
+		}(recorder, &wg)
 	}
-	// we wait for all the metric recorders, and return as soon as one sends an error
-	for range recorders {
-		err := <-errs
+
+	// As soon as all the goroutines in the Waitgroup are done, close the channel where the errors are sent
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	// Scroll the results channel and store potential errors in an array. This will block until the channel is closed.
+	for err := range results {
 		if err != nil {
-			return err
+			errs = append(errs, err)
 		}
 	}
 
-	return nil
+	return errs
 }
