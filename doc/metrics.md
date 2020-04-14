@@ -25,6 +25,8 @@ All instances of the whole SAP system
 
 The value of this metric follows the [SAP state colors](#sap-state-colors) convention.
 
+Note: this metric reports lines for all the running instances in the system, not just the ones running in the current node, so you might get duplicated lines due to multiple running exporters. Any de-duplication is left to the metric consumers.   
+
 #### Labels
 
 - `hostname`: the virtual hostname of the instance
