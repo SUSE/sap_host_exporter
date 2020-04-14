@@ -48,6 +48,7 @@ func TestProcessesMetric(t *testing.T) {
 			},
 		},
 	}, nil)
+	mockWebService.EXPECT().GetSystemInstanceList().Return(&sapcontrol.GetSystemInstanceListResponse{}, nil)
 
 	expectedMetrics := `
 	# HELP sap_start_service_processes The processes started by the SAP Start Service
@@ -61,5 +62,49 @@ func TestProcessesMetric(t *testing.T) {
 	assert.NoError(t, err)
 
 	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics), "sap_start_service_processes")
+	assert.NoError(t, err)
+}
+
+func TestInstancesMetric(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
+	mockWebService.EXPECT().GetSystemInstanceList().Return(&sapcontrol.GetSystemInstanceListResponse{
+		Instances: []*sapcontrol.SAPInstance{
+			{
+				Hostname:      "sapha1as",
+				InstanceNr:    0,
+				HttpPort:      50013,
+				HttpsPort:     50014,
+				StartPriority: "1",
+				Features:      "MESSAGESERVER|ENQUE",
+				Dispstatus:    sapcontrol.STATECOLOR_GREEN,
+			},
+			{
+				Hostname:      "sapha1er",
+				InstanceNr:    10,
+				HttpPort:      51013,
+				HttpsPort:     51014,
+				StartPriority: "0.5",
+				Features:      "ENQREP",
+				Dispstatus:    sapcontrol.STATECOLOR_GREEN,
+			},
+		},
+	}, nil)
+	mockWebService.EXPECT().GetProcessList().Return(&sapcontrol.GetProcessListResponse{}, nil)
+
+	expectedMetrics := `
+	# HELP sap_start_service_instances All instances of the whole SAP system
+	# TYPE sap_start_service_instances gauge
+	sap_start_service_instances{features="ENQREP",hostname="sapha1er",instance_number="10",start_priority="0.5"} 2
+    sap_start_service_instances{features="MESSAGESERVER|ENQUE",hostname="sapha1as",instance_number="0",start_priority="1"} 2
+	`
+
+	var err error
+	collector, err := NewCollector(mockWebService)
+	assert.NoError(t, err)
+
+	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics), "sap_start_service_instances")
 	assert.NoError(t, err)
 }
