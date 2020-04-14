@@ -33,12 +33,12 @@ func New() (*viper.Viper, error) {
 
 	setLogLevel(config.GetString("log-level"))
 
+	sanitizeSapControlUrl(config)
+
 	err = validateSapControlUrl(config)
 	if err != nil {
 		return nil, errors.Wrap(err, "invalid configuration value")
 	}
-
-	sanitizeSapControlUrl(config)
 
 	return config, nil
 }
@@ -47,7 +47,7 @@ func New() (*viper.Viper, error) {
 func validateSapControlUrl(config *viper.Viper) error {
 	sapControlUrl := config.GetString("sap-control-url")
 	if _, err := url.ParseRequestURI(sapControlUrl); err != nil {
-		return errors.Wrap(err, "invalid config value for sap-control-url")
+		return errors.Wrap(err, "invalid sap-control-url value")
 	}
 	return nil
 }
