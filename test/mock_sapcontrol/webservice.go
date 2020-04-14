@@ -78,6 +78,21 @@ func (mr *MockWebServiceMockRecorder) GetQueueStatistic() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetQueueStatistic", reflect.TypeOf((*MockWebService)(nil).GetQueueStatistic))
 }
 
+// GetSystemInstanceList mocks base method
+func (m *MockWebService) GetSystemInstanceList() (*sapcontrol.GetSystemInstanceListResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSystemInstanceList")
+	ret0, _ := ret[0].(*sapcontrol.GetSystemInstanceListResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSystemInstanceList indicates an expected call of GetSystemInstanceList
+func (mr *MockWebServiceMockRecorder) GetSystemInstanceList() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSystemInstanceList", reflect.TypeOf((*MockWebService)(nil).GetSystemInstanceList))
+}
+
 // HACheckConfig mocks base method
 func (m *MockWebService) HACheckConfig() (*sapcontrol.HACheckConfigResponse, error) {
 	m.ctrl.T.Helper()

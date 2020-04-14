@@ -28,6 +28,9 @@ type WebService interface {
 
 	/* Returns HA failover third party information. */
 	HAGetFailoverConfig() (*HAGetFailoverConfigResponse, error)
+
+	/* Returns a list of SAP instances of the SAP system. */
+	GetSystemInstanceList() (*GetSystemInstanceListResponse, error)
 }
 
 type HACheckCategory string
@@ -113,7 +116,17 @@ type GetQueueStatistic struct {
 
 type GetQueueStatisticResponse struct {
 	XMLName xml.Name            `xml:"urn:SAPControl GetQueueStatisticResponse"`
-	Queues  []*TaskHandlerQueue `xml:"queue>item,omitempty" json:"queue,omitempty"`
+	Queues  []*TaskHandlerQueue `xml:"queue>item,omitempty" json:"queue>item,omitempty"`
+}
+
+type GetSystemInstanceList struct {
+	XMLName xml.Name `xml:"urn:SAPControl GetSystemInstanceList"`
+	Timeout int32    `xml:"timeout,omitempty" json:"timeout,omitempty"`
+}
+
+type GetSystemInstanceListResponse struct {
+	XMLName   xml.Name       `xml:"urn:SAPControl GetSystemInstanceListResponse"`
+	Instances []*SAPInstance `xml:"instance>item,omitempty" json:"instance>item,omitempty"`
 }
 
 type HACheck struct {
@@ -129,7 +142,7 @@ type HACheckConfig struct {
 
 type HACheckConfigResponse struct {
 	XMLName xml.Name   `xml:"urn:SAPControl HACheckConfigResponse"`
-	Checks  []*HACheck `xml:"check>item,omitempty" json:"check,omitempty"`
+	Checks  []*HACheck `xml:"check>item,omitempty" json:"check>item,omitempty"`
 }
 
 type HACheckFailoverConfig struct {
@@ -138,7 +151,7 @@ type HACheckFailoverConfig struct {
 
 type HACheckFailoverConfigResponse struct {
 	XMLName xml.Name   `xml:"urn:SAPControl HACheckFailoverConfigResponse"`
-	Checks  []*HACheck `xml:"check>item,omitempty" json:"check,omitempty"`
+	Checks  []*HACheck `xml:"check>item,omitempty" json:"check>item,omitempty"`
 }
 
 type HAGetFailoverConfigResponse struct {
@@ -165,6 +178,16 @@ type OSProcess struct {
 	Pid         int32      `xml:"pid,omitempty" json:"pid,omitempty"`
 }
 
+type SAPInstance struct {
+	Hostname      string     `xml:"hostname,omitempty" json:"hostname,omitempty"`
+	InstanceNr    int32      `xml:"instanceNr,omitempty" json:"instanceNr,omitempty"`
+	HttpPort      int32      `xml:"httpPort,omitempty" json:"httpPort,omitempty"`
+	HttpsPort     int32      `xml:"httpsPort,omitempty" json:"httpsPort,omitempty"`
+	StartPriority string     `xml:"startPriority,omitempty" json:"startPriority,omitempty"`
+	Features      string     `xml:"features,omitempty" json:"features,omitempty"`
+	Dispstatus    STATECOLOR `xml:"dispstatus,omitempty" json:"dispstatus,omitempty"`
+}
+
 type TaskHandlerQueue struct {
 	Type   string `xml:"Typ,omitempty" json:"Typ,omitempty"`
 	Now    int32  `xml:"Now,omitempty" json:"Now,omitempty"`
@@ -189,6 +212,18 @@ func NewWebService(client *soap.Client) WebService {
 func (service *webService) GetProcessList() (*GetProcessListResponse, error) {
 	request := &GetProcessList{}
 	response := &GetProcessListResponse{}
+	err := service.client.Call("''", request, response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+// implements WebService.GetSystemInstanceList()
+func (service *webService) GetSystemInstanceList() (*GetSystemInstanceListResponse, error) {
+	request := &GetSystemInstanceList{}
+	response := &GetSystemInstanceListResponse{}
 	err := service.client.Call("''", request, response)
 	if err != nil {
 		return nil, err
