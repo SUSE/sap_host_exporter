@@ -1,4 +1,4 @@
-package alert
+package ha_check
 
 import (
 	"strings"
@@ -49,15 +49,15 @@ func TestHACheckMetrics(t *testing.T) {
 	assert.NoError(t, err)
 
 	expectedMetrics := `
-	# HELP sap_alert_ha_check High Availability system configuration and status checks
-	# TYPE sap_alert_ha_check gauge
-	sap_alert_ha_check{category="HA-STATE",comment="bar",description="foo"} 2
-	sap_alert_ha_check{category="SAP-STATE",comment="bar2",description="foo2"} 1
-	sap_alert_ha_check{category="SAP-CONFIGURATION",comment="bar3",description="foo3"} 0
-	sap_alert_ha_check{category="SAP-CONFIGURATION",comment="bar4",description="foo4"} 0
+	# HELP sap_ha_check_config High Availability system configuration and status checks
+	# TYPE sap_ha_check_config gauge
+	sap_ha_check_config{category="HA-STATE",comment="bar",description="foo"} 2
+	sap_ha_check_config{category="SAP-STATE",comment="bar2",description="foo2"} 1
+	sap_ha_check_config{category="SAP-CONFIGURATION",comment="bar3",description="foo3"} 0
+	sap_ha_check_config{category="SAP-CONFIGURATION",comment="bar4",description="foo4"} 0
 `
 
-	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics), "sap_alert_ha_check")
+	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics), "sap_ha_check_config")
 	assert.NoError(t, err)
 }
 
@@ -75,7 +75,7 @@ func TestHACheckMetricsWithEmptyData(t *testing.T) {
 	collector, err := NewCollector(mockWebService)
 	assert.NoError(t, err)
 
-	err = testutil.CollectAndCompare(collector, strings.NewReader(""), "sap_alert_ha_check")
+	err = testutil.CollectAndCompare(collector, strings.NewReader(""), "sap_ha_check_config")
 	assert.NoError(t, err)
 }
 
@@ -96,11 +96,11 @@ func TestHAFailoverActiveMetric(t *testing.T) {
 	assert.NoError(t, err)
 
 	expectedMetrics := `
-	# HELP sap_alert_ha_failover_active Whether or not High Availability Failover is active
-	# TYPE sap_alert_ha_failover_active gauge
-	sap_alert_ha_failover_active 1
+	# HELP sap_ha_check_failover_active Whether or not High Availability Failover is active
+	# TYPE sap_ha_check_failover_active gauge
+	sap_ha_check_failover_active 1
 `
-	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics), "sap_alert_ha_failover_active")
+	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics), "sap_ha_check_failover_active")
 	assert.NoError(t, err)
 }
 
@@ -121,10 +121,10 @@ func TestHAFailoverActiveMetricWithFalseValue(t *testing.T) {
 	assert.NoError(t, err)
 
 	expectedMetrics := `
-	# HELP sap_alert_ha_failover_active Whether or not High Availability Failover is active
-	# TYPE sap_alert_ha_failover_active gauge
-	sap_alert_ha_failover_active 0
+	# HELP sap_ha_check_failover_active Whether or not High Availability Failover is active
+	# TYPE sap_ha_check_failover_active gauge
+	sap_ha_check_failover_active 0
 `
-	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics), "sap_alert_ha_failover_active")
+	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics), "sap_ha_check_failover_active")
 	assert.NoError(t, err)
 }

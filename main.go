@@ -9,7 +9,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
 
-	"github.com/SUSE/sap_host_exporter/collector/alert"
 	"github.com/SUSE/sap_host_exporter/collector/dispatcher"
 	"github.com/SUSE/sap_host_exporter/collector/enqueue_server"
 	"github.com/SUSE/sap_host_exporter/collector/start_service"
@@ -64,13 +63,15 @@ func main() {
 		log.Info("Dispatcher collector registered")
 	}
 
-	alertCollector, err := alert.NewCollector(webService)
+	/* disabled due to sapstartsvc upstream issues
+	HACheckCollector, err := ha_check.NewCollector(webService)
 	if err != nil {
 		log.Warn(err)
 	} else {
-		prometheus.MustRegister(alertCollector)
-		log.Info("Alert collector registered")
+		prometheus.MustRegister(HACheckCollector)
+		log.Info("Check collector registered")
 	}
+	*/
 
 	// if we're not in debug log level, we unregister the Go runtime metrics collector that gets registered by default
 	if !log.IsLevelEnabled(log.DebugLevel) {
