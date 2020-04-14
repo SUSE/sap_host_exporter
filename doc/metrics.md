@@ -16,7 +16,32 @@ These are the currently implemented subsystems.
 
 The Start Service subsystem collects generic host-related metrics.
 
-1. [`sap_start_service_processes`](#sap_start_service_processes) 
+1. [`sap_start_service_instances`](#sap_start_service_instances) 
+2. [`sap_start_service_processes`](#sap_start_service_processes) 
+
+### `sap_start_service_instances`
+
+All instances of the whole SAP system
+
+The value of this metric follows the [SAP state colors](#sap-state-colors) convention.
+
+#### Labels
+
+- `hostname`: the virtual hostname of the instance
+- `instance_number`: the instance number
+- `start_priority`: the instance start priority
+- `features`: a pipe-separated (`|`) list of features running in the instance  
+   e.g. `ABAP|GATEWAY|ICMAN|IGS`  
+   
+#### Examples
+
+```
+# TYPE sap_start_service_instances gauge
+sap_start_service_instances{features="MESSAGESERVER|ENQUE",hostname="sapha1as",instance_number="0",start_priority="1"} 2
+sap_start_service_instances{features="ENQREP",hostname="sapha1er",instance_number="10",start_priority="0.5"} 2
+sap_start_service_instances{features="ABAP|GATEWAY|ICMAN|IGS",hostname="sapha1pas",instance_number="1",start_priority="3"} 2
+sap_start_service_instances{features="ABAP|GATEWAY|ICMAN|IGS",hostname="sapha1aas",instance_number="2",start_priority="3"} 2
+```
 
 ### `sap_start_service_processes`
 
