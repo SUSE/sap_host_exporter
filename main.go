@@ -47,7 +47,7 @@ func main() {
 
 	err = collector_register.RegisterOptionalCollectors(webService)
 	if err != nil {
-		log.Warn(err)
+		log.Fatal(err)
 	}
 	/* disabled due to sapstartsvc upstream issues
 	HACheckCollector, err := ha_check.NewCollector(webService)
