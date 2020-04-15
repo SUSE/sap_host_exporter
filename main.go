@@ -4,15 +4,16 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/SUSE/sap_host_exporter/collector/collector_register"
+	"github.com/SUSE/sap_host_exporter/collector/start_service"
+
+	"github.com/SUSE/sap_host_exporter/internal"
+	"github.com/SUSE/sap_host_exporter/internal/config"
+	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	flag "github.com/spf13/pflag"
-
-	"github.com/SUSE/sap_host_exporter/collector/start_service"
-	"github.com/SUSE/sap_host_exporter/internal"
-	"github.com/SUSE/sap_host_exporter/internal/config"
-	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
 )
 
 func init() {
@@ -44,7 +45,7 @@ func main() {
 		prometheus.MustRegister(startServiceCollector)
 		log.Info("Start Service collector registered")
 	}
-
+	collector_register.RegisterOptionalCollectors(webService)
 	/* disabled due to sapstartsvc upstream issues
 	HACheckCollector, err := ha_check.NewCollector(webService)
 	if err != nil {
