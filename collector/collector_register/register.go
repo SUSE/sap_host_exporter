@@ -20,7 +20,7 @@ func RegisterOptionalCollectors(webService sapcontrol.WebService) error {
 
 	for _, process := range processList.Processes {
 		// if we found msg_server on process name we register the Enqueue Server
-		if process.Name == "msg_server" {
+		if process.Name == "msg_server" && enqueu_found == false {
 			enqueueServerCollector, err := enqueue_server.NewCollector(webService)
 			if err != nil {
 				return errors.Wrap(err, "Error by registering enqueueServer collector")
@@ -31,7 +31,7 @@ func RegisterOptionalCollectors(webService sapcontrol.WebService) error {
 			enqueu_found = true
 		}
 		// if we found disp+work on process name we register the dispatcher collector
-		if process.Name == "disp+work" {
+		if process.Name == "disp+work" && dispatch_found == false {
 			dispatcherCollector, err := dispatcher.NewCollector(webService)
 			if err != nil {
 				return errors.Wrap(err, "Error by registering dispatcher collector")
