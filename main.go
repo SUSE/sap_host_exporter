@@ -6,7 +6,6 @@ import (
 
 	"github.com/SUSE/sap_host_exporter/collector/collector_register"
 	"github.com/SUSE/sap_host_exporter/collector/start_service"
-
 	"github.com/SUSE/sap_host_exporter/internal"
 	"github.com/SUSE/sap_host_exporter/internal/config"
 	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
@@ -45,7 +44,11 @@ func main() {
 		prometheus.MustRegister(startServiceCollector)
 		log.Info("Start Service collector registered")
 	}
-	collector_register.RegisterOptionalCollectors(webService)
+
+	err = collector_register.RegisterOptionalCollectors(webService)
+	if err != nil {
+		log.Warn(err)
+	}
 	/* disabled due to sapstartsvc upstream issues
 	HACheckCollector, err := ha_check.NewCollector(webService)
 	if err != nil {
