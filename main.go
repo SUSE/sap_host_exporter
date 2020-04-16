@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/SUSE/sap_host_exporter/collector/collector_register"
+	"github.com/SUSE/sap_host_exporter/collector/registry"
 	"github.com/SUSE/sap_host_exporter/collector/start_service"
 	"github.com/SUSE/sap_host_exporter/internal"
 	"github.com/SUSE/sap_host_exporter/internal/config"
@@ -45,7 +45,7 @@ func main() {
 		log.Info("Start Service collector registered")
 	}
 
-	err = collector_register.RegisterOptionalCollectors(webService)
+	err = registry.RegisterOptionalCollectors(webService)
 	if err != nil {
 		log.Fatal(err)
 	}

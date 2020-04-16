@@ -1,4 +1,4 @@
-package collector_register
+package registry
 
 import (
 	"bytes"

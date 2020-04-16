@@ -1,4 +1,4 @@
-package collector_register
+package registry
 
 import (
 	"github.com/SUSE/sap_host_exporter/collector/dispatcher"
