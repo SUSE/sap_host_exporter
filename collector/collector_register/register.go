@@ -6,7 +6,7 @@ import (
 	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/common/log"
+	 log "github.com/sirupsen/logrus"
 )
 
 // RegisterOptionalCollectors register depending on the system where the exporter run the additional collectors
@@ -20,30 +20,35 @@ func RegisterOptionalCollectors(webService sapcontrol.WebService) error {
 
 	for _, process := range processList.Processes {
 		// if we found msg_server on process name we register the Enqueue Server
-		if process.Name == "msg_server" && enqueu_found == false {
-			enqueueServerCollector, err := enqueue_server.NewCollector(webService)
-			if err != nil {
-				return errors.Wrap(err, "error registering Enqueue Server collector")
-			} else {
-				prometheus.MustRegister(enqueueServerCollector)
-				log.Info("Enqueue Server optional collector registered")
-			}
-			enqueu_found = true
+		if process.Name == "msg_server" {
+			enqueueFound = true
 		}
 		// if we found disp+work on process name we register the dispatcher collector
-		if process.Name == "disp+work" && dispatch_found == false {
-			dispatcherCollector, err := dispatcher.NewCollector(webService)
-			if err != nil {
-				return errors.Wrap(err, "error registering Dispatcher collector")
-			} else {
-				prometheus.MustRegister(dispatcherCollector)
-				log.Info("Dispatcher optional collector registered")
-			}
-			dispatch_found = true
+		if process.Name == "disp+work" {
+			dispatcherFound = true
 		}
 
-		if enqueu_found == true && dispatch_found == true {
+		if enqueueFound == true && dispatcherFound == true {
 			break
+		}
+	}
+
+	if enqueueFound == true {
+		enqueueServerCollector, err := enqueue_server.NewCollector(webService)
+		if err != nil {
+			return errors.Wrap(err, "error registering Enqueue Server collector")
+		} else {
+			prometheus.MustRegister(enqueueServerCollector)
+			log.Info("Enqueue Server optional collector registered")
+		}
+	}
+	if dispatcherFound == true {
+		dispatcherCollector, err := dispatcher.NewCollector(webService)
+		if err != nil {
+			return errors.Wrap(err, "error registering Dispatcher collector")
+		} else {
+			prometheus.MustRegister(dispatcherCollector)
+			log.Info("Dispatcher optional collector registered")
 		}
 	}
 
