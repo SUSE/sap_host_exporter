@@ -16,8 +16,9 @@ func TestNewCollector(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
+	currentSapInstance := sapcontrol.CurrentSapInstance{}
 
-	_, err := NewCollector(mockWebService)
+	_, err := NewCollector(mockWebService, currentSapInstance)
 
 	assert.Nil(t, err)
 }
@@ -56,6 +57,12 @@ func TestProcessesMetric(t *testing.T) {
 		ServerTime:         23,
 		ReplicationState:   sapcontrol.STATECOLOR_RED,
 	}, nil)
+	currentSapInstance := sapcontrol.CurrentSapInstance{
+		SID:      "HA1",
+		Number:   0,
+		Name:     "ASCS",
+		Hostname: "sapha1as",
+	}
 
 	expectedMetrics := `
 	# HELP sap_enqueue_server_arguments_high Peak number of lock arguments that have been stored simultaneously in the lock table
@@ -142,7 +149,7 @@ func TestProcessesMetric(t *testing.T) {
 	`
 
 	var err error
-	collector, err := NewCollector(mockWebService)
+	collector, err := NewCollector(mockWebService, currentSapInstance)
 	assert.NoError(t, err)
 
 	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics))

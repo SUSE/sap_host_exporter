@@ -16,8 +16,9 @@ func TestNewCollector(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
+	currentSapInstance := sapcontrol.CurrentSapInstance{}
 
-	_, err := NewCollector(mockWebService)
+	_, err := NewCollector(mockWebService, currentSapInstance)
 
 	assert.Nil(t, err)
 }
@@ -39,6 +40,12 @@ func TestWorkProcessQueueStatsMetric(t *testing.T) {
 			{Type: "ICM/Intern", High: 1, Max: 6000, Writes: 34877, Reads: 34877},
 		},
 	}, nil)
+	currentSapInstance := sapcontrol.CurrentSapInstance{
+		SID:      "HA1",
+		Number:   0,
+		Name:     "ASCS",
+		Hostname: "sapha1as",
+	}
 
 	expectedMetrics := `
 	# HELP sap_dispatcher_queue_high Work process peak queue length
@@ -94,7 +101,7 @@ func TestWorkProcessQueueStatsMetric(t *testing.T) {
 `
 
 	var err error
-	collector, err := NewCollector(mockWebService)
+	collector, err := NewCollector(mockWebService, currentSapInstance)
 	assert.NoError(t, err)
 
 	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics))
@@ -107,9 +114,10 @@ func TestWorkProcessQueueStatsMetricWithEmptyData(t *testing.T) {
 
 	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
 	mockWebService.EXPECT().GetQueueStatistic().Return(&sapcontrol.GetQueueStatisticResponse{}, nil)
+	currentSapInstance := sapcontrol.CurrentSapInstance{}
 
 	var err error
-	collector, err := NewCollector(mockWebService)
+	collector, err := NewCollector(mockWebService, currentSapInstance)
 	assert.NoError(t, err)
 
 	err = testutil.CollectAndCompare(collector, strings.NewReader(""))

@@ -49,7 +49,7 @@ func main() {
 		log.Info("Start Service collector registered")
 	}
 
-	err = registry.RegisterOptionalCollectors(webService)
+	err = registry.RegisterOptionalCollectors(webService, *currentSapInstance)
 	if err != nil {
 		log.Fatal(err)
 	}
