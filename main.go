@@ -4,17 +4,15 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	log "github.com/sirupsen/logrus"
-	flag "github.com/spf13/pflag"
-
-	"github.com/SUSE/sap_host_exporter/collector/dispatcher"
-	"github.com/SUSE/sap_host_exporter/collector/enqueue_server"
+	"github.com/SUSE/sap_host_exporter/collector/collector_register"
 	"github.com/SUSE/sap_host_exporter/collector/start_service"
 	"github.com/SUSE/sap_host_exporter/internal"
 	"github.com/SUSE/sap_host_exporter/internal/config"
 	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	log "github.com/sirupsen/logrus"
+	flag "github.com/spf13/pflag"
 )
 
 func init() {
@@ -47,22 +45,10 @@ func main() {
 		log.Info("Start Service collector registered")
 	}
 
-	enqueueServerCollector, err := enqueue_server.NewCollector(webService)
+	err = collector_register.RegisterOptionalCollectors(webService)
 	if err != nil {
-		log.Warn(err)
-	} else {
-		prometheus.MustRegister(enqueueServerCollector)
-		log.Info("Enqueue Server collector registered")
+		log.Fatal(err)
 	}
-
-	dispatcherCollector, err := dispatcher.NewCollector(webService)
-	if err != nil {
-		log.Warn(err)
-	} else {
-		prometheus.MustRegister(dispatcherCollector)
-		log.Info("Dispatcher collector registered")
-	}
-
 	/* disabled due to sapstartsvc upstream issues
 	HACheckCollector, err := ha_check.NewCollector(webService)
 	if err != nil {
