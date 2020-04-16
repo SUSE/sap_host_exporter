@@ -15,8 +15,9 @@ func TestNewCollector(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
+	currentSapInstance := sapcontrol.CurrentSapInstance{}
 
-	_, err := NewCollector(mockWebService)
+	_, err := NewCollector(mockWebService, currentSapInstance)
 
 	assert.Nil(t, err)
 }
@@ -49,16 +50,22 @@ func TestProcessesMetric(t *testing.T) {
 		},
 	}, nil)
 	mockWebService.EXPECT().GetSystemInstanceList().Return(&sapcontrol.GetSystemInstanceListResponse{}, nil)
+	currentSapInstance := sapcontrol.CurrentSapInstance{
+		SID:      "HA1",
+		Number:   0,
+		Name:     "ASCS",
+		Hostname: "sapha1as",
+	}
 
 	expectedMetrics := `
 	# HELP sap_start_service_processes The processes started by the SAP Start Service
 	# TYPE sap_start_service_processes gauge
-	sap_start_service_processes{name="enserver",pid="30787",status="Running"} 2
-	sap_start_service_processes{name="msg_server",pid="30786",status="Stopping"} 3
+	sap_start_service_processes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",name="enserver",pid="30787",sid="HA1",status="Running"} 2
+	sap_start_service_processes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",name="msg_server",pid="30786",sid="HA1",status="Stopping"} 3
 	`
 
 	var err error
-	collector, err := NewCollector(mockWebService)
+	collector, err := NewCollector(mockWebService, currentSapInstance)
 	assert.NoError(t, err)
 
 	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics), "sap_start_service_processes")
@@ -93,16 +100,21 @@ func TestInstancesMetric(t *testing.T) {
 		},
 	}, nil)
 	mockWebService.EXPECT().GetProcessList().Return(&sapcontrol.GetProcessListResponse{}, nil)
+	currentSapInstance := sapcontrol.CurrentSapInstance{
+		SID:      "HA1",
+		Number:   0,
+		Name:     "ASCS",
+		Hostname: "sapha1as",
+	}
 
 	expectedMetrics := `
 	# HELP sap_start_service_instances All instances of the whole SAP system
 	# TYPE sap_start_service_instances gauge
-	sap_start_service_instances{features="ENQREP",hostname="sapha1er",instance_number="10",start_priority="0.5"} 2
-    sap_start_service_instances{features="MESSAGESERVER|ENQUE",hostname="sapha1as",instance_number="0",start_priority="1"} 2
+    sap_start_service_instances{features="MESSAGESERVER|ENQUE",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",start_priority="1"} 2
 	`
 
 	var err error
-	collector, err := NewCollector(mockWebService)
+	collector, err := NewCollector(mockWebService, currentSapInstance)
 	assert.NoError(t, err)
 
 	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics), "sap_start_service_instances")

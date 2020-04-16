@@ -36,8 +36,12 @@ func main() {
 
 	client := sapcontrol.NewSoapClient(config)
 	webService := sapcontrol.NewWebService(client)
+	currentSapInstance, err := sapcontrol.NewCurrentInstance(webService)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	startServiceCollector, err := start_service.NewCollector(webService)
+	startServiceCollector, err := start_service.NewCollector(webService, *currentSapInstance)
 	if err != nil {
 		log.Warn(err)
 	} else {
