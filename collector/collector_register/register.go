@@ -11,8 +11,8 @@ import (
 
 // RegisterOptionalCollectors register depending on the system where the exporter run the additional collectors
 func RegisterOptionalCollectors(webService sapcontrol.WebService) error {
-	enqueu_found := false
-	dispatch_found := false
+	enqueueFound := false
+	dispatcherFound := false
 	processList, err := webService.GetProcessList()
 	if err != nil {
 		return errors.Wrap(err, "SAPControl web service error")
@@ -23,7 +23,7 @@ func RegisterOptionalCollectors(webService sapcontrol.WebService) error {
 		if process.Name == "msg_server" && enqueu_found == false {
 			enqueueServerCollector, err := enqueue_server.NewCollector(webService)
 			if err != nil {
-				return errors.Wrap(err, "Error by registering enqueueServer collector")
+				return errors.Wrap(err, "error registering Enqueue Server collector")
 			} else {
 				prometheus.MustRegister(enqueueServerCollector)
 				log.Info("Enqueue Server optional collector registered")
@@ -34,7 +34,7 @@ func RegisterOptionalCollectors(webService sapcontrol.WebService) error {
 		if process.Name == "disp+work" && dispatch_found == false {
 			dispatcherCollector, err := dispatcher.NewCollector(webService)
 			if err != nil {
-				return errors.Wrap(err, "Error by registering dispatcher collector")
+				return errors.Wrap(err, "error registering Dispatcher collector")
 			} else {
 				prometheus.MustRegister(dispatcherCollector)
 				log.Info("Dispatcher optional collector registered")
