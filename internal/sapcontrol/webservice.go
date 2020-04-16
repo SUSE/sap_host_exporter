@@ -31,6 +31,9 @@ type WebService interface {
 
 	/* Returns a list of SAP instances of the SAP system. */
 	GetSystemInstanceList() (*GetSystemInstanceListResponse, error)
+
+	/* Returns a list of available instance features and information how to get it. */
+	GetInstanceProperties() (*GetInstancePropertiesResponse, error)
 }
 
 type HACheckCategory string
@@ -99,6 +102,15 @@ type EnqGetStatisticResponse struct {
 	LockWaitTime       float64    `xml:"lock-wait-time,omitempty" json:"lock-wait-time,omitempty"`
 	ServerTime         float64    `xml:"server-time,omitempty" json:"server-time,omitempty"`
 	ReplicationState   STATECOLOR `xml:"replication-state,omitempty" json:"replication-state,omitempty"`
+}
+
+type GetInstanceProperties struct {
+	XMLName xml.Name `xml:"urn:SAPControl GetInstanceProperties"`
+}
+
+type GetInstancePropertiesResponse struct {
+	XMLName    xml.Name            `xml:"urn:SAPControl GetInstancePropertiesResponse"`
+	Properties []*InstanceProperty `xml:"properties>item,omitempty" json:"properties>item,omitempty"`
 }
 
 type GetProcessList struct {
@@ -178,6 +190,12 @@ type OSProcess struct {
 	Pid         int32      `xml:"pid,omitempty" json:"pid,omitempty"`
 }
 
+type InstanceProperty struct {
+	Property     string `xml:"property,omitempty" json:"property,omitempty"`
+	Propertytype string `xml:"propertytype,omitempty" json:"propertytype,omitempty"`
+	Value        string `xml:"value,omitempty" json:"value,omitempty"`
+}
+
 type SAPInstance struct {
 	Hostname      string     `xml:"hostname,omitempty" json:"hostname,omitempty"`
 	InstanceNr    int32      `xml:"instanceNr,omitempty" json:"instanceNr,omitempty"`
@@ -206,6 +224,18 @@ func NewWebService(client *soap.Client) WebService {
 	return &webService{
 		client: client,
 	}
+}
+
+// implements WebService.GetInstanceProperties()
+func (service *webService) GetInstanceProperties() (*GetInstancePropertiesResponse, error) {
+	request := &GetInstanceProperties{}
+	response := &GetInstancePropertiesResponse{}
+	err := service.client.Call("''", request, response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }
 
 // implements WebService.GetProcessList()

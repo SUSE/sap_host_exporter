@@ -48,6 +48,21 @@ func (mr *MockWebServiceMockRecorder) EnqGetStatistic() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EnqGetStatistic", reflect.TypeOf((*MockWebService)(nil).EnqGetStatistic))
 }
 
+// GetInstanceProperties mocks base method
+func (m *MockWebService) GetInstanceProperties() (*sapcontrol.GetInstancePropertiesResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetInstanceProperties")
+	ret0, _ := ret[0].(*sapcontrol.GetInstancePropertiesResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetInstanceProperties indicates an expected call of GetInstanceProperties
+func (mr *MockWebServiceMockRecorder) GetInstanceProperties() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetInstanceProperties", reflect.TypeOf((*MockWebService)(nil).GetInstanceProperties))
+}
+
 // GetProcessList mocks base method
 func (m *MockWebService) GetProcessList() (*sapcontrol.GetProcessListResponse, error) {
 	m.ctrl.T.Helper()
