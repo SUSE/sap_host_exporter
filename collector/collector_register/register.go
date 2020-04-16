@@ -26,7 +26,7 @@ func RegisterOptionalCollectors(webService sapcontrol.WebService) error {
 				return errors.Wrap(err, "Error by registering enqueueServer collector")
 			} else {
 				prometheus.MustRegister(enqueueServerCollector)
-				log.Info("Enqueue Server collector registered")
+				log.Info("Enqueue Server optional collector registered")
 			}
 			enqueu_found = true
 		}
@@ -37,7 +37,7 @@ func RegisterOptionalCollectors(webService sapcontrol.WebService) error {
 				return errors.Wrap(err, "Error by registering dispatcher collector")
 			} else {
 				prometheus.MustRegister(dispatcherCollector)
-				log.Info("Dispatcher collector registered")
+				log.Info("Dispatcher optional collector registered")
 			}
 			dispatch_found = true
 		}
