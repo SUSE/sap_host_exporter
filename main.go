@@ -9,6 +9,7 @@ import (
 	"github.com/SUSE/sap_host_exporter/internal"
 	"github.com/SUSE/sap_host_exporter/internal/config"
 	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
+	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
@@ -36,12 +37,14 @@ func main() {
 
 	client := sapcontrol.NewSoapClient(config)
 	webService := sapcontrol.NewWebService(client)
-	currentSapInstance, err := sapcontrol.NewCurrentInstance(webService)
+	currentSapInstance, err := webService.GetCurrentInstance()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(errors.Wrap(err, "SAPControl web service error"))
 	}
 
-	startServiceCollector, err := start_service.NewCollector(webService, *currentSapInstance)
+	log.Infof("Monitoring SAP Instance %s", currentSapInstance)
+
+	startServiceCollector, err := start_service.NewCollector(webService)
 	if err != nil {
 		log.Warn(err)
 	} else {
@@ -49,7 +52,7 @@ func main() {
 		log.Info("Start Service collector registered")
 	}
 
-	err = registry.RegisterOptionalCollectors(webService, *currentSapInstance)
+	err = registry.RegisterOptionalCollectors(webService)
 	if err != nil {
 		log.Fatal(err)
 	}
