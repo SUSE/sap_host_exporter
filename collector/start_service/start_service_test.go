@@ -107,7 +107,7 @@ func TestInstancesMetric(t *testing.T) {
 	}, nil).AnyTimes()
 
 	expectedMetrics := `
-	# HELP sap_start_service_instances All instances of the whole SAP system
+	# HELP sap_start_service_instances The SAP instances in the context of the whole SAP system
 	# TYPE sap_start_service_instances gauge
     sap_start_service_instances{SID="HA1",features="MESSAGESERVER|ENQUE",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",start_priority="1"} 2
 	`
