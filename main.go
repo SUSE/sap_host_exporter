@@ -56,15 +56,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	/* disabled due to sapstartsvc upstream issues
-	HACheckCollector, err := ha_check.NewCollector(webService)
-	if err != nil {
-		log.Warn(err)
-	} else {
-		prometheus.MustRegister(HACheckCollector)
-		log.Info("Check collector registered")
-	}
-	*/
 
 	// if we're not in debug log level, we unregister the Go runtime metrics collector that gets registered by default
 	if !log.IsLevelEnabled(log.DebugLevel) {
