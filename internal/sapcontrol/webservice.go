@@ -21,15 +21,6 @@ type WebService interface {
 	/* Returns a list of queue information of work processes and icm (similar to dpmon). */
 	GetQueueStatistic() (*GetQueueStatisticResponse, error)
 
-	/* Checks high availability configuration and status of the system. */
-	HACheckConfig() (*HACheckConfigResponse, error)
-
-	/* Checks HA failover third party configuration and status of an instnace. */
-	HACheckFailoverConfig() (*HACheckFailoverConfigResponse, error)
-
-	/* Returns HA failover third party information. */
-	HAGetFailoverConfig() (*HAGetFailoverConfigResponse, error)
-
 	/* Returns a list of SAP instances of the SAP system. */
 	GetSystemInstanceList() (*GetSystemInstanceListResponse, error)
 
@@ -40,27 +31,8 @@ type WebService interface {
 	GetCurrentInstance() (*CurrentSapInstance, error)
 }
 
-type HACheckCategory string
-type HAVerificationState string
-type HAVerificationStateCode int
 type STATECOLOR string
 type STATECOLOR_CODE int
-
-const (
-	HA_CHECK_CATEGORY_SAP_CONFIGURATION HACheckCategory = "SAPControl-SAP-CONFIGURATION"
-	HA_CHECK_CATEGORY_SAP_STATE         HACheckCategory = "SAPControl-SAP-STATE"
-	HA_CHECK_CATEGORY_HA_CONFIGURATION  HACheckCategory = "SAPControl-HA-CONFIGURATION"
-	HA_CHECK_CATEGORY_HA_STATE          HACheckCategory = "SAPControl-HA-STATE"
-)
-
-const (
-	HA_VERIFICATION_STATE_SUCCESS      HAVerificationState     = "SAPControl-HA-SUCCESS"
-	HA_VERIFICATION_STATE_WARNING      HAVerificationState     = "SAPControl-HA-WARNING"
-	HA_VERIFICATION_STATE_ERROR        HAVerificationState     = "SAPControl-HA-ERROR"
-	HA_VERIFICATION_STATE_CODE_SUCCESS HAVerificationStateCode = 0
-	HA_VERIFICATION_STATE_CODE_WARNING HAVerificationStateCode = 1
-	HA_VERIFICATION_STATE_CODE_ERROR   HAVerificationStateCode = 2
-)
 
 const (
 	STATECOLOR_GRAY        STATECOLOR      = "SAPControl-GRAY"
@@ -143,45 +115,6 @@ type GetSystemInstanceList struct {
 type GetSystemInstanceListResponse struct {
 	XMLName   xml.Name       `xml:"urn:SAPControl GetSystemInstanceListResponse"`
 	Instances []*SAPInstance `xml:"instance>item,omitempty" json:"instance>item,omitempty"`
-}
-
-type HACheck struct {
-	State       HAVerificationState `xml:"state,omitempty" json:"state,omitempty"`
-	Category    HACheckCategory     `xml:"category,omitempty" json:"category,omitempty"`
-	Description string              `xml:"description,omitempty" json:"description,omitempty"`
-	Comment     string              `xml:"comment,omitempty" json:"comment,omitempty"`
-}
-
-type HACheckConfig struct {
-	XMLName xml.Name `xml:"urn:SAPControl HACheckConfig"`
-}
-
-type HACheckConfigResponse struct {
-	XMLName xml.Name   `xml:"urn:SAPControl HACheckConfigResponse"`
-	Checks  []*HACheck `xml:"check>item,omitempty" json:"check>item,omitempty"`
-}
-
-type HACheckFailoverConfig struct {
-	XMLName xml.Name `xml:"urn:SAPControl HACheckFailoverConfig"`
-}
-
-type HACheckFailoverConfigResponse struct {
-	XMLName xml.Name   `xml:"urn:SAPControl HACheckFailoverConfigResponse"`
-	Checks  []*HACheck `xml:"check>item,omitempty" json:"check>item,omitempty"`
-}
-
-type HAGetFailoverConfigResponse struct {
-	XMLName               xml.Name `xml:"urn:SAPControl HAGetFailoverConfigResponse"`
-	HAActive              bool     `xml:"HAActive,omitempty" json:"HAActive,omitempty"`
-	HAProductVersion      string   `xml:"HAProductVersion,omitempty" json:"HAProductVersion,omitempty"`
-	HASAPInterfaceVersion string   `xml:"HASAPInterfaceVersion,omitempty" json:"HASAPInterfaceVersion,omitempty"`
-	HADocumentation       string   `xml:"HADocumentation,omitempty" json:"HADocumentation,omitempty"`
-	HAActiveNode          string   `xml:"HAActiveNode,omitempty" json:"HAActiveNode,omitempty"`
-	HANodes               []string `xml:"HANodes>item,omitempty" json:"HANodes,omitempty"`
-}
-
-type HAGetFailoverConfig struct {
-	XMLName xml.Name `xml:"urn:SAPControl HAGetFailoverConfig"`
 }
 
 type OSProcess struct {
@@ -293,42 +226,6 @@ func (s *webService) GetQueueStatistic() (*GetQueueStatisticResponse, error) {
 	return response, nil
 }
 
-// implements WebService.HACheckConfig()
-func (s *webService) HACheckConfig() (*HACheckConfigResponse, error) {
-	request := &HACheckConfig{}
-	response := &HACheckConfigResponse{}
-	err := s.client.Call("''", request, response)
-	if err != nil {
-		return nil, err
-	}
-
-	return response, nil
-}
-
-// implements WebService.HACheckFailoverConfig()
-func (s *webService) HACheckFailoverConfig() (*HACheckFailoverConfigResponse, error) {
-	request := &HACheckFailoverConfig{}
-	response := &HACheckFailoverConfigResponse{}
-	err := s.client.Call("''", request, response)
-	if err != nil {
-		return nil, err
-	}
-
-	return response, nil
-}
-
-// implements WebService.HAGetFailoverConfig()
-func (s *webService) HAGetFailoverConfig() (*HAGetFailoverConfigResponse, error) {
-	request := &HAGetFailoverConfig{}
-	response := &HAGetFailoverConfigResponse{}
-	err := s.client.Call("''", request, response)
-	if err != nil {
-		return nil, err
-	}
-
-	return response, nil
-}
-
 // makes the STATECOLOR values more metric friendly
 func StateColorToFloat(statecolor STATECOLOR) (float64, error) {
 	switch statecolor {
@@ -342,35 +239,5 @@ func StateColorToFloat(statecolor STATECOLOR) (float64, error) {
 		return float64(STATECOLOR_CODE_RED), nil
 	default:
 		return -1, errors.New("Invalid STATECOLOR value")
-	}
-}
-
-// makes HACheckCategory values more human-readable
-func HaCheckCategoryToString(category HACheckCategory) (string, error) {
-	switch category {
-	case HA_CHECK_CATEGORY_HA_CONFIGURATION:
-		return "HA-CONFIGURATION", nil
-	case HA_CHECK_CATEGORY_HA_STATE:
-		return "HA-STATE", nil
-	case HA_CHECK_CATEGORY_SAP_CONFIGURATION:
-		return "SAP-CONFIGURATION", nil
-	case HA_CHECK_CATEGORY_SAP_STATE:
-		return "SAP-STATE", nil
-	default:
-		return "", errors.New("Invalid HACheckCategory value")
-	}
-}
-
-// makes HAVerificationState values more metric friendly
-func HaVerificationStateToFloat(state HAVerificationState) (float64, error) {
-	switch state {
-	case HA_VERIFICATION_STATE_SUCCESS:
-		return float64(HA_VERIFICATION_STATE_CODE_SUCCESS), nil
-	case HA_VERIFICATION_STATE_WARNING:
-		return float64(HA_VERIFICATION_STATE_CODE_WARNING), nil
-	case HA_VERIFICATION_STATE_ERROR:
-		return float64(HA_VERIFICATION_STATE_CODE_ERROR), nil
-	default:
-		return -1, errors.New("Invalid HAVerificationState value")
 	}
 }
