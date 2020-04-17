@@ -48,6 +48,21 @@ func (mr *MockWebServiceMockRecorder) EnqGetStatistic() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EnqGetStatistic", reflect.TypeOf((*MockWebService)(nil).EnqGetStatistic))
 }
 
+// GetCurrentInstance mocks base method
+func (m *MockWebService) GetCurrentInstance() (*sapcontrol.CurrentSapInstance, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCurrentInstance")
+	ret0, _ := ret[0].(*sapcontrol.CurrentSapInstance)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCurrentInstance indicates an expected call of GetCurrentInstance
+func (mr *MockWebServiceMockRecorder) GetCurrentInstance() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCurrentInstance", reflect.TypeOf((*MockWebService)(nil).GetCurrentInstance))
+}
+
 // GetInstanceProperties mocks base method
 func (m *MockWebService) GetInstanceProperties() (*sapcontrol.GetInstancePropertiesResponse, error) {
 	m.ctrl.T.Helper()

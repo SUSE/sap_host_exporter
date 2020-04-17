@@ -12,12 +12,11 @@ import (
 	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
 )
 
-func NewCollector(webService sapcontrol.WebService, currentSapInstance sapcontrol.CurrentSapInstance) (*dispatcherCollector, error) {
+func NewCollector(webService sapcontrol.WebService) (*dispatcherCollector, error) {
 
 	c := &dispatcherCollector{
 		collector.NewDefaultCollector("dispatcher"),
 		webService,
-		currentSapInstance,
 	}
 
 	c.SetDescriptor("queue_now", "Work process current queue length", []string{"type", "instance_name", "instance_number", "sid", "instance_hostname"})
@@ -32,7 +31,6 @@ func NewCollector(webService sapcontrol.WebService, currentSapInstance sapcontro
 type dispatcherCollector struct {
 	collector.DefaultCollector
 	webService sapcontrol.WebService
-	currentSapInstance sapcontrol.CurrentSapInstance
 }
 
 func (c *dispatcherCollector) Collect(ch chan<- prometheus.Metric) {
@@ -47,16 +45,20 @@ func (c *dispatcherCollector) Collect(ch chan<- prometheus.Metric) {
 
 func (c *dispatcherCollector) recordWorkProcessQueueStats(ch chan<- prometheus.Metric) error {
 	queueStatistic, err := c.webService.GetQueueStatistic()
+	if err != nil {
+		return errors.Wrap(err, "SAPControl web service error")
+	}
 
+	currentSapInstance, err := c.webService.GetCurrentInstance()
 	if err != nil {
 		return errors.Wrap(err, "SAPControl web service error")
 	}
 
 	commonLabels := []string{
-		c.currentSapInstance.Name,
-		strconv.Itoa(int(c.currentSapInstance.Number)),
-		c.currentSapInstance.SID,
-		c.currentSapInstance.Hostname,
+		currentSapInstance.Name,
+		strconv.Itoa(int(currentSapInstance.Number)),
+		currentSapInstance.SID,
+		currentSapInstance.Hostname,
 	}
 
 	// for each work queue, we record a different line for each stat of that queue, with the type as a common label

@@ -15,9 +15,8 @@ func TestNewCollector(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
-	currentSapInstance := sapcontrol.CurrentSapInstance{}
 
-	_, err := NewCollector(mockWebService, currentSapInstance)
+	_, err := NewCollector(mockWebService)
 
 	assert.Nil(t, err)
 }
@@ -50,12 +49,12 @@ func TestProcessesMetric(t *testing.T) {
 		},
 	}, nil)
 	mockWebService.EXPECT().GetSystemInstanceList().Return(&sapcontrol.GetSystemInstanceListResponse{}, nil)
-	currentSapInstance := sapcontrol.CurrentSapInstance{
+	mockWebService.EXPECT().GetCurrentInstance().Return(&sapcontrol.CurrentSapInstance{
 		SID:      "HA1",
 		Number:   0,
 		Name:     "ASCS",
 		Hostname: "sapha1as",
-	}
+	}, nil).AnyTimes()
 
 	expectedMetrics := `
 	# HELP sap_start_service_processes The processes started by the SAP Start Service
@@ -65,7 +64,7 @@ func TestProcessesMetric(t *testing.T) {
 	`
 
 	var err error
-	collector, err := NewCollector(mockWebService, currentSapInstance)
+	collector, err := NewCollector(mockWebService)
 	assert.NoError(t, err)
 
 	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics), "sap_start_service_processes")
@@ -100,12 +99,12 @@ func TestInstancesMetric(t *testing.T) {
 		},
 	}, nil)
 	mockWebService.EXPECT().GetProcessList().Return(&sapcontrol.GetProcessListResponse{}, nil)
-	currentSapInstance := sapcontrol.CurrentSapInstance{
+	mockWebService.EXPECT().GetCurrentInstance().Return(&sapcontrol.CurrentSapInstance{
 		SID:      "HA1",
 		Number:   0,
 		Name:     "ASCS",
 		Hostname: "sapha1as",
-	}
+	}, nil).AnyTimes()
 
 	expectedMetrics := `
 	# HELP sap_start_service_instances All instances of the whole SAP system
@@ -114,7 +113,7 @@ func TestInstancesMetric(t *testing.T) {
 	`
 
 	var err error
-	collector, err := NewCollector(mockWebService, currentSapInstance)
+	collector, err := NewCollector(mockWebService)
 	assert.NoError(t, err)
 
 	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics), "sap_start_service_instances")

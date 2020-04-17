@@ -12,12 +12,11 @@ import (
 	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
 )
 
-func NewCollector(webService sapcontrol.WebService, currentSapInstance sapcontrol.CurrentSapInstance) (*enqueueServerCollector, error) {
+func NewCollector(webService sapcontrol.WebService) (*enqueueServerCollector, error) {
 
 	c := &enqueueServerCollector{
 		collector.NewDefaultCollector("enqueue_server"),
 		webService,
-		currentSapInstance,
 	}
 
 	c.SetDescriptor("owner_now", "Current number of lock owners in the lock table", []string{"instance_name", "instance_number", "sid", "instance_hostname"})
@@ -54,7 +53,6 @@ func NewCollector(webService sapcontrol.WebService, currentSapInstance sapcontro
 type enqueueServerCollector struct {
 	collector.DefaultCollector
 	webService sapcontrol.WebService
-	currentSapInstance sapcontrol.CurrentSapInstance
 }
 
 func (c *enqueueServerCollector) Collect(ch chan<- prometheus.Metric) {
@@ -72,11 +70,16 @@ func (c *enqueueServerCollector) recordEnqStats(ch chan<- prometheus.Metric) err
 		return errors.Wrap(err, "SAPControl web service error")
 	}
 
+	currentSapInstance, err := c.webService.GetCurrentInstance()
+	if err != nil {
+		return errors.Wrap(err, "SAPControl web service error")
+	}
+
 	labels := []string{
-		c.currentSapInstance.Name,
-		strconv.Itoa(int(c.currentSapInstance.Number)),
-		c.currentSapInstance.SID,
-		c.currentSapInstance.Hostname,
+		currentSapInstance.Name,
+		strconv.Itoa(int(currentSapInstance.Number)),
+		currentSapInstance.SID,
+		currentSapInstance.Hostname,
 	}
 
 	ch <- c.MakeGaugeMetric("owner_now", float64(enqStatistic.OwnerNow), labels...)
@@ -87,7 +90,7 @@ func (c *enqueueServerCollector) recordEnqStats(ch chan<- prometheus.Metric) err
 	if err != nil {
 		log.Warnf("Could not record owner_state metric: %s", err)
 	} else {
-		ch <- c.MakeGaugeMetric("owner_state", ownerState)
+		ch <- c.MakeGaugeMetric("owner_state", ownerState, labels...)
 	}
 
 	ch <- c.MakeGaugeMetric("arguments_now", float64(enqStatistic.ArgumentsNow), labels...)
@@ -98,7 +101,7 @@ func (c *enqueueServerCollector) recordEnqStats(ch chan<- prometheus.Metric) err
 	if err != nil {
 		log.Warnf("Could not record arguments_state metric: %s", err)
 	} else {
-		ch <- c.MakeGaugeMetric("arguments_state", argumentsState)
+		ch <- c.MakeGaugeMetric("arguments_state", argumentsState, labels...)
 	}
 
 	ch <- c.MakeGaugeMetric("locks_now", float64(enqStatistic.LocksNow), labels...)
@@ -109,7 +112,7 @@ func (c *enqueueServerCollector) recordEnqStats(ch chan<- prometheus.Metric) err
 	if err != nil {
 		log.Warnf("Could not record locks_state metric: %s", err)
 	} else {
-		ch <- c.MakeGaugeMetric("locks_state", locksState)
+		ch <- c.MakeGaugeMetric("locks_state", locksState, labels...)
 	}
 
 	ch <- c.MakeCounterMetric("enqueue_requests", float64(enqStatistic.EnqueueRequests), labels...)

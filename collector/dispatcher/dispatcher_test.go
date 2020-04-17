@@ -16,9 +16,8 @@ func TestNewCollector(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
-	currentSapInstance := sapcontrol.CurrentSapInstance{}
 
-	_, err := NewCollector(mockWebService, currentSapInstance)
+	_, err := NewCollector(mockWebService)
 
 	assert.Nil(t, err)
 }
@@ -40,68 +39,68 @@ func TestWorkProcessQueueStatsMetric(t *testing.T) {
 			{Type: "ICM/Intern", High: 1, Max: 6000, Writes: 34877, Reads: 34877},
 		},
 	}, nil)
-	currentSapInstance := sapcontrol.CurrentSapInstance{
+	mockWebService.EXPECT().GetCurrentInstance().Return(&sapcontrol.CurrentSapInstance{
 		SID:      "HA1",
 		Number:   0,
 		Name:     "ASCS",
 		Hostname: "sapha1as",
-	}
+	}, nil)
 
 	expectedMetrics := `
 	# HELP sap_dispatcher_queue_high Work process peak queue length
 	# TYPE sap_dispatcher_queue_high counter
-	sap_dispatcher_queue_high{type="ABAP/BTC"} 2
-	sap_dispatcher_queue_high{type="ABAP/DIA"} 5
-	sap_dispatcher_queue_high{type="ABAP/ENQ"} 0
-	sap_dispatcher_queue_high{type="ABAP/NOWP"} 3
-	sap_dispatcher_queue_high{type="ABAP/SPO"} 1
-	sap_dispatcher_queue_high{type="ABAP/UP2"} 1
-	sap_dispatcher_queue_high{type="ABAP/UPD"} 2
-	sap_dispatcher_queue_high{type="ICM/Intern"} 1
+	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/BTC"} 2
+	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/DIA"} 5
+	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/ENQ"} 0
+	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/NOWP"} 3
+	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/SPO"} 1
+	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UP2"} 1
+	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UPD"} 2
+	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ICM/Intern"} 1
 	# HELP sap_dispatcher_queue_max Work process maximum queue length
 	# TYPE sap_dispatcher_queue_max gauge
-	sap_dispatcher_queue_max{type="ABAP/BTC"} 14000
-	sap_dispatcher_queue_max{type="ABAP/DIA"} 14000
-	sap_dispatcher_queue_max{type="ABAP/ENQ"} 14000
-	sap_dispatcher_queue_max{type="ABAP/NOWP"} 14000
-	sap_dispatcher_queue_max{type="ABAP/SPO"} 14000
-	sap_dispatcher_queue_max{type="ABAP/UP2"} 14000
-	sap_dispatcher_queue_max{type="ABAP/UPD"} 14000
-	sap_dispatcher_queue_max{type="ICM/Intern"} 6000
+	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/BTC"} 14000
+	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/DIA"} 14000
+	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/ENQ"} 14000
+	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/NOWP"} 14000
+	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/SPO"} 14000
+	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UP2"} 14000
+	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UPD"} 14000
+	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ICM/Intern"} 6000
 	# HELP sap_dispatcher_queue_now Work process current queue length
 	# TYPE sap_dispatcher_queue_now gauge
-	sap_dispatcher_queue_now{type="ABAP/BTC"} 0
-	sap_dispatcher_queue_now{type="ABAP/DIA"} 0
-	sap_dispatcher_queue_now{type="ABAP/ENQ"} 0
-	sap_dispatcher_queue_now{type="ABAP/NOWP"} 0
-	sap_dispatcher_queue_now{type="ABAP/SPO"} 0
-	sap_dispatcher_queue_now{type="ABAP/UP2"} 0
-	sap_dispatcher_queue_now{type="ABAP/UPD"} 0
-	sap_dispatcher_queue_now{type="ICM/Intern"} 0
+	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/BTC"} 0
+	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/DIA"} 0
+	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/ENQ"} 0
+	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/NOWP"} 0
+	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/SPO"} 0
+	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UP2"} 0
+	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UPD"} 0
+	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ICM/Intern"} 0
 	# HELP sap_dispatcher_queue_reads Work process queue reads
 	# TYPE sap_dispatcher_queue_reads counter
-	sap_dispatcher_queue_reads{type="ABAP/BTC"} 10464
-	sap_dispatcher_queue_reads{type="ABAP/DIA"} 447173
-	sap_dispatcher_queue_reads{type="ABAP/ENQ"} 0
-	sap_dispatcher_queue_reads{type="ABAP/NOWP"} 249133
-	sap_dispatcher_queue_reads{type="ABAP/SPO"} 38366
-	sap_dispatcher_queue_reads{type="ABAP/UP2"} 3488
-	sap_dispatcher_queue_reads{type="ABAP/UPD"} 3491
-	sap_dispatcher_queue_reads{type="ICM/Intern"} 34877
+	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/BTC"} 10464
+	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/DIA"} 447173
+	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/ENQ"} 0
+	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/NOWP"} 249133
+	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/SPO"} 38366
+	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UP2"} 3488
+	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UPD"} 3491
+	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ICM/Intern"} 34877
 	# HELP sap_dispatcher_queue_writes Work process queue writes
 	# TYPE sap_dispatcher_queue_writes counter
-	sap_dispatcher_queue_writes{type="ABAP/BTC"} 10464
-	sap_dispatcher_queue_writes{type="ABAP/DIA"} 447173
-	sap_dispatcher_queue_writes{type="ABAP/ENQ"} 0
-	sap_dispatcher_queue_writes{type="ABAP/NOWP"} 249133
-	sap_dispatcher_queue_writes{type="ABAP/SPO"} 38366
-	sap_dispatcher_queue_writes{type="ABAP/UP2"} 3488
-	sap_dispatcher_queue_writes{type="ABAP/UPD"} 3491
-	sap_dispatcher_queue_writes{type="ICM/Intern"} 34877
+	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/BTC"} 10464
+	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/DIA"} 447173
+	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/ENQ"} 0
+	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/NOWP"} 249133
+	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/SPO"} 38366
+	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UP2"} 3488
+	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UPD"} 3491
+	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ICM/Intern"} 34877
 `
 
 	var err error
-	collector, err := NewCollector(mockWebService, currentSapInstance)
+	collector, err := NewCollector(mockWebService)
 	assert.NoError(t, err)
 
 	err = testutil.CollectAndCompare(collector, strings.NewReader(expectedMetrics))
@@ -114,10 +113,10 @@ func TestWorkProcessQueueStatsMetricWithEmptyData(t *testing.T) {
 
 	mockWebService := mock_sapcontrol.NewMockWebService(ctrl)
 	mockWebService.EXPECT().GetQueueStatistic().Return(&sapcontrol.GetQueueStatisticResponse{}, nil)
-	currentSapInstance := sapcontrol.CurrentSapInstance{}
+	mockWebService.EXPECT().GetCurrentInstance().Return(&sapcontrol.CurrentSapInstance{}, nil)
 
 	var err error
-	collector, err := NewCollector(mockWebService, currentSapInstance)
+	collector, err := NewCollector(mockWebService)
 	assert.NoError(t, err)
 
 	err = testutil.CollectAndCompare(collector, strings.NewReader(""))

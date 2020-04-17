@@ -12,12 +12,11 @@ import (
 	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
 )
 
-func NewCollector(webService sapcontrol.WebService, currentSapInstance sapcontrol.CurrentSapInstance) (*startServiceCollector, error) {
+func NewCollector(webService sapcontrol.WebService) (*startServiceCollector, error) {
 
 	c := &startServiceCollector{
 		collector.NewDefaultCollector("start_service"),
 		webService,
-		currentSapInstance,
 	}
 
 	c.SetDescriptor("processes", "The processes started by the SAP Start Service", []string{"name", "pid", "status", "instance_name", "instance_number", "sid", "instance_hostname"})
@@ -28,8 +27,7 @@ func NewCollector(webService sapcontrol.WebService, currentSapInstance sapcontro
 
 type startServiceCollector struct {
 	collector.DefaultCollector
-	webService         sapcontrol.WebService
-	currentSapInstance sapcontrol.CurrentSapInstance
+	webService sapcontrol.WebService
 }
 
 func (c *startServiceCollector) Collect(ch chan<- prometheus.Metric) {
@@ -47,7 +45,11 @@ func (c *startServiceCollector) Collect(ch chan<- prometheus.Metric) {
 
 func (c *startServiceCollector) recordProcesses(ch chan<- prometheus.Metric) error {
 	processList, err := c.webService.GetProcessList()
+	if err != nil {
+		return errors.Wrap(err, "SAPControl web service error")
+	}
 
+	currentSapInstance, err := c.webService.GetCurrentInstance()
 	if err != nil {
 		return errors.Wrap(err, "SAPControl web service error")
 	}
@@ -63,10 +65,10 @@ func (c *startServiceCollector) recordProcesses(ch chan<- prometheus.Metric) err
 			process.Name,
 			strconv.Itoa(int(process.Pid)),
 			process.Textstatus,
-			c.currentSapInstance.Name,
-			strconv.Itoa(int(c.currentSapInstance.Number)),
-			c.currentSapInstance.SID,
-			c.currentSapInstance.Hostname)
+			currentSapInstance.Name,
+			strconv.Itoa(int(currentSapInstance.Number)),
+			currentSapInstance.SID,
+			currentSapInstance.Hostname)
 	}
 
 	return nil
@@ -74,7 +76,11 @@ func (c *startServiceCollector) recordProcesses(ch chan<- prometheus.Metric) err
 
 func (c *startServiceCollector) recordInstances(ch chan<- prometheus.Metric) error {
 	instanceList, err := c.webService.GetSystemInstanceList()
+	if err != nil {
+		return errors.Wrap(err, "SAPControl web service error")
+	}
 
+	currentSapInstance, err := c.webService.GetCurrentInstance()
 	if err != nil {
 		return errors.Wrap(err, "SAPControl web service error")
 	}
@@ -82,7 +88,7 @@ func (c *startServiceCollector) recordInstances(ch chan<- prometheus.Metric) err
 	for _, instance := range instanceList.Instances {
 		// we only record the line relative to the current instance, to avoid duplicated metrics
 		// we need to check both instance nr and virtual hostname because with SAP you can never be safe enough
-		if instance.InstanceNr != c.currentSapInstance.Number || instance.Hostname != c.currentSapInstance.Hostname {
+		if instance.InstanceNr != currentSapInstance.Number || instance.Hostname != currentSapInstance.Hostname {
 			continue
 		}
 		instanceStatus, err := sapcontrol.StateColorToFloat(instance.Dispstatus)
@@ -94,10 +100,10 @@ func (c *startServiceCollector) recordInstances(ch chan<- prometheus.Metric) err
 			instanceStatus,
 			instance.Features,
 			instance.StartPriority,
-			c.currentSapInstance.Name,
-			strconv.Itoa(int(c.currentSapInstance.Number)),
-			c.currentSapInstance.SID,
-			c.currentSapInstance.Hostname)
+			currentSapInstance.Name,
+			strconv.Itoa(int(currentSapInstance.Number)),
+			currentSapInstance.SID,
+			currentSapInstance.Hostname)
 	}
 
 	return nil
