@@ -19,8 +19,8 @@ func NewCollector(webService sapcontrol.WebService) (*startServiceCollector, err
 		webService,
 	}
 
-	c.SetDescriptor("processes", "The processes started by the SAP Start Service", []string{"name", "pid", "status"})
-	c.SetDescriptor("instances", "All instances of the whole SAP system", []string{"hostname", "instance_number", "start_priority", "features"})
+	c.SetDescriptor("processes", "The processes started by the SAP Start Service", []string{"name", "pid", "status", "instance_name", "instance_number", "SID", "instance_hostname"})
+	c.SetDescriptor("instances", "All instances of the whole SAP system", []string{"features", "start_priority", "instance_name", "instance_number", "SID", "instance_hostname"})
 
 	return c, nil
 }
@@ -45,7 +45,11 @@ func (c *startServiceCollector) Collect(ch chan<- prometheus.Metric) {
 
 func (c *startServiceCollector) recordProcesses(ch chan<- prometheus.Metric) error {
 	processList, err := c.webService.GetProcessList()
+	if err != nil {
+		return errors.Wrap(err, "SAPControl web service error")
+	}
 
+	currentSapInstance, err := c.webService.GetCurrentInstance()
 	if err != nil {
 		return errors.Wrap(err, "SAPControl web service error")
 	}
@@ -55,7 +59,16 @@ func (c *startServiceCollector) recordProcesses(ch chan<- prometheus.Metric) err
 		if err != nil {
 			return errors.Wrapf(err, "unable to process SAPControl OSProcess data: %v", *process)
 		}
-		ch <- c.MakeGaugeMetric("processes", state, process.Name, strconv.Itoa(int(process.Pid)), process.Textstatus)
+		ch <- c.MakeGaugeMetric(
+			"processes",
+			state,
+			process.Name,
+			strconv.Itoa(int(process.Pid)),
+			process.Textstatus,
+			currentSapInstance.Name,
+			strconv.Itoa(int(currentSapInstance.Number)),
+			currentSapInstance.SID,
+			currentSapInstance.Hostname)
 	}
 
 	return nil
@@ -63,17 +76,34 @@ func (c *startServiceCollector) recordProcesses(ch chan<- prometheus.Metric) err
 
 func (c *startServiceCollector) recordInstances(ch chan<- prometheus.Metric) error {
 	instanceList, err := c.webService.GetSystemInstanceList()
+	if err != nil {
+		return errors.Wrap(err, "SAPControl web service error")
+	}
 
+	currentSapInstance, err := c.webService.GetCurrentInstance()
 	if err != nil {
 		return errors.Wrap(err, "SAPControl web service error")
 	}
 
 	for _, instance := range instanceList.Instances {
-		state, err := sapcontrol.StateColorToFloat(instance.Dispstatus)
+		// we only record the line relative to the current instance, to avoid duplicated metrics
+		// we need to check both instance nr and virtual hostname because with SAP you can never be safe enough
+		if instance.InstanceNr != currentSapInstance.Number || instance.Hostname != currentSapInstance.Hostname {
+			continue
+		}
+		instanceStatus, err := sapcontrol.StateColorToFloat(instance.Dispstatus)
 		if err != nil {
 			return errors.Wrapf(err, "unable to process SAPControl Instance data: %v", *instance)
 		}
-		ch <- c.MakeGaugeMetric("instances", state, instance.Hostname, strconv.Itoa(int(instance.InstanceNr)), instance.StartPriority, instance.Features)
+		ch <- c.MakeGaugeMetric(
+			"instances",
+			instanceStatus,
+			instance.Features,
+			instance.StartPriority,
+			currentSapInstance.Name,
+			strconv.Itoa(int(currentSapInstance.Number)),
+			currentSapInstance.SID,
+			currentSapInstance.Hostname)
 	}
 
 	return nil

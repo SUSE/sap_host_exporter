@@ -9,6 +9,7 @@ import (
 	"github.com/SUSE/sap_host_exporter/internal"
 	"github.com/SUSE/sap_host_exporter/internal/config"
 	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
+	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
@@ -36,6 +37,12 @@ func main() {
 
 	client := sapcontrol.NewSoapClient(config)
 	webService := sapcontrol.NewWebService(client)
+	currentSapInstance, err := webService.GetCurrentInstance()
+	if err != nil {
+		log.Fatal(errors.Wrap(err, "SAPControl web service error"))
+	}
+
+	log.Infof("Monitoring SAP Instance %s", currentSapInstance)
 
 	startServiceCollector, err := start_service.NewCollector(webService)
 	if err != nil {

@@ -6,11 +6,19 @@ General notes:
 - All the metrics are _namespaced_ with the prefix `sap`, which is followed by a _subsystem_, and both are in turn composed into a _Fully Qualified Name_ (FQN) of each metrics.
 - All the metrics and labels _names_ are in snake_case, as conventional with Prometheus. That said, as much as we'll try to keep this consistent throughout the project, the label _values_ may not actually follow this convention, though (e.g. label is a hostname).
 
+### Subsystems
+
 These are the currently implemented subsystems.
 
 1. [SAP Start Service](#sap-start-service)
 2. [SAP Enqueue Server](#sap-enqueue-server)
 3. [HA Checks](#ha-checks)
+
+### Appendix
+
+1. [SAP State colors](#sap-state-colors)
+2. [Common labels](#common-labels)
+
 
 ## SAP Start Service
 
@@ -29,8 +37,6 @@ Note: this metric reports lines for all the running instances in the system, not
 
 #### Labels
 
-- `hostname`: the virtual hostname of the instance
-- `instance_number`: the instance number
 - `start_priority`: the instance start priority
 - `features`: a pipe-separated (`|`) list of features running in the instance  
    e.g. `ABAP|GATEWAY|ICMAN|IGS`  
@@ -573,3 +579,12 @@ The value of `*_state` metrics is an integer status code that maps to the conven
 - `2`: `GREEN`.
 - `3`: `YELLOW`.
 - `4`: `RED`.
+
+### Common labels
+
+The following labels are shared among all the metrics.
+
+- `SID`: the SAP System ID.
+- `instance_name`: the SAP instance name.
+- `instance_hostname`: the SAP instance virtual hostname. Note, this may differ from the actual hostname of the instance host.
+- `instance_number`: the SAP instance number,

@@ -2,6 +2,7 @@ package sapcontrol
 
 import (
 	"encoding/xml"
+	"sync"
 
 	"github.com/hooklift/gowsdl/soap"
 	"github.com/pkg/errors"
@@ -31,6 +32,12 @@ type WebService interface {
 
 	/* Returns a list of SAP instances of the SAP system. */
 	GetSystemInstanceList() (*GetSystemInstanceListResponse, error)
+
+	/* Returns a list of available instance features and information how to get it. */
+	GetInstanceProperties() (*GetInstancePropertiesResponse, error)
+
+	/* Custom method to get the current instance data. This is not something natively exposed by the webservice. */
+	GetCurrentInstance() (*CurrentSapInstance, error)
 }
 
 type HACheckCategory string
@@ -99,6 +106,15 @@ type EnqGetStatisticResponse struct {
 	LockWaitTime       float64    `xml:"lock-wait-time,omitempty" json:"lock-wait-time,omitempty"`
 	ServerTime         float64    `xml:"server-time,omitempty" json:"server-time,omitempty"`
 	ReplicationState   STATECOLOR `xml:"replication-state,omitempty" json:"replication-state,omitempty"`
+}
+
+type GetInstanceProperties struct {
+	XMLName xml.Name `xml:"urn:SAPControl GetInstanceProperties"`
+}
+
+type GetInstancePropertiesResponse struct {
+	XMLName    xml.Name            `xml:"urn:SAPControl GetInstancePropertiesResponse"`
+	Properties []*InstanceProperty `xml:"properties>item,omitempty" json:"properties>item,omitempty"`
 }
 
 type GetProcessList struct {
@@ -178,6 +194,12 @@ type OSProcess struct {
 	Pid         int32      `xml:"pid,omitempty" json:"pid,omitempty"`
 }
 
+type InstanceProperty struct {
+	Property     string `xml:"property,omitempty" json:"property,omitempty"`
+	Propertytype string `xml:"propertytype,omitempty" json:"propertytype,omitempty"`
+	Value        string `xml:"value,omitempty" json:"value,omitempty"`
+}
+
 type SAPInstance struct {
 	Hostname      string     `xml:"hostname,omitempty" json:"hostname,omitempty"`
 	InstanceNr    int32      `xml:"instanceNr,omitempty" json:"instanceNr,omitempty"`
@@ -198,21 +220,36 @@ type TaskHandlerQueue struct {
 }
 
 type webService struct {
-	client *soap.Client
+	client             *soap.Client
+	once               *sync.Once
+	currentSapInstance *CurrentSapInstance
 }
 
 // constructor of a WebService interface
 func NewWebService(client *soap.Client) WebService {
 	return &webService{
 		client: client,
+		once:   &sync.Once{},
 	}
 }
 
+// implements WebService.GetInstanceProperties()
+func (s *webService) GetInstanceProperties() (*GetInstancePropertiesResponse, error) {
+	request := &GetInstanceProperties{}
+	response := &GetInstancePropertiesResponse{}
+	err := s.client.Call("''", request, response)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
 // implements WebService.GetProcessList()
-func (service *webService) GetProcessList() (*GetProcessListResponse, error) {
+func (s *webService) GetProcessList() (*GetProcessListResponse, error) {
 	request := &GetProcessList{}
 	response := &GetProcessListResponse{}
-	err := service.client.Call("''", request, response)
+	err := s.client.Call("''", request, response)
 	if err != nil {
 		return nil, err
 	}
@@ -221,10 +258,10 @@ func (service *webService) GetProcessList() (*GetProcessListResponse, error) {
 }
 
 // implements WebService.GetSystemInstanceList()
-func (service *webService) GetSystemInstanceList() (*GetSystemInstanceListResponse, error) {
+func (s *webService) GetSystemInstanceList() (*GetSystemInstanceListResponse, error) {
 	request := &GetSystemInstanceList{}
 	response := &GetSystemInstanceListResponse{}
-	err := service.client.Call("''", request, response)
+	err := s.client.Call("''", request, response)
 	if err != nil {
 		return nil, err
 	}
@@ -233,10 +270,10 @@ func (service *webService) GetSystemInstanceList() (*GetSystemInstanceListRespon
 }
 
 // implements WebService.EnqGetStatistic()
-func (service *webService) EnqGetStatistic() (*EnqGetStatisticResponse, error) {
+func (s *webService) EnqGetStatistic() (*EnqGetStatisticResponse, error) {
 	request := &EnqGetStatistic{}
 	response := &EnqGetStatisticResponse{}
-	err := service.client.Call("''", request, response)
+	err := s.client.Call("''", request, response)
 	if err != nil {
 		return nil, err
 	}
@@ -245,10 +282,10 @@ func (service *webService) EnqGetStatistic() (*EnqGetStatisticResponse, error) {
 }
 
 // implements WebService.GetQueueStatistic()
-func (service *webService) GetQueueStatistic() (*GetQueueStatisticResponse, error) {
+func (s *webService) GetQueueStatistic() (*GetQueueStatisticResponse, error) {
 	request := &GetQueueStatistic{}
 	response := &GetQueueStatisticResponse{}
-	err := service.client.Call("''", request, response)
+	err := s.client.Call("''", request, response)
 	if err != nil {
 		return nil, err
 	}
@@ -257,10 +294,10 @@ func (service *webService) GetQueueStatistic() (*GetQueueStatisticResponse, erro
 }
 
 // implements WebService.HACheckConfig()
-func (service *webService) HACheckConfig() (*HACheckConfigResponse, error) {
+func (s *webService) HACheckConfig() (*HACheckConfigResponse, error) {
 	request := &HACheckConfig{}
 	response := &HACheckConfigResponse{}
-	err := service.client.Call("''", request, response)
+	err := s.client.Call("''", request, response)
 	if err != nil {
 		return nil, err
 	}
@@ -269,10 +306,10 @@ func (service *webService) HACheckConfig() (*HACheckConfigResponse, error) {
 }
 
 // implements WebService.HACheckFailoverConfig()
-func (service *webService) HACheckFailoverConfig() (*HACheckFailoverConfigResponse, error) {
+func (s *webService) HACheckFailoverConfig() (*HACheckFailoverConfigResponse, error) {
 	request := &HACheckFailoverConfig{}
 	response := &HACheckFailoverConfigResponse{}
-	err := service.client.Call("''", request, response)
+	err := s.client.Call("''", request, response)
 	if err != nil {
 		return nil, err
 	}
@@ -281,10 +318,10 @@ func (service *webService) HACheckFailoverConfig() (*HACheckFailoverConfigRespon
 }
 
 // implements WebService.HAGetFailoverConfig()
-func (service *webService) HAGetFailoverConfig() (*HAGetFailoverConfigResponse, error) {
+func (s *webService) HAGetFailoverConfig() (*HAGetFailoverConfigResponse, error) {
 	request := &HAGetFailoverConfig{}
 	response := &HAGetFailoverConfigResponse{}
-	err := service.client.Call("''", request, response)
+	err := s.client.Call("''", request, response)
 	if err != nil {
 		return nil, err
 	}
