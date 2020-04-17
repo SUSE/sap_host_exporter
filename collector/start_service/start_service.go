@@ -19,8 +19,8 @@ func NewCollector(webService sapcontrol.WebService) (*startServiceCollector, err
 		webService,
 	}
 
-	c.SetDescriptor("processes", "The processes started by the SAP Start Service", []string{"name", "pid", "status", "instance_name", "instance_number", "sid", "instance_hostname"})
-	c.SetDescriptor("instances", "All instances of the whole SAP system", []string{"features", "start_priority", "instance_name", "instance_number", "sid", "instance_hostname"})
+	c.SetDescriptor("processes", "The processes started by the SAP Start Service", []string{"name", "pid", "status", "instance_name", "instance_number", "SID", "instance_hostname"})
+	c.SetDescriptor("instances", "All instances of the whole SAP system", []string{"features", "start_priority", "instance_name", "instance_number", "SID", "instance_hostname"})
 
 	return c, nil
 }

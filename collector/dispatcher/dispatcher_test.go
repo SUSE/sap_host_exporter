@@ -49,54 +49,54 @@ func TestWorkProcessQueueStatsMetric(t *testing.T) {
 	expectedMetrics := `
 	# HELP sap_dispatcher_queue_high Work process peak queue length
 	# TYPE sap_dispatcher_queue_high counter
-	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/BTC"} 2
-	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/DIA"} 5
-	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/ENQ"} 0
-	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/NOWP"} 3
-	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/SPO"} 1
-	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UP2"} 1
-	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UPD"} 2
-	sap_dispatcher_queue_high{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ICM/Intern"} 1
+	sap_dispatcher_queue_high{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/BTC"} 2
+	sap_dispatcher_queue_high{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/DIA"} 5
+	sap_dispatcher_queue_high{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/ENQ"} 0
+	sap_dispatcher_queue_high{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/NOWP"} 3
+	sap_dispatcher_queue_high{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/SPO"} 1
+	sap_dispatcher_queue_high{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/UP2"} 1
+	sap_dispatcher_queue_high{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/UPD"} 2
+	sap_dispatcher_queue_high{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ICM/Intern"} 1
 	# HELP sap_dispatcher_queue_max Work process maximum queue length
 	# TYPE sap_dispatcher_queue_max gauge
-	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/BTC"} 14000
-	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/DIA"} 14000
-	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/ENQ"} 14000
-	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/NOWP"} 14000
-	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/SPO"} 14000
-	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UP2"} 14000
-	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UPD"} 14000
-	sap_dispatcher_queue_max{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ICM/Intern"} 6000
+	sap_dispatcher_queue_max{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/BTC"} 14000
+	sap_dispatcher_queue_max{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/DIA"} 14000
+	sap_dispatcher_queue_max{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/ENQ"} 14000
+	sap_dispatcher_queue_max{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/NOWP"} 14000
+	sap_dispatcher_queue_max{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/SPO"} 14000
+	sap_dispatcher_queue_max{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/UP2"} 14000
+	sap_dispatcher_queue_max{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/UPD"} 14000
+	sap_dispatcher_queue_max{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ICM/Intern"} 6000
 	# HELP sap_dispatcher_queue_now Work process current queue length
 	# TYPE sap_dispatcher_queue_now gauge
-	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/BTC"} 0
-	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/DIA"} 0
-	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/ENQ"} 0
-	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/NOWP"} 0
-	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/SPO"} 0
-	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UP2"} 0
-	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UPD"} 0
-	sap_dispatcher_queue_now{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ICM/Intern"} 0
+	sap_dispatcher_queue_now{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/BTC"} 0
+	sap_dispatcher_queue_now{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/DIA"} 0
+	sap_dispatcher_queue_now{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/ENQ"} 0
+	sap_dispatcher_queue_now{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/NOWP"} 0
+	sap_dispatcher_queue_now{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/SPO"} 0
+	sap_dispatcher_queue_now{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/UP2"} 0
+	sap_dispatcher_queue_now{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/UPD"} 0
+	sap_dispatcher_queue_now{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ICM/Intern"} 0
 	# HELP sap_dispatcher_queue_reads Work process queue reads
 	# TYPE sap_dispatcher_queue_reads counter
-	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/BTC"} 10464
-	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/DIA"} 447173
-	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/ENQ"} 0
-	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/NOWP"} 249133
-	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/SPO"} 38366
-	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UP2"} 3488
-	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UPD"} 3491
-	sap_dispatcher_queue_reads{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ICM/Intern"} 34877
+	sap_dispatcher_queue_reads{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/BTC"} 10464
+	sap_dispatcher_queue_reads{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/DIA"} 447173
+	sap_dispatcher_queue_reads{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/ENQ"} 0
+	sap_dispatcher_queue_reads{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/NOWP"} 249133
+	sap_dispatcher_queue_reads{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/SPO"} 38366
+	sap_dispatcher_queue_reads{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/UP2"} 3488
+	sap_dispatcher_queue_reads{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/UPD"} 3491
+	sap_dispatcher_queue_reads{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ICM/Intern"} 34877
 	# HELP sap_dispatcher_queue_writes Work process queue writes
 	# TYPE sap_dispatcher_queue_writes counter
-	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/BTC"} 10464
-	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/DIA"} 447173
-	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/ENQ"} 0
-	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/NOWP"} 249133
-	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/SPO"} 38366
-	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UP2"} 3488
-	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ABAP/UPD"} 3491
-	sap_dispatcher_queue_writes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",type="ICM/Intern"} 34877
+	sap_dispatcher_queue_writes{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/BTC"} 10464
+	sap_dispatcher_queue_writes{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/DIA"} 447173
+	sap_dispatcher_queue_writes{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/ENQ"} 0
+	sap_dispatcher_queue_writes{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/NOWP"} 249133
+	sap_dispatcher_queue_writes{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/SPO"} 38366
+	sap_dispatcher_queue_writes{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/UP2"} 3488
+	sap_dispatcher_queue_writes{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ABAP/UPD"} 3491
+	sap_dispatcher_queue_writes{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",type="ICM/Intern"} 34877
 `
 
 	var err error

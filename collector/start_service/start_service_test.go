@@ -59,8 +59,8 @@ func TestProcessesMetric(t *testing.T) {
 	expectedMetrics := `
 	# HELP sap_start_service_processes The processes started by the SAP Start Service
 	# TYPE sap_start_service_processes gauge
-	sap_start_service_processes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",name="enserver",pid="30787",sid="HA1",status="Running"} 2
-	sap_start_service_processes{instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",name="msg_server",pid="30786",sid="HA1",status="Stopping"} 3
+	sap_start_service_processes{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",name="enserver",pid="30787",status="Running"} 2
+	sap_start_service_processes{SID="HA1",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",name="msg_server",pid="30786",status="Stopping"} 3
 	`
 
 	var err error
@@ -109,7 +109,7 @@ func TestInstancesMetric(t *testing.T) {
 	expectedMetrics := `
 	# HELP sap_start_service_instances All instances of the whole SAP system
 	# TYPE sap_start_service_instances gauge
-    sap_start_service_instances{features="MESSAGESERVER|ENQUE",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",sid="HA1",start_priority="1"} 2
+    sap_start_service_instances{SID="HA1",features="MESSAGESERVER|ENQUE",instance_hostname="sapha1as",instance_name="ASCS",instance_number="0",start_priority="1"} 2
 	`
 
 	var err error

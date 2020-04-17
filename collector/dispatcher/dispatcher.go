@@ -19,11 +19,11 @@ func NewCollector(webService sapcontrol.WebService) (*dispatcherCollector, error
 		webService,
 	}
 
-	c.SetDescriptor("queue_now", "Work process current queue length", []string{"type", "instance_name", "instance_number", "sid", "instance_hostname"})
-	c.SetDescriptor("queue_high", "Work process peak queue length", []string{"type", "instance_name", "instance_number", "sid", "instance_hostname"})
-	c.SetDescriptor("queue_max", "Work process maximum queue length", []string{"type", "instance_name", "instance_number", "sid", "instance_hostname"})
-	c.SetDescriptor("queue_writes", "Work process queue writes", []string{"type", "instance_name", "instance_number", "sid", "instance_hostname"})
-	c.SetDescriptor("queue_reads", "Work process queue reads", []string{"type", "instance_name", "instance_number", "sid", "instance_hostname"})
+	c.SetDescriptor("queue_now", "Work process current queue length", []string{"type", "instance_name", "instance_number", "SID", "instance_hostname"})
+	c.SetDescriptor("queue_high", "Work process peak queue length", []string{"type", "instance_name", "instance_number", "SID", "instance_hostname"})
+	c.SetDescriptor("queue_max", "Work process maximum queue length", []string{"type", "instance_name", "instance_number", "SID", "instance_hostname"})
+	c.SetDescriptor("queue_writes", "Work process queue writes", []string{"type", "instance_name", "instance_number", "SID", "instance_hostname"})
+	c.SetDescriptor("queue_reads", "Work process queue reads", []string{"type", "instance_name", "instance_number", "SID", "instance_hostname"})
 
 	return c, nil
 }
