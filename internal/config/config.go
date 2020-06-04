@@ -9,10 +9,10 @@ import (
 	"github.com/spf13/viper"
 )
 
-func New() (*viper.Viper, error) {
+func New(flagSet *flag.FlagSet) (*viper.Viper, error) {
 	config := viper.New()
 
-	err := config.BindPFlags(flag.CommandLine)
+	err := config.BindPFlags(flagSet)
 	if err != nil {
 		return nil, errors.Wrap(err, "could not bind config to CLI flags")
 	}

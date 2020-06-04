@@ -47,5 +47,7 @@ func loadConfigurationFromFile(config *viper.Viper, path string) error {
 		return errors.Wrap(err, "could not read file")
 	}
 
+	log.Info("Using config file: ", path)
+
 	return nil
 }
