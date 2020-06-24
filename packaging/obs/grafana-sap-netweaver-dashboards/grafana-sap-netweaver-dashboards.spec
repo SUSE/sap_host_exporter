@@ -18,7 +18,7 @@ Name:           grafana-sap-netweaver-dashboards
 Version:        0
 Release:        0
 License:        Apache-2.0
-Summary:        Grafana Dashboards displaying metrics about a Pacemaker/Corosync High Availability Cluster.
+Summary:        Grafana Dashboards displaying metrics about a SAP NetWeaver landscape.
 Group:          System/Monitoring
 Url:            https://github.com/ClusterLabs/ha_cluster_exporter
 Source:         %{name}-%{version}.tar.gz
@@ -27,7 +27,7 @@ Requires:       grafana-sap-providers
 BuildRequires:  grafana-sap-providers
 
 %description
-Grafana Dashboards displaying metrics about a Pacemaker/Corosync High Availability Cluster.
+Grafana Dashboards displaying metrics about a SAP NetWeaver landscape.
 
 %prep
 %setup -q
