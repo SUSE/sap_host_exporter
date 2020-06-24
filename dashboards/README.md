@@ -28,9 +28,6 @@ Copy the [provider configuration file](https://build.opensuse.org/package/view_f
 
 Once done, restart the Grafana server.
 
-### Grafana.com
-
-Dashboards will be soon available on [grafana.com/dashboards](https://grafana.com/dashboards)
 
 ## Development notes
 
