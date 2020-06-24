@@ -20,7 +20,7 @@ Release:        0
 License:        Apache-2.0
 Summary:        Grafana Dashboards displaying metrics about a SAP NetWeaver landscape.
 Group:          System/Monitoring
-Url:            https://github.com/ClusterLabs/ha_cluster_exporter
+Url:            https://github.com/SUSE/sap_host_exporter
 Source:         %{name}-%{version}.tar.gz
 BuildArch:      noarch
 Requires:       grafana-sap-providers
