@@ -1,14 +1,17 @@
-# this is the what ends up in the RPM "Version" field and it is also used as suffix for the built binaries
-# if you want to commit to OBS it must be a remotely available Git reference
-VERSION ?= $(shell git describe --tags --abbrev=0)dev+git.$(shell git show -s --format=%ct.%h HEAD)
+# this is the what ends up in the RPM "Version" field and embedded in the --version CLI flag
+VERSION ?= $(shell .ci/get_version_from_git.sh)
+
+# this
 DATE = $(shell date --iso-8601=seconds)
+
+# if you want to release to OBS, this must be a remotely available Git reference
+REVISION ?= master
 
 # we only use this to comply with RPM changelog conventions at SUSE
 AUTHOR ?= shap-staff@suse.de
 
 # you can customize any of the following to build forks
 OBS_PROJECT ?= server:monitoring
-OBS_PACKAGE ?= prometheus-sap_host_exporter
 REPOSITORY ?= SUSE/sap_host_exporter
 
 # the Go archs we crosscompile to
@@ -22,7 +25,7 @@ download:
 
 build: amd64
 
-build-all: clean-bin $(ARCHS)
+build-all: clean $(ARCHS)
 
 $(ARCHS):
 	@mkdir -p build/bin
@@ -58,29 +61,44 @@ coverage:
 	go test -cover -coverprofile=build/coverage ./...
 	go tool cover -html=build/coverage
 
-clean: clean-bin clean-obs
+clean:
 	go clean
 	rm -rf build
 
-clean-bin:
-	rm -rf build/bin
-
-clean-obs:
-	rm -rf build/obs
-
-obs-workdir: clean-obs
-	@mkdir -p build/obs
-	osc checkout $(OBS_PROJECT) $(OBS_PACKAGE) -o build/obs
-	rm -f build/obs/*.tar.gz
-	cp -rv packaging/obs/* build/obs/
+exporter-obs-workdir: build/obs/prometheus-sap_host_exporter
+build/obs/prometheus-sap_host_exporter:
+	@mkdir -p $@
+	osc checkout $(OBS_PROJECT) prometheus-sap_host_exporter -o $@
+	rm -f $@/*.tar.gz
+	cp -rv packaging/obs/* $@/
 # we interpolate environment variables in OBS _service file so that we control what is downloaded by the tar_scm source service
-	sed -i 's~%%VERSION%%~$(VERSION)~' build/obs/_service
-	sed -i 's~%%REPOSITORY%%~$(REPOSITORY)~' build/obs/_service
-	cd build/obs; osc service runall
-	.ci/gh_release_to_obs_changeset.py $(REPOSITORY) -a $(AUTHOR) -t $(VERSION) -f build/obs/$(OBS_PACKAGE).changes || true
+	sed -i 's~%%VERSION%%~$(VERSION)~' $@/_service
+	sed -i 's~%%REVISION%%~$(REVISION)~' $@/_service
+	sed -i 's~%%REPOSITORY%%~$(REPOSITORY)~' $@/_service
+	cd $@; osc service runall
 
-obs-commit: obs-workdir
-	cd build/obs; osc addremove
-	cd build/obs; osc commit -m "Update to git ref $(VERSION)"
+exporter-obs-changelog: exporter-obs-workdir
+	.ci/gh_release_to_obs_changeset.py $(REPOSITORY) -a $(AUTHOR) -t $(REVISION) -f build/obs/prometheus-sap_host_exporter/prometheus-sap_host_exporter.changes
 
-.PHONY: default download install static-checks vet-check fmt fmt-check mod-tidy generate test coverage clean clean-bin clean-obs build build-all obs-commit obs-workdir $(ARCHS)
+exporter-obs-commit: exporter-obs-workdir
+	cd build/obs/prometheus-sap_host_exporter; osc addremove
+	cd build/obs/prometheus-sap_host_exporter; osc commit -m "Update from git rev $(REVISION)"
+
+dashboards-obs-workdir: build/obs/grafana-sap-netweaver-dashboards
+build/obs/grafana-sap-netweaver-dashboards:
+	@mkdir -p $@
+	osc checkout $(OBS_PROJECT) grafana-sap-netweaver-dashboards -o $@
+	rm -f $@/*.tar.gz
+	cp -rv packaging/obs/grafana-sap-netweaver-dashboards/* $@/
+# we interpolate environment variables in OBS _service file so that we control what is downloaded by the tar_scm source service
+	sed -i 's~%%REVISION%%~$(REVISION)~' $@/_service
+	sed -i 's~%%REPOSITORY%%~$(REPOSITORY)~' $@/_service
+	cd $@; osc service runall
+
+dashboards-obs-commit: dashboards-obs-workdir
+	cd build/obs/grafana-sap-netweaver-dashboards; osc addremove
+	cd build/obs/grafana-sap-netweaver-dashboards; osc commit -m "Update from git rev $(REVISION)"
+
+.PHONY: $(ARCHS) build build-all checks clean coverage dashboards-obs-commit dashboards-obs-workdir default download \
+		exporter-obs-changelog exporter-obs-commit exporter-obs-workdir fmt fmt-check generate install mod-tidy \
+		static-checks test vet-check
