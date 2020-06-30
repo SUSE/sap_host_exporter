@@ -33,4 +33,4 @@ Once done, restart the Grafana server.
 
 - Please make sure the `version` field in the JSON is incremented just once per PR.
 - Unlike the exporter, OBS Submit Requests are not automated for the dashboard package.  
-  Once PRs are merged, you will have to manually perform a Submit Request against `openSUSE:Factory`, after updating the `version` field in the `_service` file and adding an entry to the `grafana-ha-cluster-dashboards.changes` file.    
+  Once PRs are merged, you will have to manually perform a Submit Request against `openSUSE:Factory`, after updating the `version` field in the `_service` file and adding an entry to the `grafana-sap-netweaver-dashboards.changes` file.    
