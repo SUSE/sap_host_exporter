@@ -1,11 +1,11 @@
 # this is the what ends up in the RPM "Version" field and embedded in the --version CLI flag
 VERSION ?= $(shell .ci/get_version_from_git.sh)
 
-# this
+# this will be used as the build date by the Go compile task
 DATE = $(shell date --iso-8601=seconds)
 
 # if you want to release to OBS, this must be a remotely available Git reference
-REVISION ?= master
+REVISION ?= $(shell git rev-parse --abbrev-ref HEAD)
 
 # we only use this to comply with RPM changelog conventions at SUSE
 AUTHOR ?= shap-staff@suse.de

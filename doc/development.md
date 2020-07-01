@@ -40,7 +40,7 @@ For reference, you can find the full, generated, web service code [here](_genera
 
 ## OBS Packaging
 
-The CI will automatically publish GitHub releases to SUSE's Open Build Service: to perform a new release, just publish a new GH release or push a git tag. Tags must always follow the [SemVer](https://semver.org/) scheme.
+The CI will automatically publish GitHub releases to SUSE's Open Build Service: to perform a new release, just publish a new GH release. Tags must always follow the [SemVer](https://semver.org/) scheme.
 
 If you wish to produce an OBS working directory locally, having configured [`osc`](https://en.opensuse.org/openSUSE:OSC) already, you can run:
 ```
@@ -48,22 +48,26 @@ make obs-workdir
 ```
 This will checkout the OBS project and prepare a new OBS commit in the `build/obs` directory.
 
-Note that, by default, the current Git working directory HEAD reference is used to download the sources from the remote, so this reference must have been pushed beforehand.
-  
-You can use the `OSB_PROJECT`, `OBS_PACKAGE`, `REPOSITORY` and `VERSION` environment variables to change the behaviour of OBS-related make targets.
+You can use the `OSB_PROJECT`, `REPOSITORY`, `VERSION` and `REVISION` environment variables to change the behaviour of OBS-related make targets.
+
+By default, the current Git working directory is used to infer the values of `VERSION` and `REVISION`, which are used by OBS source services to generate a compressed archive of the sources.  
 
 For example, if you were on a feature branch of your own fork, you may want to change these variables, so:
 ```bash
-git push feature/yxz # don't forget to make changes remotely available
+git checkout feature/xyz
+git push johndoe feature/xyz # don't forget to push changes your own fork remote
 export OBS_PROJECT=home:JohnDoe
-export OBS_PACKAGE=my_project_branch
-export REPOSITORY=johndoe/my_forked_repo
-export VERSION=feature/yxz
-make obs-workdir
+export REPOSITORY=johndoe/sap_host_exporter
+make exporter-obs-workdir
 ``` 
-will prepare to commit on OBS into `home:JohnDoe/my_project_branch` by checking out the branch `feature/yxz` from `github.com/johndoe/my_forked_repo`.
+will prepare to commit on OBS into `home:JohnDoe/sap_host_exporter` by checking out the branch `feature/yxz` from `github.com/johndoe/sap_host_exporter`.
 
-At last, to actually perform the commit into OBS, run `make obs-commit`. 
+At last, to actually perform the commit into OBS, run: 
+```bash
+make exporter-obs-commit
+``` 
+
+Note that that actual continuously deployed releases also involve an intermediate step that updates the changelog automatically with the markdown text of the GitHub release.
 
 
 ## SAP learning material
