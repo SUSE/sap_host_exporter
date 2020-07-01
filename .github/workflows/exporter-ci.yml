@@ -39,7 +39,7 @@ jobs:
       run: make -j4 build-all
     - uses: actions/upload-artifact@v2
       with:
-        name: ha_cluster_exporter
+        name: sap_host_exporter
         path: build/bin
 
   obs-commit:
