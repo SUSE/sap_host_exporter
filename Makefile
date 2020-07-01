@@ -29,7 +29,7 @@ build-all: clean $(ARCHS)
 
 $(ARCHS):
 	@mkdir -p build/bin
-	CGO_ENABLED=0 GOOS=linux GOARCH=$@ go build -trimpath -ldflags "-s -w -X main.version=$(VERSION) -X main.buildDate=$(DATE)" -o build/bin/sap_host_exporter-$(VERSION)-$@
+	CGO_ENABLED=0 GOOS=linux GOARCH=$@ go build -trimpath -ldflags "-s -w -X main.version=$(VERSION) -X main.buildDate=$(DATE)" -o build/bin/sap_host_exporter-$@
 
 install:
 	go install
