@@ -2,7 +2,8 @@
 
 This is a bespoke Prometheus exporter enabling the monitoring of SAP systems (a.k.a. SAP NetWeaver applications).
 
-[![Build Status](https://travis-ci.org/SUSE/sap_host_exporter.svg?branch=master)](https://travis-ci.org/SUSE/sap_host_exporter)
+[![Exporter CI](https://github.com/SUSE/sap_host_exporter/workflows/Exporter%20CI/badge.svg)](https://github.com/SUSE/sap_host_exporter/actions?query=workflow%3A%22Exporter+CI%22)
+[![Dashboards CI](https://github.com/SUSE/sap_host_exporter/workflows/Dashboards%20CI/badge.svg)](https://github.com/SUSE/sap_host_exporter/actions?query=workflow%3A%22Dashboards+CI%22)
 
 
 ## Table of Contents

@@ -1,11 +1,11 @@
 # this is the what ends up in the RPM "Version" field and embedded in the --version CLI flag
 VERSION ?= $(shell .ci/get_version_from_git.sh)
 
-# this
+# this will be used as the build date by the Go compile task
 DATE = $(shell date --iso-8601=seconds)
 
 # if you want to release to OBS, this must be a remotely available Git reference
-REVISION ?= master
+REVISION ?= $(shell git rev-parse --abbrev-ref HEAD)
 
 # we only use this to comply with RPM changelog conventions at SUSE
 AUTHOR ?= shap-staff@suse.de
@@ -29,7 +29,7 @@ build-all: clean $(ARCHS)
 
 $(ARCHS):
 	@mkdir -p build/bin
-	CGO_ENABLED=0 GOOS=linux GOARCH=$@ go build -trimpath -ldflags "-s -w -X main.version=$(VERSION) -X main.buildDate=$(DATE)" -o build/bin/sap_host_exporter-$(VERSION)-$@
+	CGO_ENABLED=0 GOOS=linux GOARCH=$@ go build -trimpath -ldflags "-s -w -X main.version=$(VERSION) -X main.buildDate=$(DATE)" -o build/bin/sap_host_exporter-$@
 
 install:
 	go install
@@ -70,7 +70,7 @@ build/obs/prometheus-sap_host_exporter:
 	@mkdir -p $@
 	osc checkout $(OBS_PROJECT) prometheus-sap_host_exporter -o $@
 	rm -f $@/*.tar.gz
-	cp -rv packaging/obs/* $@/
+	cp -rv packaging/obs/prometheus-sap_host_exporter/* $@/
 # we interpolate environment variables in OBS _service file so that we control what is downloaded by the tar_scm source service
 	sed -i 's~%%VERSION%%~$(VERSION)~' $@/_service
 	sed -i 's~%%REVISION%%~$(REVISION)~' $@/_service
