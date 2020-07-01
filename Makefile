@@ -70,7 +70,7 @@ build/obs/prometheus-sap_host_exporter:
 	@mkdir -p $@
 	osc checkout $(OBS_PROJECT) prometheus-sap_host_exporter -o $@
 	rm -f $@/*.tar.gz
-	cp -rv packaging/obs/* $@/
+	cp -rv packaging/obs/prometheus-sap_host_exporter/* $@/
 # we interpolate environment variables in OBS _service file so that we control what is downloaded by the tar_scm source service
 	sed -i 's~%%VERSION%%~$(VERSION)~' $@/_service
 	sed -i 's~%%REVISION%%~$(REVISION)~' $@/_service
