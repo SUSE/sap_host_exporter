@@ -10,7 +10,9 @@ This is a bespoke Prometheus exporter enabling the monitoring of SAP systems (a.
 1. [Features](#features)
 2. [Installation](#installation)
 3. [Usage](#usage)
-   1. [Metrics](doc/metrics.md)
+   1. [Configuration](#configuration)
+   2. [Metrics](#metrics)
+   3. [systemd integration](#systemd-integration)
 5. [Contributing](#contributing)
    1. [Design](doc/design.md)
    2. [Development](doc/development.md)
@@ -66,17 +68,18 @@ zypper install prometheus-sap_host_exporter
 You can run the exporter as follows:
 
 ```shell
-./sap_host_exporter --sap-control-url http://$SAP_HOST:$SAP_PORT
+./sap_host_exporter --sap-control-url $SAP_HOST:$SAP_CONTROL_PORT
 ```
 
-It will export the metrics under the `/metrics` path, on port `9680` by default.
+Though not strictly required, it is advised to run the exporter locally in the target SAP instance host, and connect to the SAPControl web service via Unix Domain Sockets:
 
-Though not strictly required, it is advised to run it in the nodes of the cluster and access the SAPControl web service locally.
+```shell
+./sap_host_exporter --sap-control-uds /tmp/.sapstream50013
+```
 
-The exporter won't export any metric it can't collect, but since it doesn't care about which subsystems are present in the monitored target, failing to collect metrics is _not_ considered a hard failure condition.
-Instead, in case some of the collectors fail to either register or perform collect cycles, a soft warning will be printed out in the log.
-
-Refer to [doc/metrics.md](doc/metrics.md) for extensive details about all the exported metrics.
+For further details on SAPControl, please refer to the [official SAP docs](https://www.sap.com/documents/2016/09/0a40e60d-8b7c-0010-82c7-eda71af511fa.html) to properly connect to the SAPControl service.
+ 
+The exporter will expose the metrics under the `/metrics` path, on port `9680` by default.
 
 **Hint:**
 You can deploy a full SAP NetWeaver cluster via Terraform with [SUSE/ha-sap-terraform-deployments](https://github.com/SUSE/ha-sap-terraform-deployments); 
@@ -95,6 +98,13 @@ The program will scan, in order, the current working directory, `$HOME/.config`,
 The first match has precedence, and the CLI flags have precedence over the config file.
 
 Please refer to the [example YAML configuration](doc/sap_host_exporter.yaml) for more details.
+
+### Metrics
+
+The exporter won't export any metric it can't collect, but since it doesn't care about which subsystems are present in the monitored target, failing to collect metrics is _not_ considered a hard failure condition.
+Instead, in case some of the collectors fail to either register or perform collect cycles, a soft warning will be printed out in the log.
+
+Refer to [doc/metrics.md](doc/metrics.md) for extensive details about all the exported metrics.
 
 ### systemd integration
 

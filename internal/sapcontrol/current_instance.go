@@ -28,7 +28,7 @@ func (s *webService) GetCurrentInstance() (*CurrentSapInstance, error) {
 		response, err = s.GetInstanceProperties()
 
 		if err != nil {
-			err = errors.Wrap(err, "could not performGetInstanceProperties query")
+			err = errors.Wrap(err, "could not perform GetInstanceProperties query")
 			return
 		}
 
