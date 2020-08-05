@@ -1,17 +1,26 @@
 {
-  "__inputs": [],
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
+    }
+  ],
   "__requires": [
     {
       "type": "panel",
       "id": "bargauge",
-      "name": "Bar Gauge",
+      "name": "Bar gauge",
       "version": ""
     },
     {
       "type": "grafana",
       "id": "grafana",
       "name": "Grafana",
-      "version": "6.3.5"
+      "version": "7.0.3"
     },
     {
       "type": "panel",
@@ -20,9 +29,15 @@
       "version": ""
     },
     {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    },
+    {
       "type": "panel",
-      "id": "table",
-      "name": "Table",
+      "id": "table-old",
+      "name": "Table (old)",
       "version": ""
     }
   ],
@@ -47,6 +62,7 @@
   "panels": [
     {
       "collapsed": false,
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -60,6 +76,13 @@
     },
     {
       "columns": [],
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fontSize": "100%",
       "gridPos": {
         "h": 6,
@@ -68,7 +91,6 @@
         "y": 1
       },
       "id": 28,
-      "options": {},
       "pageSize": null,
       "scroll": true,
       "showHeader": true,
@@ -79,6 +101,7 @@
       "styles": [
         {
           "alias": "Features",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -95,6 +118,7 @@
         },
         {
           "alias": "Number",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -111,6 +135,7 @@
         },
         {
           "alias": "Start priority",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -127,6 +152,7 @@
         },
         {
           "alias": "Status",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -161,6 +187,7 @@
         },
         {
           "alias": "",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -177,6 +204,7 @@
         },
         {
           "alias": "Hostname",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -193,6 +221,7 @@
         },
         {
           "alias": "Name",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -209,6 +238,7 @@
         },
         {
           "alias": "",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -234,10 +264,17 @@
       "timeShift": null,
       "title": "Instances",
       "transform": "table",
-      "type": "table"
+      "type": "table-old"
     },
     {
       "columns": [],
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fontSize": "100%",
       "gridPos": {
         "h": 6,
@@ -246,7 +283,6 @@
         "y": 1
       },
       "id": 2,
-      "options": {},
       "pageSize": null,
       "pluginVersion": "6.3.5",
       "scroll": true,
@@ -258,6 +294,7 @@
       "styles": [
         {
           "alias": "Code",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(50, 172, 45, 0.97)",
@@ -296,6 +333,7 @@
         },
         {
           "alias": "PID",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -312,6 +350,7 @@
         },
         {
           "alias": "Status",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -328,6 +367,7 @@
         },
         {
           "alias": "Process name",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -344,6 +384,7 @@
         },
         {
           "alias": "Instance name",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -360,6 +401,7 @@
         },
         {
           "alias": "Instance nr.",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -376,6 +418,7 @@
         },
         {
           "alias": "",
+          "align": "auto",
           "colorMode": null,
           "colors": [
             "rgba(245, 54, 54, 0.9)",
@@ -404,7 +447,7 @@
       "timeShift": null,
       "title": "Processes",
       "transform": "table",
-      "type": "table"
+      "type": "table-old"
     },
     {
       "aliasColors": {
@@ -416,6 +459,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -424,6 +474,7 @@
         "x": 0,
         "y": 7
       },
+      "hiddenSeries": false,
       "id": 30,
       "legend": {
         "avg": false,
@@ -522,6 +573,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -530,6 +588,7 @@
         "x": 12,
         "y": 7
       },
+      "hiddenSeries": false,
       "id": 4,
       "legend": {
         "avg": false,
@@ -622,6 +681,7 @@
     },
     {
       "collapsed": false,
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -638,6 +698,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -646,6 +713,7 @@
         "x": 0,
         "y": 16
       },
+      "hiddenSeries": false,
       "id": 20,
       "legend": {
         "avg": false,
@@ -735,6 +803,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -743,6 +818,7 @@
         "x": 8,
         "y": 16
       },
+      "hiddenSeries": false,
       "id": 24,
       "interval": "",
       "legend": {
@@ -846,6 +922,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -854,6 +937,7 @@
         "x": 16,
         "y": 16
       },
+      "hiddenSeries": false,
       "id": 26,
       "legend": {
         "avg": false,
@@ -935,6 +1019,7 @@
     },
     {
       "collapsed": false,
+      "datasource": "${DS_PROMETHEUS}",
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -951,6 +1036,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -959,6 +1051,7 @@
         "x": 0,
         "y": 25
       },
+      "hiddenSeries": false,
       "id": 14,
       "legend": {
         "avg": false,
@@ -1034,23 +1127,18 @@
       }
     },
     {
-      "gridPos": {
-        "h": 15,
-        "w": 8,
-        "x": 8,
-        "y": 25
-      },
-      "id": 18,
-      "options": {
-        "displayMode": "basic",
-        "fieldOptions": {
-          "calcs": [
-            "last"
-          ],
-          "defaults": {
-            "mappings": [],
-            "min": 0,
-            "thresholds": [
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "mappings": [],
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
               {
                 "color": "green",
                 "value": null
@@ -1064,13 +1152,30 @@
                 "value": 100
               }
             ]
-          },
-          "override": {},
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 15,
+        "w": 8,
+        "x": 8,
+        "y": 25
+      },
+      "id": 18,
+      "options": {
+        "displayMode": "basic",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "fields": "",
           "values": true
         },
-        "orientation": "horizontal"
+        "showUnfilled": true
       },
-      "pluginVersion": "6.3.5",
+      "pluginVersion": "7.0.3",
       "targets": [
         {
           "expr": "sap_dispatcher_queue_high",
@@ -1086,6 +1191,34 @@
     },
     {
       "cacheTimeout": null,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "decimals": 0,
+          "mappings": [],
+          "max": 15000,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 5000
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
       "gridPos": {
         "h": 15,
         "w": 8,
@@ -1096,33 +1229,17 @@
       "links": [],
       "options": {
         "displayMode": "basic",
-        "fieldOptions": {
+        "orientation": "horizontal",
+        "reduceOptions": {
           "calcs": [
             "lastNotNull"
           ],
-          "defaults": {
-            "decimals": 0,
-            "mappings": [],
-            "max": 15000,
-            "min": 0,
-            "thresholds": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "green",
-                "value": 5000
-              }
-            ],
-            "unit": "short"
-          },
-          "override": {},
+          "fields": "",
           "values": true
         },
-        "orientation": "horizontal"
+        "showUnfilled": true
       },
-      "pluginVersion": "6.3.5",
+      "pluginVersion": "7.0.3",
       "targets": [
         {
           "expr": "sap_dispatcher_queue_max",
@@ -1141,6 +1258,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1149,6 +1273,7 @@
         "x": 0,
         "y": 30
       },
+      "hiddenSeries": false,
       "id": 6,
       "legend": {
         "avg": false,
@@ -1226,6 +1351,13 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -1308,14 +1440,14 @@
     }
   ],
   "refresh": false,
-  "schemaVersion": 19,
+  "schemaVersion": 25,
   "style": "dark",
   "tags": [],
   "templating": {
     "list": []
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-1h",
     "to": "now"
   },
   "timepicker": {
@@ -1333,7 +1465,7 @@
     ]
   },
   "timezone": "",
-  "title": "SAP NetWeaver Details",
+  "title": "SAP NetWeaver",
   "uid": "lLLUAU_Wk",
-  "version": 8
+  "version": 1
 }

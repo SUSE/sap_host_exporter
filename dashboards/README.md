@@ -3,11 +3,11 @@
 We provide a dashboards for Grafana, leveraging the exporter.
 
 
-## SAP NetWeaver Details
+## SAP NetWeaver
 
 This dashboard shows the details of a single landscape.
 
-![SAP NetWeaver Details](screenshot-details.png)
+![SAP NetWeaver](screenshot.png)
 
 
 ## Installation
