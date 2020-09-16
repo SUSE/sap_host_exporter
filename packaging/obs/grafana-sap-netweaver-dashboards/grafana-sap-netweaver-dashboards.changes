@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 16 13:10:30 UTC 2020 - Dario Maiocchi <dmaiocchi@suse.com>
+
+- Release 1.0.2:
+  * fix minor typo in dashboard spec file
+
+-------------------------------------------------------------------
 Wed Aug  5 11:31:49 UTC 2020 - Stefano Torresi <stefano.torresi@suse.com>
 
 - Release 1.0.1
