@@ -25,6 +25,7 @@ Source:         %{name}-%{version}.tar.gz
 BuildArch:      noarch
 Requires:       grafana-sap-providers
 BuildRequires:  grafana-sap-providers
+Requires(pre):  shadow
 
 %description
 Grafana Dashboards displaying metrics about a SAP NetWeaver landscape.
@@ -33,6 +34,11 @@ Grafana Dashboards displaying metrics about a SAP NetWeaver landscape.
 %setup -q
 
 %build
+
+%pre
+echo "Creating grafana user and group if not present"
+getent group grafana > /dev/null || groupadd -r grafana
+getent passwd grafana > /dev/null || useradd -r -g grafana -d  %{_datadir}/grafana -s /sbin/nologin grafana
 
 %install
 %define dashboards_dir %{_localstatedir}/lib/grafana/dashboards
