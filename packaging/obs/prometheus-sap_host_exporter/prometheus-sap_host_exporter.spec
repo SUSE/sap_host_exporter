@@ -34,7 +34,7 @@ Provides:       prometheus(sap_host_exporter) = %{version}-%{release}
 
 %description
 A Prometheus metrics exporter that connects to the SAPControl web interface
-to collects data about SAP systems like NetWeaver and S4/HANA.
+to collect data about SAP systems like NetWeaver and S4/HANA.
 
 %prep
 %setup -q            # unpack project sources
