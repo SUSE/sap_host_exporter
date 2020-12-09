@@ -18,7 +18,7 @@ Name:           prometheus-sap_host_exporter
 Version:        0
 Release:        0
 License:        Apache-2.0
-Summary:        Prometheus exporter for SAP systems (a.k.a. NetWeaver)
+Summary:        Prometheus exporter for SAP hosts
 Group:          System/Monitoring
 Url:            https://github.com/SUSE/sap_host_exporter
 Source:         %{name}-%{version}.tar.gz
@@ -33,7 +33,8 @@ Provides:       prometheus(sap_host_exporter) = %{version}-%{release}
 %{go_nostrip}
 
 %description
-Prometheus exporter for Pacemaker HA clusters metrics
+A Prometheus metrics exporter that connects to the SAPControl web interface
+to collects data about SAP systems like NetWeaver and S4/HANA.
 
 %prep
 %setup -q            # unpack project sources
