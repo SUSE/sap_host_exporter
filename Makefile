@@ -17,10 +17,9 @@ REPOSITORY ?= SUSE/sap_host_exporter
 # the Go archs we crosscompile to
 ARCHS ?= amd64 arm64 ppc64le s390x
 
-default: clean download mod-tidy generate fmt vet-check test build
+default: clean verify mod-tidy generate fmt vet-check test build
 
-download:
-	go mod download
+verify:
 	go mod verify
 
 build: amd64
@@ -36,7 +35,7 @@ install:
 
 static-checks: vet-check fmt-check
 
-vet-check: download
+vet-check:
 	go vet ./...
 
 fmt:
@@ -51,7 +50,7 @@ fmt-check:
 generate:
 	go generate ./...
 
-test: download
+test:
 	go test -v ./...
 
 checks: static-checks test
