@@ -2,14 +2,15 @@ package registry
 
 import (
 	"bytes"
-	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
+	"os"
+	"testing"
+
+	"github.com/SUSE/sap_host_exporter/lib/sapcontrol"
 	"github.com/SUSE/sap_host_exporter/test/mock_sapcontrol"
 	"github.com/golang/mock/gomock"
 
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
-	"os"
-	"testing"
 )
 
 func captureOutput(f func()) string {

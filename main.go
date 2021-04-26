@@ -10,7 +10,7 @@ import (
 	"github.com/SUSE/sap_host_exporter/collector/start_service"
 	"github.com/SUSE/sap_host_exporter/internal"
 	"github.com/SUSE/sap_host_exporter/internal/config"
-	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
+	"github.com/SUSE/sap_host_exporter/lib/sapcontrol"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"

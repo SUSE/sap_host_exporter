@@ -9,7 +9,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 
 	"github.com/SUSE/sap_host_exporter/collector"
-	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
+	"github.com/SUSE/sap_host_exporter/lib/sapcontrol"
 )
 
 func NewCollector(webService sapcontrol.WebService) (*dispatcherCollector, error) {

@@ -33,7 +33,7 @@ Only public interfaces should need to be mocked.
 
 ### SAPControl web service
 
-The for the [SAPControl web service](internal/sapcontrol/soap_wsdl.go), we generated the basic structure with [hooklift/gowsdl](https://github.com/hooklift/gowsdl), then extracted and adapted only the parts of the web service that we actually need.
+The for the [SAPControl web service](lib/sapcontrol/soap_wsdl.go), we generated the basic structure with [hooklift/gowsdl](https://github.com/hooklift/gowsdl), then extracted and adapted only the parts of the web service that we actually need.
 
 For reference, you can find the full, generated, web service code [here](_generated_soap_wsdl.go), but bear in mind that we don't intend to use its generated code as it is. As such, note that this file is not covered by the `make generate` target.
 
