@@ -8,7 +8,7 @@ import (
 	"github.com/pkg/errors"
 )
 
-//go:generate mockgen -destination ../../test/mock_sapcontrol/webservice.go github.com/SUSE/sap_host_exporter/internal/sapcontrol WebService
+//go:generate mockgen -destination ../../test/mock_sapcontrol/webservice.go github.com/SUSE/sap_host_exporter/lib/sapcontrol WebService
 
 // the main interface exposed by this package
 type WebService interface {

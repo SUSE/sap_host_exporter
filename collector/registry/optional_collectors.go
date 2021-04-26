@@ -3,7 +3,7 @@ package registry
 import (
 	"github.com/SUSE/sap_host_exporter/collector/dispatcher"
 	"github.com/SUSE/sap_host_exporter/collector/enqueue_server"
-	"github.com/SUSE/sap_host_exporter/internal/sapcontrol"
+	"github.com/SUSE/sap_host_exporter/lib/sapcontrol"
 	"github.com/pkg/errors"
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
