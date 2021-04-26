@@ -98,6 +98,6 @@ dashboards-obs-commit: dashboards-obs-workdir
 	cd build/obs/grafana-sap-netweaver-dashboards; osc addremove
 	cd build/obs/grafana-sap-netweaver-dashboards; osc commit -m "Update from git rev $(REVISION)"
 
-.PHONY: $(ARCHS) build build-all checks clean coverage dashboards-obs-commit dashboards-obs-workdir default download \
+.PHONY: $(ARCHS) build build-all checks clean coverage dashboards-obs-commit dashboards-obs-workdir default \
 		exporter-obs-changelog exporter-obs-commit exporter-obs-workdir fmt fmt-check generate install mod-tidy \
-		static-checks test vet-check
+		static-checks test vet-check verify
