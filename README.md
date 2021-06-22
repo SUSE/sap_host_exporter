@@ -87,7 +87,7 @@ this exporter and the whole Prometheus monitoring stack will be automatically in
 
 ### Configuration
 
-The runtime parameters can be configured either via CLI flags or via a configuration file, both or which are completely optional.
+The runtime parameters can be configured either via CLI flags or via a configuration file, both of which are completely optional.
 
 For more details, refer to the help message via `sap_host_exporter --help`.
 
