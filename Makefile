@@ -17,10 +17,9 @@ REPOSITORY ?= SUSE/sap_host_exporter
 # the Go archs we crosscompile to
 ARCHS ?= amd64 arm64 ppc64le s390x
 
-default: clean download mod-tidy generate fmt vet-check test build
+default: clean verify mod-tidy generate fmt vet-check test build
 
-download:
-	go mod download
+verify:
 	go mod verify
 
 build: amd64
@@ -36,7 +35,7 @@ install:
 
 static-checks: vet-check fmt-check
 
-vet-check: download
+vet-check:
 	go vet ./...
 
 fmt:
@@ -51,7 +50,7 @@ fmt-check:
 generate:
 	go generate ./...
 
-test: download
+test:
 	go test -v ./...
 
 checks: static-checks test
@@ -99,6 +98,6 @@ dashboards-obs-commit: dashboards-obs-workdir
 	cd build/obs/grafana-sap-netweaver-dashboards; osc addremove
 	cd build/obs/grafana-sap-netweaver-dashboards; osc commit -m "Update from git rev $(REVISION)"
 
-.PHONY: $(ARCHS) build build-all checks clean coverage dashboards-obs-commit dashboards-obs-workdir default download \
+.PHONY: $(ARCHS) build build-all checks clean coverage dashboards-obs-commit dashboards-obs-workdir default \
 		exporter-obs-changelog exporter-obs-commit exporter-obs-workdir fmt fmt-check generate install mod-tidy \
-		static-checks test vet-check
+		static-checks test vet-check verify
