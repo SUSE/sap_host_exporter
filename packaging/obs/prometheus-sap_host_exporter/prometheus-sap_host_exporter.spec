@@ -25,12 +25,9 @@ Source:         %{name}-%{version}.tar.gz
 Source1:        vendor.tar.gz
 ExclusiveArch:  aarch64 x86_64 ppc64le s390x
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-BuildRequires:  golang-packaging
 BuildRequires:  golang(API) >= 1.12
 Provides:       sap_host_exporter = %{version}-%{release}
 Provides:       prometheus(sap_host_exporter) = %{version}-%{release}
-
-%{go_nostrip}
 
 %description
 A Prometheus metrics exporter that connects to the SAPControl web interface
