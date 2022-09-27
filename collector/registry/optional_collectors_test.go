@@ -47,6 +47,16 @@ func TestActivationDispatcherOutput(t *testing.T) {
 				Elapsedtime: "",
 				Pid:         30786,
 			},
+			{
+				// activate the collector (on windows)
+				Name:        "disp+work.EXE",
+				Description: "foobar2",
+				Dispstatus:  sapcontrol.STATECOLOR_YELLOW,
+				Textstatus:  "Stopping",
+				Starttime:   "",
+				Elapsedtime: "",
+				Pid:         30785,
+			},
 		},
 	}, nil)
 
@@ -81,6 +91,16 @@ func TestActivationEnqueueServerOutput(t *testing.T) {
 				Starttime:   "",
 				Elapsedtime: "",
 				Pid:         30786,
+			},
+			{
+				// activate the collector (On Windows)
+				Name:        "msg_server.EXE",
+				Description: "foobar2",
+				Dispstatus:  sapcontrol.STATECOLOR_YELLOW,
+				Textstatus:  "Stopping",
+				Starttime:   "",
+				Elapsedtime: "",
+				Pid:         30785,
 			},
 		},
 	}, nil)
