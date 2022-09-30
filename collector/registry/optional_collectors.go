@@ -1,6 +1,8 @@
 package registry
 
 import (
+	"strings"
+
 	"github.com/SUSE/sap_host_exporter/collector/dispatcher"
 	"github.com/SUSE/sap_host_exporter/collector/enqueue_server"
 	"github.com/SUSE/sap_host_exporter/lib/sapcontrol"
@@ -19,10 +21,10 @@ func RegisterOptionalCollectors(webService sapcontrol.WebService) error {
 	}
 
 	for _, process := range processList.Processes {
-		if process.Name == "msg_server" {
+		if strings.Contains(process.Name, "msg_server") {
 			enqueueFound = true
 		}
-		if process.Name == "disp+work" {
+		if strings.Contains(process.Name, "disp+work") {
 			dispatcherFound = true
 		}
 		if enqueueFound == true && dispatcherFound == true {
