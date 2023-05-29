@@ -74,7 +74,9 @@ build/obs/prometheus-sap_host_exporter:
 	sed -i 's~%%VERSION%%~$(VERSION)~' $@/_service
 	sed -i 's~%%REVISION%%~$(REVISION)~' $@/_service
 	sed -i 's~%%REPOSITORY%%~$(REPOSITORY)~' $@/_service
-	cd $@; osc service runall
+	go mod vendor
+	tar --sort=name --mtime='UTC 1970-01-01' -c vendor | gzip -n > $@/vendor.tar.gz
+	cd $@; osc service manualrun
 
 exporter-obs-changelog: exporter-obs-workdir
 	.ci/gh_release_to_obs_changeset.py $(REPOSITORY) -a $(AUTHOR) -t $(REVISION) -f build/obs/prometheus-sap_host_exporter/prometheus-sap_host_exporter.changes

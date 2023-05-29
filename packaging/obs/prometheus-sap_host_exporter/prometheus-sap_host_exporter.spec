@@ -25,7 +25,7 @@ Source:         %{name}-%{version}.tar.gz
 Source1:        vendor.tar.gz
 ExclusiveArch:  aarch64 x86_64 ppc64le s390x
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-BuildRequires:  golang(API) >= 1.12
+BuildRequires:  golang(API) >= 1.20
 Provides:       sap_host_exporter = %{version}-%{release}
 Provides:       prometheus(sap_host_exporter) = %{version}-%{release}
 
