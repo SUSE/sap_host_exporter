@@ -5,35 +5,36 @@
 package mock_sapcontrol
 
 import (
+	reflect "reflect"
+
 	sapcontrol "github.com/SUSE/sap_host_exporter/lib/sapcontrol"
 	gomock "github.com/golang/mock/gomock"
-	reflect "reflect"
 )
 
-// MockWebService is a mock of WebService interface
+// MockWebService is a mock of WebService interface.
 type MockWebService struct {
 	ctrl     *gomock.Controller
 	recorder *MockWebServiceMockRecorder
 }
 
-// MockWebServiceMockRecorder is the mock recorder for MockWebService
+// MockWebServiceMockRecorder is the mock recorder for MockWebService.
 type MockWebServiceMockRecorder struct {
 	mock *MockWebService
 }
 
-// NewMockWebService creates a new mock instance
+// NewMockWebService creates a new mock instance.
 func NewMockWebService(ctrl *gomock.Controller) *MockWebService {
 	mock := &MockWebService{ctrl: ctrl}
 	mock.recorder = &MockWebServiceMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockWebService) EXPECT() *MockWebServiceMockRecorder {
 	return m.recorder
 }
 
-// EnqGetStatistic mocks base method
+// EnqGetStatistic mocks base method.
 func (m *MockWebService) EnqGetStatistic() (*sapcontrol.EnqGetStatisticResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "EnqGetStatistic")
@@ -42,13 +43,13 @@ func (m *MockWebService) EnqGetStatistic() (*sapcontrol.EnqGetStatisticResponse,
 	return ret0, ret1
 }
 
-// EnqGetStatistic indicates an expected call of EnqGetStatistic
+// EnqGetStatistic indicates an expected call of EnqGetStatistic.
 func (mr *MockWebServiceMockRecorder) EnqGetStatistic() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EnqGetStatistic", reflect.TypeOf((*MockWebService)(nil).EnqGetStatistic))
 }
 
-// GetCurrentInstance mocks base method
+// GetCurrentInstance mocks base method.
 func (m *MockWebService) GetCurrentInstance() (*sapcontrol.CurrentSapInstance, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCurrentInstance")
@@ -57,13 +58,13 @@ func (m *MockWebService) GetCurrentInstance() (*sapcontrol.CurrentSapInstance, e
 	return ret0, ret1
 }
 
-// GetCurrentInstance indicates an expected call of GetCurrentInstance
+// GetCurrentInstance indicates an expected call of GetCurrentInstance.
 func (mr *MockWebServiceMockRecorder) GetCurrentInstance() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCurrentInstance", reflect.TypeOf((*MockWebService)(nil).GetCurrentInstance))
 }
 
-// GetInstanceProperties mocks base method
+// GetInstanceProperties mocks base method.
 func (m *MockWebService) GetInstanceProperties() (*sapcontrol.GetInstancePropertiesResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetInstanceProperties")
@@ -72,13 +73,13 @@ func (m *MockWebService) GetInstanceProperties() (*sapcontrol.GetInstancePropert
 	return ret0, ret1
 }
 
-// GetInstanceProperties indicates an expected call of GetInstanceProperties
+// GetInstanceProperties indicates an expected call of GetInstanceProperties.
 func (mr *MockWebServiceMockRecorder) GetInstanceProperties() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetInstanceProperties", reflect.TypeOf((*MockWebService)(nil).GetInstanceProperties))
 }
 
-// GetProcessList mocks base method
+// GetProcessList mocks base method.
 func (m *MockWebService) GetProcessList() (*sapcontrol.GetProcessListResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetProcessList")
@@ -87,13 +88,13 @@ func (m *MockWebService) GetProcessList() (*sapcontrol.GetProcessListResponse, e
 	return ret0, ret1
 }
 
-// GetProcessList indicates an expected call of GetProcessList
+// GetProcessList indicates an expected call of GetProcessList.
 func (mr *MockWebServiceMockRecorder) GetProcessList() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProcessList", reflect.TypeOf((*MockWebService)(nil).GetProcessList))
 }
 
-// GetQueueStatistic mocks base method
+// GetQueueStatistic mocks base method.
 func (m *MockWebService) GetQueueStatistic() (*sapcontrol.GetQueueStatisticResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetQueueStatistic")
@@ -102,13 +103,13 @@ func (m *MockWebService) GetQueueStatistic() (*sapcontrol.GetQueueStatisticRespo
 	return ret0, ret1
 }
 
-// GetQueueStatistic indicates an expected call of GetQueueStatistic
+// GetQueueStatistic indicates an expected call of GetQueueStatistic.
 func (mr *MockWebServiceMockRecorder) GetQueueStatistic() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetQueueStatistic", reflect.TypeOf((*MockWebService)(nil).GetQueueStatistic))
 }
 
-// GetSystemInstanceList mocks base method
+// GetSystemInstanceList mocks base method.
 func (m *MockWebService) GetSystemInstanceList() (*sapcontrol.GetSystemInstanceListResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetSystemInstanceList")
@@ -117,7 +118,7 @@ func (m *MockWebService) GetSystemInstanceList() (*sapcontrol.GetSystemInstanceL
 	return ret0, ret1
 }
 
-// GetSystemInstanceList indicates an expected call of GetSystemInstanceList
+// GetSystemInstanceList indicates an expected call of GetSystemInstanceList.
 func (mr *MockWebServiceMockRecorder) GetSystemInstanceList() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSystemInstanceList", reflect.TypeOf((*MockWebService)(nil).GetSystemInstanceList))
