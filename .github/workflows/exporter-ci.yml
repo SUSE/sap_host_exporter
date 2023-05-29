@@ -2,12 +2,13 @@ name: Exporter CI
 
 # this workflow will
 # - check build and test the go codebase on every pull request
-# - commit to the OBS development upstream whenever master the master branch is updated
+# - commit to the OBS development upstream whenever the main branch is updated
 # - perform an OBS Submit Request to downstream whenever a GitHub release is published
 # - attach build artifacts to GitHub releases
 
 on:
   push:
+    branches: [main]
     paths-ignore:
     - 'dashboards/**'
     - 'packaging/obs/grafana-sap-netweaver-dashboards/**'
@@ -17,6 +18,7 @@ on:
     - 'dashboards/**'
     - 'packaging/obs/grafana-sap-netweaver-dashboards/**'
     - '.github/workflows/dashboards*'
+  workflow_dispatch:
   release:
     types: [ published ]
 
@@ -50,50 +52,56 @@ jobs:
 
   obs-commit:
     needs: build
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    container: shap/continuous_deliver
-    env:
-      OBS_USER: ${{ secrets.OBS_USER }}
-      OBS_PASS: ${{ secrets.OBS_PASS }}
-      OBS_PROJECT: ${{ secrets.OBS_PROJECT }}
-      REVISION: ${{ github.sha }}
-      REPOSITORY: ${{ github.repository }}
-      GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    container:
+      image: ghcr.io/trento-project/continuous-delivery:main
+      options: -u 0:0
+      env:
+        OBS_USER: ${{ secrets.OBS_USER }}
+        OBS_PASS: ${{ secrets.OBS_PASS }}
+        OBS_PROJECT: ${{ secrets.OBS_PROJECT }}
+        REVISION: ${{ github.sha }}
+        REPOSITORY: ${{ github.repository }}
+        GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: configure OSC
       run: |
-        /scripts/init_osc_creds.sh
         mkdir -p $HOME/.config/osc
-        cp /root/.config/osc/oscrc $HOME/.config/osc
+        cp /home/osc/.config/osc/oscrc $HOME/.config/osc
+        /scripts/init_osc_creds.sh
+    - run: git config --global --add safe.directory $(pwd)
     - run: make exporter-obs-commit
 
   obs-submit-request:
     needs: build
     if: github.event.release
     runs-on: ubuntu-latest
-    container: shap/continuous_deliver
-    env:
-      OBS_USER: ${{ secrets.OBS_USER }}
-      OBS_PASS: ${{ secrets.OBS_PASS }}
-      OBS_PROJECT: ${{ secrets.OBS_PROJECT }}
-      PACKAGE_NAME: prometheus-sap_host_exporter
-      TARGET_PROJECT: ${{ secrets.OBS_DOWNSTREAM_PROJECT }}
-      REVISION: ${{ github.event.release.tag_name }}
-      REPOSITORY: ${{ github.repository }}
-      GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    container:
+      image: ghcr.io/trento-project/continuous-delivery:main
+      options: -u 0:0
+      env:
+        OBS_USER: ${{ secrets.OBS_USER }}
+        OBS_PASS: ${{ secrets.OBS_PASS }}
+        OBS_PROJECT: ${{ secrets.OBS_PROJECT }}
+        PACKAGE_NAME: prometheus-sap_host_exporter
+        TARGET_PROJECT: ${{ secrets.OBS_DOWNSTREAM_PROJECT }}
+        REVISION: ${{ github.event.release.tag_name }}
+        REPOSITORY: ${{ github.repository }}
+        GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
     - name: configure OSC
       run: |
-        /scripts/init_osc_creds.sh
         mkdir -p $HOME/.config/osc
-        cp /root/.config/osc/oscrc $HOME/.config/osc
+        cp /home/osc/.config/osc/oscrc $HOME/.config/osc
+        /scripts/init_osc_creds.sh
+    - run: git config --global --add safe.directory $(pwd)
     - run: make exporter-obs-workdir
     - run: make exporter-obs-changelog
     - run: make exporter-obs-commit
@@ -104,7 +112,7 @@ jobs:
     if: github.event.release
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/download-artifact@v2
+    - uses: actions/download-artifact@v3
       with:
         name: sap_host_exporter
     - uses: AButler/upload-release-assets@v2.0
