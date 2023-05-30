@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/golang/mock v1.6.0
-	github.com/hooklift/gowsdl v0.3.2-0.20200216020636-7a3e6bce010b
+	github.com/hooklift/gowsdl v0.5.0
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.15.1
 	github.com/sirupsen/logrus v1.9.2
