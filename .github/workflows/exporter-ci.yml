@@ -53,6 +53,8 @@ jobs:
   obs-commit:
     needs: build
     if: github.ref == 'refs/heads/main'
+    concurrency:
+      group: ${{ github.ref }}
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/trento-project/continuous-delivery:main
@@ -79,6 +81,8 @@ jobs:
   obs-submit-request:
     needs: build
     if: github.event.release
+    concurrency:
+      group: ${{ github.ref }}
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/trento-project/continuous-delivery:main
