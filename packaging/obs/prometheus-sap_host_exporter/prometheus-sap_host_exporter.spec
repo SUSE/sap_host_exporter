@@ -1,5 +1,5 @@
 #
-# Copyright 2020 SUSE LLC
+# Copyright 2020-2024 SUSE LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -62,6 +62,10 @@ install -D -m 0600 doc/%{shortname}.yaml "%{buildroot}/etc/%{shortname}/default.
 install -Dd -m 0755 %{buildroot}%{_sbindir}
 ln -s /usr/sbin/service %{buildroot}%{_sbindir}/rc%{name}
 
+# Install supportconfig plugin
+install -D -m 755 supportconfig-sap_host_exporter %{buildroot}%{_prefix}/lib/supportconfig/plugins/%{shortname}
+
+
 %pre
 %service_add_pre %{name}@.service
 
@@ -88,5 +92,8 @@ ln -s /usr/sbin/service %{buildroot}%{_sbindir}/rc%{name}
 %{_sbindir}/rc%{name}
 %dir /etc/%{shortname}/
 %config /etc/%{shortname}/default.yaml
+%dir %{_prefix}/lib/supportconfig
+%dir %{_prefix}/lib/supportconfig/plugins
+%{_prefix}/lib/supportconfig/plugins/%{shortname}
 
 %changelog
