@@ -1,6 +1,8 @@
 module github.com/SUSE/sap_host_exporter
 
-go 1.20
+go 1.23
+
+toolchain go1.23.0
 
 require (
 	github.com/golang/mock v1.6.0
