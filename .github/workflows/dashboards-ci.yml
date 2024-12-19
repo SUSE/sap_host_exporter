@@ -8,47 +8,44 @@ on:
   push:
     branches: [main]
     paths:
-    - 'Makefile'
-    - 'dashboards/**'
-    - 'packaging/obs/grafana-sap-netweaver-dashboards/**'
-    - '.github/workflows/dashboards*'
+      - "Makefile"
+      - "dashboards/**"
+      - "packaging/obs/grafana-sap-netweaver-dashboards/**"
+      - ".github/workflows/dashboards*"
   pull_request:
     paths:
-    - 'Makefile'
-    - 'dashboards/**'
-    - 'packaging/obs/grafana-sap-netweaver-dashboards/**'
-    - '.github/workflows/dashboards*'
+      - "Makefile"
+      - "dashboards/**"
+      - "packaging/obs/grafana-sap-netweaver-dashboards/**"
+      - ".github/workflows/dashboards*"
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
-    - run: npm -g install jsonlint
-    - name: validate JSON
-      run: find dashboards -name "*.json" -type f -exec jsonlint -c {} \;
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v1
+      - run: npm -g install jsonlint
+      - name: validate JSON
+        run: find dashboards -name "*.json" -type f -exec jsonlint -c {} \;
 
   obs-commit:
     needs: build
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    container: shap/continuous_deliver
-    env:
-      OBS_USER: ${{ secrets.OBS_USER }}
-      OBS_PASS: ${{ secrets.OBS_PASS }}
-      OBS_PROJECT: ${{ secrets.OBS_PROJECT }}
-      REVISION: ${{ github.sha }}
-      REPOSITORY: ${{ github.repository }}
-      GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    container:
+      image: ghcr.io/trento-project/continuous-delivery:0.1.x
+      options: -u 0:0
+      env:
+        OBS_USER: ${{ secrets.OBS_USER }}
+        OBS_PASS: ${{ secrets.OBS_PASS }}
+        OBS_PROJECT: ${{ vars.OBS_PROJECT }}
+        REVISION: ${{ github.sha }}
+        REPOSITORY: ${{ github.repository }}
+        GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
-    - name: configure OSC
-      run: |
-        /scripts/init_osc_creds.sh
-        mkdir -p $HOME/.config/osc
-        cp /root/.config/osc/oscrc $HOME/.config/osc
-    - run: make dashboards-obs-commit
-
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - run: /scripts/init_osc_creds.sh
+      - run: make dashboards-obs-commit
