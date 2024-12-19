@@ -2,8 +2,8 @@ package sapcontrol
 
 import (
 	"fmt"
-	"strconv"
 	"math"
+	"strconv"
 
 	"github.com/pkg/errors"
 )
