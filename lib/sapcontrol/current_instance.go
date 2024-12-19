@@ -3,6 +3,7 @@ package sapcontrol
 import (
 	"fmt"
 	"strconv"
+	"math"
 
 	"github.com/pkg/errors"
 )
@@ -37,10 +38,14 @@ func (s *webService) GetCurrentInstance() (*CurrentSapInstance, error) {
 		for _, prop := range response.Properties {
 			switch prop.Property {
 			case "SAPSYSTEM":
-				var num int
-				num, err = strconv.Atoi(prop.Value)
+				var num int64
+				num, err = strconv.ParseInt(prop.Value, 10, 32)
 				if err != nil {
-					err = errors.Wrap(err, "could not parse instance number to int")
+					err = errors.Wrap(err, "could not parse instance number to int32")
+					return
+				}
+				if num < math.MinInt32 || num > math.MaxInt32 {
+					err = errors.New("parsed instance number out of int32 range")
 					return
 				}
 				s.currentSapInstance.Number = int32(num)
