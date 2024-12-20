@@ -25,7 +25,7 @@ Source:         %{name}-%{version}.tar.gz
 Source1:        vendor.tar.gz
 ExclusiveArch:  aarch64 x86_64 ppc64le s390x
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-BuildRequires:  golang(API) >= 1.20
+BuildRequires:  golang(API) >= 1.23
 Provides:       sap_host_exporter = %{version}-%{release}
 Provides:       prometheus(sap_host_exporter) = %{version}-%{release}
 
@@ -40,8 +40,11 @@ to collect data about SAP systems like NetWeaver and S4/HANA.
 %define shortname sap_host_exporter
 
 %build
-
-export CGO_ENABLED=0
+%ifarch s390x
+  export CGO_ENABLED=1
+%else
+  export CGO_ENABLED=0
+%endif
 go build -mod=vendor \
          -buildmode=pie \
          -ldflags="-s -w -X main.version=%{version}" \
