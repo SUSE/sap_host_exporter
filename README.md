@@ -3,10 +3,9 @@
 This is a bespoke Prometheus exporter enabling the monitoring of SAP systems (a.k.a. SAP NetWeaver applications).
 
 [![Exporter CI](https://github.com/SUSE/sap_host_exporter/workflows/Exporter%20CI/badge.svg)](https://github.com/SUSE/sap_host_exporter/actions?query=workflow%3A%22Exporter+CI%22)
-[![Dashboards CI](https://github.com/SUSE/sap_host_exporter/workflows/Dashboards%20CI/badge.svg)](https://github.com/SUSE/sap_host_exporter/actions?query=workflow%3A%22Dashboards+CI%22)
-
 
 ## Table of Contents
+
 1. [Features](#features)
 2. [Installation](#installation)
 3. [Usage](#usage)
@@ -18,50 +17,47 @@ This is a bespoke Prometheus exporter enabling the monitoring of SAP systems (a.
    2. [Development](doc/development.md)
 6. [License](#license)
 
-
 ## Features
 
 The exporter is a stateless HTTP endpoint. On each HTTP request, it pulls runtime data from the SAP system via the SAPControl web interface.
 
 Exported data include:
+
 - Start Service processes
 - Enqueue Server stats
 - AS Dispatcher work process queue stats  
-
 
 ## Installation
 
 The project can be installed in many ways, including but not limited to:
 
-1. [Manual clone & build](#manual-clone-&-build)
+1. [Manual clone and build](#manual-clone-and-build)
 2. [Go](#go)
 3. [RPM](#rpm)
 
+### Manual clone and build
 
-### Manual clone & build
-
-```
+```shell
 git clone https://github.com/SUSE/sap_host_exporter
 cd sap_host_exporter
-make
+make build
 make install
 ```
 
 ### Go
 
-```
+```shell
 go get github.com/SUSE/sap_host_exporter
 ```
 
 ### RPM
-You can find the repositories for RPM based distributions in [SUSE's Open Build Service](https://build.opensuse.org/package/show/server:monitoring/prometheus-sap_host_exporter).  
+
+You can find the repositories for RPM based distributions in [SUSE's Open Build Service](https://build.opensuse.org/package/show/devel:sap:monitoring:stable/prometheus-sap_host_exporter).  
 On openSUSE or SUSE Linux Enterprise you can just use the `zypper` system package manager:
+
 ```shell
-export DISTRO=SLE_15_SP2 # change as desired
-zypper addrepo https://download.opensuse.org/repositories/server:/monitoring/$DISTRO/server:monitoring.repo
 zypper install prometheus-sap_host_exporter
 ```
-
 
 ## Usage
 
@@ -78,12 +74,8 @@ Though not strictly required, it is advised to run the exporter locally in the t
 ```
 
 For further details on SAPControl, please refer to the [official SAP docs](https://www.sap.com/documents/2016/09/0a40e60d-8b7c-0010-82c7-eda71af511fa.html) to properly connect to the SAPControl service.
- 
-The exporter will expose the metrics under the `/metrics` path, on port `9680` by default.
 
-**Hint:**
-You can deploy a full SAP NetWeaver cluster via Terraform with [SUSE/ha-sap-terraform-deployments](https://github.com/SUSE/ha-sap-terraform-deployments); 
-this exporter and the whole Prometheus monitoring stack will be automatically installed and configured for you.
+The exporter will expose the metrics under the `/metrics` path, on port `9680` by default.
 
 ### Configuration
 
@@ -114,23 +106,21 @@ A [systemd unit file](packaging/obs/prometheus-sap_host_exporter.spec) is provid
 systemctl --now enable prometheus-sap_host_exporter
 ```
 
-
 ## Contributing
 
 Pull requests are more than welcome!
 
 We recommend having a look at the [design document](doc/design.md) and the [development notes](doc/development.md) before contributing.
 
+## Copying
 
-## License
-
-Copyright 2020 SUSE LLC
+Copyright 2020-2025 SUSE LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
+you may not use this code repository except in compliance with the License.
 You may obtain a copy of the License at
 
-   https://www.apache.org/licenses/LICENSE-2.0
+   <https://www.apache.org/licenses/LICENSE-2.0>
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
