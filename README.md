@@ -47,7 +47,7 @@ make install
 ### Go
 
 ```shell
-go get github.com/SUSE/sap_host_exporter
+go install github.com/SUSE/sap_host_exporter@latest
 ```
 
 ### RPM
@@ -56,7 +56,7 @@ You can find the repositories for RPM based distributions in [SUSE's Open Build 
 On openSUSE or SUSE Linux Enterprise you can just use the `zypper` system package manager:
 
 ```shell
-zypper install prometheus-sap_host_exporter
+zypper install sap_host_exporter
 ```
 
 ## Usage
