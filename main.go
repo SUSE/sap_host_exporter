@@ -20,9 +20,9 @@ import (
 
 var (
 	// the released version
-	version string
+	version string = "development"
 	// the time the binary was built
-	buildDate string
+	buildDate string = "at unknown time"
 	// global --help flag
 	helpFlag *bool
 	// global --version flag
@@ -105,9 +105,6 @@ func showHelp() {
 }
 
 func showVersion() {
-	if buildDate == "" {
-		buildDate = "at unknown time"
-	}
-	fmt.Printf("version %s\nbuilt with %s %s/%s %s\n", version, runtime.Version(), runtime.GOOS, runtime.GOARCH, buildDate)
+	fmt.Printf("%s version\nbuilt with %s %s/%s %s\n", version, runtime.Version(), runtime.GOOS, runtime.GOARCH, buildDate)
 	os.Exit(0)
 }
